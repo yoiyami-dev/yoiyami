@@ -1,10 +1,10 @@
 {
 	"name": "yoiyami",
-	"version": "12.119.2_rcamod-v5b8",
+	"version": "12.119.2_rcamod-v5b9",
 	"codename": "indigo",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/rca-fedi/misskey.git"
+		"url": "https://github.com/rca-fedi/yoiyami.git"
 	},
 	"private": true,
 	"scripts": {
