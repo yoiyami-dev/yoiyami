@@ -2,11 +2,11 @@
 	<FormSwitch v-model="streamModeEnabled" class="_formBlock">配信モード(Beta)</FormSwitch>
 </template>
 <script lang="ts" setup>
-	import { computed, ref, watch } from 'vue';
+	import { computed } from 'vue';
 	import { defaultStore } from '@/store';
 	import FormSwitch from '@/components/form/switch.vue';
 	import { GetFormResultType } from '@/scripts/form';
-	import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget';
+	import { useWidgetPropsManager, Widget, WidgetComponentExpose } from './widget';
 
 	const streamModeEnabled = computed(defaultStore.makeGetterSetter('streamModeEnabled'));
 
@@ -23,7 +23,7 @@
 	const props = defineProps<{ widget?: Widget<WidgetProps>; }>();
 	const emit = defineEmits<{ (ev: 'updateProps', props: WidgetProps); }>();
 
-	const { widgetProps, configure } = useWidgetPropsManager(name,
+	const { configure } = useWidgetPropsManager(name,
 		widgetPropsDef,
 		props,
 		emit,
@@ -36,4 +36,5 @@
 	});
 
 	//TODO: ちゃんとi18n対応しやがれ(@自分)
+	//TODO: 自動でリロードするようにするべきかも
 </script>
