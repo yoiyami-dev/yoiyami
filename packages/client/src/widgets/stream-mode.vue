@@ -10,7 +10,7 @@
 
 	const streamModeEnabled = computed(defaultStore.makeGetterSetter('streamModeEnabled'));
 
-	const name = 'streadMode';
+	const name = 'streamMode';
 
 	const widgetPropsDef = {
 	};

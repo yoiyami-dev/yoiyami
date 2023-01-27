@@ -1323,6 +1323,7 @@ _widgets:
   serverMetric: "サーバーメトリクス"
   aiscript: "AiScriptコンソール"
   aichan: "藍"
+  streamMode: "配信モード切り替え"
 
 _cw:
   hide: "隠す"

@@ -1290,6 +1290,7 @@ _widgets:
   serverMetric: "Server metrics"
   aiscript: "AiScript console"
   aichan: "Ai"
+  streamMode: "Switching stream mode"
 _cw:
   hide: "Hide"
   show: "Show content"
