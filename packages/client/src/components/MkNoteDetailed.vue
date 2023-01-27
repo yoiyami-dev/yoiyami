@@ -1,6 +1,6 @@
 <template>
 <div
-	v-if="!muted"
+	v-if="!muted || !streamMode"
 	v-show="!isDeleted"
 	ref="el"
 	v-hotkey="keymap"
@@ -129,6 +129,7 @@ import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 import MkVisibility from '@/components/MkVisibility.vue';
 import { pleaseLogin } from '@/scripts/please-login';
 import { checkWordMute } from '@/scripts/check-word-mute';
+import { checkStreamMode } from '@/scripts/check-stream-mode';
 import { userPage } from '@/filters/user';
 import { notePage } from '@/filters/note';
 import * as os from '@/os';
@@ -177,6 +178,7 @@ const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
 const isDeleted = ref(false);
 const muted = ref(checkWordMute(appearNote, $i, defaultStore.state.mutedWords));
+const streamMode = ref(checkStreamMode(appearNote, $i, defaultStore.state.streamModeEnabled));
 const translation = ref(null);
 const translating = ref(false);
 const urls = appearNote.text ? extractUrlFromMfm(mfm.parse(appearNote.text)) : null;
