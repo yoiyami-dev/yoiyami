@@ -1,6 +1,6 @@
 <template>
 <div
-	v-if="!muted || streamMode"
+	v-if="!muted || !streamMode"
 	v-show="!isDeleted"
 	ref="el"
 	v-hotkey="keymap"
