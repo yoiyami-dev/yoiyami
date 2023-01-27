@@ -266,6 +266,10 @@ export const defaultStore = markRaw(new Storage('base', {
 	navBarReloadIcon: {
 		where: 'device',
 		default: true,
+	},
+	streamModeEnabled: {
+		where: 'device',
+		default: false,
 	}
 }));
 

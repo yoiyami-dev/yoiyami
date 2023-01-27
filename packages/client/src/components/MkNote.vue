@@ -1,6 +1,6 @@
 <template>
 <div
-	v-if="!muted"
+	v-if="!muted || streamMode"
 	v-show="!isDeleted"
 	ref="el"
 	v-hotkey="keymap"
@@ -120,6 +120,7 @@ import MkVisibility from '@/components/MkVisibility.vue';
 import { pleaseLogin } from '@/scripts/please-login';
 import { focusPrev, focusNext } from '@/scripts/focus';
 import { checkWordMute } from '@/scripts/check-word-mute';
+import { checkStreamMode } from '@/scripts/check-stream-mode';
 import { userPage } from '@/filters/user';
 import * as os from '@/os';
 import { defaultStore, noteViewInterruptors } from '@/store';
@@ -172,6 +173,7 @@ const isLong = (appearNote.cw == null && appearNote.text != null && (
 const collapsed = ref(appearNote.cw == null && isLong);
 const isDeleted = ref(false);
 const muted = ref(checkWordMute(appearNote, $i, defaultStore.state.mutedWords));
+const streamMode = ref(checkStreamMode(appearNote, $i, defaultStore.state.streamModeEnabled));
 const translation = ref(null);
 const translating = ref(false);
 const urls = appearNote.text ? extractUrlFromMfm(mfm.parse(appearNote.text)) : null;
