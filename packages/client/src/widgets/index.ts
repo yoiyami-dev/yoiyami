@@ -23,6 +23,7 @@ export default function(app: App) {
 	app.component('MkwButton', defineAsyncComponent(() => import('./button.vue')));
 	app.component('MkwAiscript', defineAsyncComponent(() => import('./aiscript.vue')));
 	app.component('MkwAichan', defineAsyncComponent(() => import('./aichan.vue')));
+	app.component('MkwStreamMode', defineAsyncComponent(() => import('./stream-mode.vue')));
 }
 
 export const widgets = [
@@ -48,4 +49,5 @@ export const widgets = [
 	'button',
 	'aiscript',
 	'aichan',
+	'streamMode',
 ];
