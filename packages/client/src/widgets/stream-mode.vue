@@ -10,7 +10,7 @@
 
 	const streamModeEnabled = computed(defaultStore.makeGetterSetter('streamModeEnabled'));
 
-	const name = 'postForm';
+	const name = 'streadMode';
 
 	const widgetPropsDef = {
 	};
