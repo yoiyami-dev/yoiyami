@@ -5,6 +5,8 @@
 		<FormSwitch v-model="navBarChatIcon" class="_formBlock">チャットを表示する</FormSwitch>
 		<FormSwitch v-model="navBarReloadIcon" class="_formBlock">リロードを表示する</FormSwitch>
 		<FormSwitch v-model="navBarWidgetIcon" class="_formBlock">ウィジェットを表示する</FormSwitch>
+		<FormSwitch v-model="newVideoPlayerEnabled" class="_formBlock">新しいビデオプレイヤー(vue-plyr)を使用する</FormSwitch>
+
 	</div>
 </template>
 	
@@ -17,4 +19,5 @@ import { defaultStore } from '@/store';
 	const navBarChatIcon = computed(defaultStore.makeGetterSetter('navBarChatIcon'));
 	const navBarReloadIcon = computed(defaultStore.makeGetterSetter('navBarReloadIcon'));
 	const navBarWidgetIcon = computed(defaultStore.makeGetterSetter('navBarWidgetIcon'));
+	const newVideoPlayerEnabled = computed(defaultStore.makeGetterSetter('newVideoPlayerEnabled'));
 </script>
