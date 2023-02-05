@@ -270,7 +270,11 @@ export const defaultStore = markRaw(new Storage('base', {
 	streamModeEnabled: {
 		where: 'device',
 		default: false,
-	}
+	},
+	newVideoPlayerEnabled: {
+		where: 'device',
+		default: true,
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期

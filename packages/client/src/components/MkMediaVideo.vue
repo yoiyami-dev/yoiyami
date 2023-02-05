@@ -5,7 +5,7 @@
 		<span>{{ $ts.clickToShow }}</span>
 	</div>
 </div>
-<div v-else class="kkjnbbplepmiyuadieoenjgutgcmtsvu">
+<div v-else-if="newVideoPlayerEnabled" class="kkjnbbplepmiyuadieoenjgutgcmtsvu new-plyr">
 	<vue-plyr>
 		<video
 			controls
@@ -19,6 +19,22 @@
 			>
 		</video>
 	</vue-plyr>
+	<i class="fas fa-eye-slash" @click="hide = true"></i>
+</div>
+<div v-else class="kkjnbbplepmiyuadieoenjgutgcmtsvu">
+	<video
+		:poster="video.thumbnailUrl"
+		:title="video.comment"
+		:alt="video.comment"
+		preload="none"
+		controls
+		@contextmenu.stop
+	>
+		<source 
+			:src="video.url" 
+			:type="video.type"
+		>
+	</video>
 	<i class="fas fa-eye-slash" @click="hide = true"></i>
 </div>
 </template>
@@ -35,6 +51,8 @@ const props = defineProps<{
 }>();
 
 const hide = ref((defaultStore.state.nsfw === 'force') ? true : props.video.isSensitive && (defaultStore.state.nsfw !== 'ignore'));
+
+const newVideoPlayerEnabled = defaultStore.state.newVideoPlayerEnabled;
 </script>
 
 <style lang="scss" scoped>
@@ -70,6 +88,10 @@ const hide = ref((defaultStore.state.nsfw === 'force') ? true : props.video.isSe
 		width: 100%;
 		height: 100%;
 	}
+}
+
+.kkjnbbplepmiyuadieoenjgutgcmtsvu.new-plyr {
+	--plyr-color-main: var(--accent);
 }
 
 .icozogqfvdetwohsdglrbswgrejoxbdj {
