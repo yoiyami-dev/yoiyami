@@ -33,7 +33,7 @@
 				</MkA>
 			</div>
 			<div v-if="!fetching && messages.length == 0" class="_fullinfo">
-				<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
+				<i class="fas fa-exclamation"></i>
 				<div>{{ $ts.noHistory }}</div>
 			</div>
 			<MkLoading v-if="fetching"/>
