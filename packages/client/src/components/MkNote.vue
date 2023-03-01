@@ -71,7 +71,7 @@
 				<MkA v-if="appearNote.channel && !inChannel" class="channel" :to="`/channels/${appearNote.channel.id}`"><i class="fas fa-satellite-dish"></i> {{ appearNote.channel.name }}</MkA>
 			</div>
 			<footer class="footer">
-				<XReactionsViewer ref="reactionsViewer" :note="appearNote"/>
+				<XReactionsViewer v-if="!$store.state.hideReactions" ref="reactionsViewer" :note="appearNote"/>
 				<button class="button _button" @click="reply()">
 					<template v-if="appearNote.reply"><i class="fas fa-reply-all"></i></template>
 					<template v-else><i class="fas fa-reply"></i></template>
