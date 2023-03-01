@@ -84,6 +84,7 @@
 				<button v-if="appearNote.myReaction != null" ref="reactButton" class="button _button reacted" @click="undoReact(appearNote)">
 					<i class="fas fa-minus"></i>
 				</button>
+				<p>{{ totalReactions }}</p>
 				<button ref="menuButton" class="button _button" @click="menu()">
 					<i class="fas fa-ellipsis-h"></i>
 				</button>
@@ -189,6 +190,20 @@ const keymap = {
 	'm|o': () => menu(true),
 	's': () => showContent.value !== showContent.value,
 };
+
+//debug
+let totalReactions = 0;
+if (appearNote.reactions != null) {
+	for (let n = 0; n < Object.entries(appearNote.reactions).length; n++) {
+		console.log(Object.entries(appearNote.reactions)[n][1]);
+		totalReactions = totalReactions + Number(Object.entries(appearNote.reactions)[n][1]);
+	}
+	console.log(totalReactions);
+}
+
+// console.log(appearNote);
+// console.log(Object.entries(appearNote.reactions)[0][0]);
+// console.log(appearNote.reactions.map(r => r[0]));
 
 useNoteCapture({
 	rootEl: el,
