@@ -80,11 +80,12 @@
 				<XRenoteButton ref="renoteButton" class="button" :note="appearNote" :count="appearNote.renoteCount"/>
 				<button v-if="appearNote.myReaction == null" ref="reactButton" class="button _button" @click="react()">
 					<i class="fas fa-plus"></i>
+					<p v-if="totalReactions > 0" class="count">{{ totalReactions }}</p>
 				</button>
 				<button v-if="appearNote.myReaction != null" ref="reactButton" class="button _button reacted" @click="undoReact(appearNote)">
 					<i class="fas fa-minus"></i>
+					<p v-if="totalReactions > 0" class="count">{{ totalReactions }}</p>
 				</button>
-				<p>{{ totalReactions }}</p>
 				<button ref="menuButton" class="button _button" @click="menu()">
 					<i class="fas fa-ellipsis-h"></i>
 				</button>
