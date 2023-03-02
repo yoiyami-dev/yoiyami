@@ -1,6 +1,6 @@
 <template>
 <div class="hpaizdrt" :style="bg">
-	<img v-if="instance.faviconUrl" class="icon" :src="instance.faviconUrl"/>
+	<img v-if="instance.faviconUrl" class="icon" :class="{hideShadow : $store.state.hideInstanceTickerShadow}" :src="instance.faviconUrl"/>
 	<span class="name">{{ instance.name }}</span>
 </div>
 </template>
@@ -65,5 +65,8 @@ const bg = {
 		vertical-align: top;
 		font-weight: bold;
 	}
+}
+.hideShadow {
+	text-shadow: none;
 }
 </style>
