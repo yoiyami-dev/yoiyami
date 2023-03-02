@@ -10,7 +10,7 @@
 		<FormSwitch v-model="postFormFooterEmojiIconEnabled" class="_formBlock">投稿画面のフッターに絵文字ボタンを表示する</FormSwitch>
 		<FormSwitch v-model="hideReaction" class="_formBlock">リアクションを非表示にする</FormSwitch>
 		<FormSwitch v-model="showReactionsCount" class="_formBlock">リアクションの数を表示する<template #caption>現時点ではリアルタイムに変更されません</template></FormSwitch>
-		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerの陰を非表示にする</FormSwitch>
+		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
 
 	</div>
 </template>
