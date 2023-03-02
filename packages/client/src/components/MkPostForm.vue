@@ -54,6 +54,7 @@
 				<span v-if="visibility === 'specified'"><i class="fas fa-envelope"></i></span>
 			</button>
 			<button v-tooltip="i18n.ts.previewNoteText" class="_button preview" :class="{ active: showPreview }" @click="showPreview = !showPreview"><i class="fas fa-file-code"></i></button>
+			<button class="submit _buttonGradate" :disabled="!canPost" data-cy-open-post-form-submit @click="post"><i :class="reply ? 'fas fa-reply' : renote ? 'fas fa-quote-right' : 'fas fa-paper-plane'"></i></button>
 		</footer>
 		<MkEmojiPicker v-if="$store.state.postFormEmojiPickerNewStyleEnabled" @chosen="emojiChosen"></MkEmojiPicker>
 		<datalist id="hashtags">
@@ -921,7 +922,7 @@ function emojiChosen(emoji: any) {
 		> footer {
 			padding: 0 16px 16px 16px;
 			display: flex;
-  		justify-content: space-evenly;
+			justify-content: space-evenly;
 
 			> button {
 				display: inline-block;
@@ -938,6 +939,22 @@ function emojiChosen(emoji: any) {
 
 				&.active {
 					color: var(--accent);
+				}
+			}
+			> .submit {
+				padding: 0 12px;
+				line-height: 34px;
+				font-weight: bold;
+				vertical-align: bottom;
+				border-radius: 4px;
+				font-size: 0.9em;
+
+				&:disabled {
+					opacity: 0.7;
+				}
+
+				&:hover {
+					background: var(--X8);
 				}
 			}
 		}
