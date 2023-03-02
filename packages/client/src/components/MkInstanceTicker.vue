@@ -1,7 +1,7 @@
 <template>
 <div class="hpaizdrt" :style="bg">
-	<img v-if="instance.faviconUrl" class="icon" :class="{hideShadow : $store.state.hideInstanceTickerShadow}" :src="instance.faviconUrl"/>
-	<span class="name">{{ instance.name }}</span>
+	<img v-if="instance.faviconUrl" class="icon" :src="instance.faviconUrl"/>
+	<span class="name" :class="{hideShadow : $store.state.hideInstanceTickerShadow}">{{ instance.name }}</span>
 </div>
 </template>
 
