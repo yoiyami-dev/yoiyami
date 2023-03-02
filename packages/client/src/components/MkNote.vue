@@ -192,19 +192,16 @@ const keymap = {
 	's': () => showContent.value !== showContent.value,
 };
 
-//debug
-let totalReactions = 0;
-if (appearNote.reactions != null) {
-	for (let n = 0; n < Object.entries(appearNote.reactions).length; n++) {
-		console.log(Object.entries(appearNote.reactions)[n][1]);
-		totalReactions = totalReactions + Number(Object.entries(appearNote.reactions)[n][1]);
-	}
-	console.log(totalReactions);
-}
+updateReactionCount(); //ノート読み込んだ時点で一回実行しておきたいので
 
-// console.log(appearNote);
-// console.log(Object.entries(appearNote.reactions)[0][0]);
-// console.log(appearNote.reactions.map(r => r[0]));
+function updateReactionCount() { //非効率的かも (r-ca)
+	if (appearNote.reactions != null) {
+		for (let n = 0; n < Object.entries(appearNote.reactions).length; n++) {
+			let totalReactions = 0;
+			totalReactions = totalReactions + Number(Object.entries(appearNote.reactions)[n][1]);
+		}
+	}
+}
 
 useNoteCapture({
 	rootEl: el,
@@ -233,6 +230,7 @@ function react(viaKeyboard = false): void {
 	}, () => {
 		focus();
 	});
+	updateReactionCount(); //監視してないので、とりあえず自分で変更したタイミングで更新してお茶を濁してみる
 }
 
 function undoReact(note): void {
@@ -241,6 +239,7 @@ function undoReact(note): void {
 	os.api('notes/reactions/delete', {
 		noteId: note.id,
 	});
+	updateReactionCount(); //監視してないので、とりあえず自分で変更したタイミングで更新してお茶を濁してみる
 }
 
 const currentClipPage = inject<Ref<misskey.entities.Clip> | null>('currentClipPage', null);
