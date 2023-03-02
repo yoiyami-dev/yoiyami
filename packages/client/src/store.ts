@@ -283,6 +283,14 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	postFormFooterPostButtonEnabled: {
+		where: 'device',
+		default: false,
+	},
+	postFormHeaderPostButtonEnabled: {
+		where: 'device',
+		default: true,
+	},
 	hideReactions: {
 		where: 'device',
 		default: false,

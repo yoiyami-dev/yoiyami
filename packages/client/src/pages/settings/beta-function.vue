@@ -11,6 +11,8 @@
 		<FormSwitch v-model="hideReaction" class="_formBlock">リアクションを非表示にする</FormSwitch>
 		<FormSwitch v-model="showReactionsCount" class="_formBlock">リアクションの数を表示する<template #caption>現時点ではリアルタイムに変更されません</template></FormSwitch>
 		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
+		<FormSwitch v-model="postFormFooterPostButtonEnabled" class="_formBlock">投稿画面のフッターに投稿ボタンを表示する</FormSwitch>
+		<FormSwitch v-model="postFormHeaderPostButtonEnabled" class="_formBlock">投稿画面のヘッダーに投稿ボタンを表示する</FormSwitch>
 
 	</div>
 </template>
@@ -30,4 +32,6 @@ import { defaultStore } from '@/store';
 	const hideReaction = computed(defaultStore.makeGetterSetter('hideReactions'));
 	const showReactionsCount = computed(defaultStore.makeGetterSetter('showReactionsCount'));
 	const hideInstanceTickerShadow = computed(defaultStore.makeGetterSetter('hideInstanceTickerShadow'));
+	const postFormFooterPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormFooterPostButtonEnabled'));
+	const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormHeaderPostButtonEnabled'));
 </script>

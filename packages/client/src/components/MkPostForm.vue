@@ -15,7 +15,7 @@
 		<div class="right">
 			<span class="text-count" :class="{ over: textLength > maxTextLength }">{{ maxTextLength - textLength }}</span>
 			<span v-if="localOnly" class="local-only"><i class="fas fa-biohazard"></i></span>
-			<button class="submit _buttonGradate" :disabled="!canPost" data-cy-open-post-form-submit @click="post">{{ submitText }}<i :class="reply ? 'fas fa-reply' : renote ? 'fas fa-quote-right' : 'fas fa-paper-plane'"></i></button>
+			<button v-if="$store.state.postFormHeaderPostButtonEnabled" class="submit _buttonGradate" :disabled="!canPost" data-cy-open-post-form-submit @click="post">{{ submitText }}<i :class="reply ? 'fas fa-reply' : renote ? 'fas fa-quote-right' : 'fas fa-paper-plane'"></i></button>
 		</div>
 	</header>
 	<div class="form" :class="{ fixed }">
@@ -54,7 +54,7 @@
 				<span v-if="visibility === 'specified'"><i class="fas fa-envelope"></i></span>
 			</button>
 			<button v-tooltip="i18n.ts.previewNoteText" class="_button preview" :class="{ active: showPreview }" @click="showPreview = !showPreview"><i class="fas fa-file-code"></i></button>
-			<button class="submit _buttonGradate" :disabled="!canPost" data-cy-open-post-form-submit @click="post"><i :class="reply ? 'fas fa-reply' : renote ? 'fas fa-quote-right' : 'fas fa-paper-plane'"></i></button>
+			<button v-if="$store.state.postFormFooterPostButtonEnabled" class="submit _buttonGradate" :disabled="!canPost" data-cy-open-post-form-submit @click="post"><i :class="reply ? 'fas fa-reply' : renote ? 'fas fa-quote-right' : 'fas fa-paper-plane'"></i></button>
 		</footer>
 		<MkEmojiPicker v-if="$store.state.postFormEmojiPickerNewStyleEnabled" @chosen="emojiChosen"></MkEmojiPicker>
 		<datalist id="hashtags">
