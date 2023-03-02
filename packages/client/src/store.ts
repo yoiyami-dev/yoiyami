@@ -286,7 +286,11 @@ export const defaultStore = markRaw(new Storage('base', {
 	hideReactions: {
 		where: 'device',
 		default: false,
-	}
+	},
+	showReactionsCount: {
+		where: 'device',
+		default: false,
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期

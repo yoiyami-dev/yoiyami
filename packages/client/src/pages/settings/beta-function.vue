@@ -9,6 +9,7 @@
 		<FormSwitch v-model="postFormEmojiPickerNewStyleEnabled" class="_formBlock">投稿画面で新しい絵文字ピッカーを使用する</FormSwitch>
 		<FormSwitch v-model="postFormFooterEmojiIconEnabled" class="_formBlock">投稿画面のフッターに絵文字ボタンを表示する</FormSwitch>
 		<FormSwitch v-model="hideReaction" class="_formBlock">リアクションを非表示にする</FormSwitch>
+		<FormSwitch v-model="showReactionsCount" class="_formBlock">リアクションの数を表示する<template #caption>現時点ではリアルタイムに変更されません</template></FormSwitch>
 
 	</div>
 </template>
@@ -26,4 +27,5 @@ import { defaultStore } from '@/store';
 	const postFormEmojiPickerNewStyleEnabled = computed(defaultStore.makeGetterSetter('postFormEmojiPickerNewStyleEnabled'));
 	const postFormFooterEmojiIconEnabled = computed(defaultStore.makeGetterSetter('postFormFooterEmojiIconEnabled'));
 	const hideReaction = computed(defaultStore.makeGetterSetter('hideReactions'));
+	const showReactionsCount = computed(defaultStore.makeGetterSetter('showReactionsCount'));
 </script>
