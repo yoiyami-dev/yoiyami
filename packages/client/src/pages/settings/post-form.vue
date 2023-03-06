@@ -24,12 +24,17 @@ import FormSwitch from '@/components/form/switch.vue';
 import FormSection from '@/components/form/section.vue';
 import * as os from '@/os';
 import { i18n } from '@/i18n';
+import { definePageMetadata } from '@/scripts/page-metadata';
 
 const postFormEmojiPickerNewStyleEnabled = computed(defaultStore.makeGetterSetter('postFormEmojiPickerNewStyleEnabled'));
 const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormHeaderPostButtonEnabled'));
 const postFormFooterPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormFooterPostButtonEnabled'));
 const postFormFooterEmojiIconEnabled = computed(defaultStore.makeGetterSetter('postFormFooterEmojiIconEnabled'));
 
+definePageMetadata({
+	title: i18n.ts.postForm,
+	icon: 'fas fa-pencil-alt',
+});
 </script>
 <style lang="scss" scoped>
 
