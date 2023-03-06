@@ -53,6 +53,7 @@
 			<div><Mfm :key="useOsNativeEmojis" text="🍮🍦🍭🍩🍰🍫🍬🥞🍪"/></div>
 		</FormSwitch>
 		<FormSwitch v-model="disableDrawer" class="_formBlock">{{ i18n.ts.disableDrawer }}</FormSwitch>
+		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
 
 		<FormRadios v-model="fontSize" class="_formBlock">
 			<template #label>{{ i18n.ts.fontSize }}</template>
@@ -143,6 +144,7 @@ const enableInfiniteScroll = computed(defaultStore.makeGetterSetter('enableInfin
 const useReactionPickerForContextMenu = computed(defaultStore.makeGetterSetter('useReactionPickerForContextMenu'));
 const squareAvatars = computed(defaultStore.makeGetterSetter('squareAvatars'));
 const aiChanMode = computed(defaultStore.makeGetterSetter('aiChanMode'));
+const hideInstanceTickerShadow = computed(defaultStore.makeGetterSetter('hideInstanceTickerShadow'));
 
 watch(lang, () => {
 	localStorage.setItem('lang', lang.value as string);
