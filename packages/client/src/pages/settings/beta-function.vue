@@ -17,7 +17,7 @@
 </template>
 	
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { defaultStore } from '@/store';
 import FormInfo from '@/components/MkInfo.vue';
 import FormSwitch from '@/components/form/switch.vue';
