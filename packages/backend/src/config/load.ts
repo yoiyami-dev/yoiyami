@@ -37,7 +37,7 @@ export default function load() {
 	config.port = config.port || parseInt(process.env.PORT || '', 10);
 
 	mixin.version = meta.version;
-	mixin.yyVersion = meta.yy_version;
+	mixin.yy_version = meta.yy_version;
 	mixin.host = url.host;
 	mixin.hostname = url.hostname;
 	mixin.scheme = url.protocol.replace(/:$/, '');
