@@ -53,7 +53,7 @@
 			<div><Mfm :key="useOsNativeEmojis" text="🍮🍦🍭🍩🍰🍫🍬🥞🍪"/></div>
 		</FormSwitch>
 		<FormSwitch v-model="disableDrawer" class="_formBlock">{{ i18n.ts.disableDrawer }}</FormSwitch>
-		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
+		<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">{{ i18n.ts.hideInstanceTickerShadow }}</FormSwitch>
 
 		<FormRadios v-model="fontSize" class="_formBlock">
 			<template #label>{{ i18n.ts.fontSize }}</template>
