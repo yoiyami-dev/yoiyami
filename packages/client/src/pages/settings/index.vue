@@ -121,6 +121,11 @@ const menuDef = computed(() => [{
 		to: '/settings/statusbar',
 		active: currentPage?.route.name === 'statusbar',
 	}, {
+		icon: 'fas fa-pencil-alt',
+		text: i18n.ts.postForm,
+		to: '/settings/post-form',
+		active: currentPage?.route.name === 'post-form',
+	}, {
 		icon: 'fas fa-music',
 		text: i18n.ts.sounds,
 		to: '/settings/sounds',
