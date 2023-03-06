@@ -16,6 +16,9 @@ const _dirname = dirname(_filename);
  */
 const dir = `${_dirname}/../../../../.config`;
 
+//うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得している（起動中に編集されたらたぶんこわれる）
+const package_path = `${_dirname}/../../../../package.json`;
+
 /**
  * Path of configuration file
  */
@@ -27,6 +30,7 @@ export default function load() {
 	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/meta.json`, 'utf-8'));
 	const clientManifest = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/_client_dist_/manifest.json`, 'utf-8'));
 	const config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source;
+	const package_json = JSON.parse(fs.readFileSync(package_path, 'utf-8')); //暫定
 
 	const mixin = {} as Mixin;
 
@@ -37,7 +41,7 @@ export default function load() {
 	config.port = config.port || parseInt(process.env.PORT || '', 10);
 
 	mixin.version = meta.version;
-	mixin.yy_version = meta.yy_version;
+	mixin.yy_version = package_json.yy_version;
 	mixin.host = url.host;
 	mixin.hostname = url.hostname;
 	mixin.scheme = url.protocol.replace(/:$/, '');
