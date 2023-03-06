@@ -71,6 +71,7 @@ export type Source = {
  * Misskeyが自動的に(ユーザーが設定した情報から推論して)設定する情報
  */
 export type Mixin = {
+	softwareName: string;
 	version: string;
 	yy_version: string;
 	host: string;

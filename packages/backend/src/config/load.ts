@@ -40,6 +40,7 @@ export default function load() {
 
 	config.port = config.port || parseInt(process.env.PORT || '', 10);
 
+	mixin.softwareName = package_json.name;
 	mixin.version = meta.version;
 	mixin.yy_version = package_json.yy_version;
 	mixin.host = url.host;
