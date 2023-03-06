@@ -178,6 +178,10 @@ export const routes = [{
 		name: 'other',
 		component: page(() => import('./pages/settings/beta-function.vue')),
 	},{
+		path: '/post-form',
+		name: 'post-form',
+		component: page(() => import('./pages/settings/post-form.vue')),
+	}, {
 		path: '/other',
 		name: 'other',
 		component: page(() => import('./pages/settings/other.vue')),
