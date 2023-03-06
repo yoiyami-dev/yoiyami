@@ -1,132 +1,132 @@
 <template>
-	<MkSpacer :content-max="narrow ? 800 : 1100">
-		<div ref="rootEl" v-size="{ max: [500] }" class="ftskorzw" :class="{ wide: !narrow }">
-			<div class="main">
-				<!-- TODO -->
-				<!-- <div class="punished" v-if="user.isSuspended"><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSuspended }}</div> -->
-				<!-- <div class="punished" v-if="user.isSilenced"><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSilenced }}</div> -->
+<MkSpacer :content-max="narrow ? 800 : 1100">
+	<div ref="rootEl" v-size="{ max: [500] }" class="ftskorzw" :class="{ wide: !narrow }">
+		<div class="main">
+			<!-- TODO -->
+			<!-- <div class="punished" v-if="user.isSuspended"><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSuspended }}</div> -->
+			<!-- <div class="punished" v-if="user.isSilenced"><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSilenced }}</div> -->
 
-				<div class="profile">
-					<MkRemoteCaution v-if="user.host != null" :href="user.url" class="warn" />
+			<div class="profile">
+				<MkRemoteCaution v-if="user.host != null" :href="user.url" class="warn" />
 
-					<div :key="user.id" class="_block main">
-						<div class="banner-container" :style="style">
-							<div ref="bannerEl" class="banner" :style="style"></div>
-							<div class="fade"></div>
-							<div class="title">
-								<MkUserName class="name" :user="user" :nowrap="true" />
-								<div class="bottom">
-									<span class="username">
-										<MkAcct :user="user" :detail="true" />
-									</span>
-									<!-- <span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="fas fa-bookmark"></i></span>
-								<span v-if="!user.isAdmin && user.isModerator" :title="i18n.ts.isModerator" style="color: var(--badge);"><i class="far fa-bookmark"></i></span>
-								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="fas fa-lock"></i></span>
-								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="fas fa-robot"></i></span> -->
-									<span v-if="user.isModerator" class="moderator">Moderator</span>
-									<span v-if="user.isAdmin" class="administrator">Administrator</span>
-								</div>
-							</div>
-							<span v-if="$i && $i.id != user.id && user.isFollowed" class="followed">{{
-									i18n.ts.followsYou
-							}}</span>
-							<div v-if="$i" class="actions">
-								<button class="menu _button" @click="menu"><i class="fas fa-ellipsis-h"></i></button>
-								<MkFollowButton v-if="$i.id != user.id" :user="user" :inline="true" :transparent="false"
-									:full="true" class="koudoku" />
-							</div>
-						</div>
-						<MkAvatar class="avatar" :user="user" :disable-preview="true" :show-indicator="true" />
+				<div :key="user.id" class="_block main">
+					<div class="banner-container" :style="style">
+						<div ref="bannerEl" class="banner" :style="style"></div>
+						<div class="fade"></div>
 						<div class="title">
-							<MkUserName :user="user" :nowrap="false" class="name" />
+							<MkUserName class="name" :user="user" :nowrap="true" />
 							<div class="bottom">
 								<span class="username">
 									<MkAcct :user="user" :detail="true" />
 								</span>
 								<!-- <span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="fas fa-bookmark"></i></span>
-							<span v-if="!user.isAdmin && user.isModerator" :title="i18n.ts.isModerator" style="color: var(--badge);"><i class="far fa-bookmark"></i></span> -->
+								<span v-if="!user.isAdmin && user.isModerator" :title="i18n.ts.isModerator" style="color: var(--badge);"><i class="far fa-bookmark"></i></span>
+								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="fas fa-lock"></i></span>
+								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="fas fa-robot"></i></span> -->
 								<span v-if="user.isModerator" class="moderator">Moderator</span>
 								<span v-if="user.isAdmin" class="administrator">Administrator</span>
-								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="fas fa-lock"></i></span>
-								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="fas fa-robot"></i></span>
 							</div>
 						</div>
-						<div class="description">
-							<Mfm v-if="user.description" :text="user.description" :is-note="false" :author="user"
-								:i="$i" :custom-emojis="user.emojis" />
-							<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
-						</div>
-						<div class="fields system">
-							<dl v-if="user.location" class="field">
-								<dt class="name"><i class="fas fa-map-marker fa-fw"></i> {{ i18n.ts.location }}</dt>
-								<dd class="value">{{ user.location }}</dd>
-							</dl>
-							<dl v-if="user.birthday" class="field">
-								<dt class="name"><i class="fas fa-birthday-cake fa-fw"></i> {{ i18n.ts.birthday }}</dt>
-								<dd class="value">{{ user.birthday.replace('-', '/').replace('-', '/') }} ({{
-										$t('yearsOld', { age })
-								}})</dd>
-							</dl>
-							<dl class="field">
-								<dt class="name"><i class="fas fa-calendar-alt fa-fw"></i> {{ i18n.ts.registeredDate }}
-								</dt>
-								<dd class="value">{{ new Date(user.createdAt).toLocaleString() }} (
-									<MkTime :time="user.createdAt" />)
-								</dd>
-							</dl>
-						</div>
-						<div v-if="user.fields.length > 0" class="fields">
-							<dl v-for="(field, i) in user.fields" :key="i" class="field">
-								<dt class="name">
-									<Mfm :text="field.name" :plain="true" :custom-emojis="user.emojis"
-										:colored="false" />
-								</dt>
-								<dd class="value">
-									<Mfm :text="field.value" :author="user" :i="$i" :custom-emojis="user.emojis"
-										:colored="false" />
-								</dd>
-							</dl>
-						</div>
-						<div class="status">
-							<MkA v-click-anime :to="userPage(user)" :class="{ active: page === 'index' }">
-								<b>{{ number(user.notesCount) }}</b>
-								<span>{{ i18n.ts.notes }}</span>
-							</MkA>
-							<MkA v-click-anime :to="userPage(user, 'following')"
-								:class="{ active: page === 'following' }">
-								<b>{{ number(user.followingCount) }}</b>
-								<span>{{ i18n.ts.following }}</span>
-							</MkA>
-							<MkA v-click-anime :to="userPage(user, 'followers')"
-								:class="{ active: page === 'followers' }">
-								<b>{{ number(user.followersCount) }}</b>
-								<span>{{ i18n.ts.followers }}</span>
-							</MkA>
+						<span v-if="$i && $i.id != user.id && user.isFollowed" class="followed">{{
+							i18n.ts.followsYou
+						}}</span>
+						<div v-if="$i" class="actions">
+							<button class="menu _button" @click="menu"><i class="fas fa-ellipsis-h"></i></button>
+							<MkFollowButton v-if="$i.id != user.id" :user="user" :inline="true" :transparent="false"
+								:full="true" class="koudoku" />
 						</div>
 					</div>
-				</div>
-
-				<div class="contents">
-					<div v-if="user.pinnedNotes.length > 0" class="_gap">
-						<XNote v-for="note in user.pinnedNotes" :key="note.id" class="note _block" :note="note"
-							:pinned="true" />
+					<MkAvatar class="avatar" :user="user" :disable-preview="true" :show-indicator="true" />
+					<div class="title">
+						<MkUserName :user="user" :nowrap="false" class="name" />
+						<div class="bottom">
+							<span class="username">
+								<MkAcct :user="user" :detail="true" />
+							</span>
+							<!-- <span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="fas fa-bookmark"></i></span>
+							<span v-if="!user.isAdmin && user.isModerator" :title="i18n.ts.isModerator" style="color: var(--badge);"><i class="far fa-bookmark"></i></span> -->
+							<span v-if="user.isModerator" class="moderator">Moderator</span>
+							<span v-if="user.isAdmin" class="administrator">Administrator</span>
+							<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="fas fa-lock"></i></span>
+							<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="fas fa-robot"></i></span>
+						</div>
 					</div>
-					<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
-					<template v-if="narrow">
-						<XPhotos :key="user.id" :user="user" />
-						<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
-					</template>
-				</div>
-				<div>
-					<XUserTimeline :user="user" />
+					<div class="description">
+						<Mfm v-if="user.description" :text="user.description" :is-note="false" :author="user"
+							:i="$i" :custom-emojis="user.emojis" />
+						<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
+					</div>
+					<div class="fields system">
+						<dl v-if="user.location" class="field">
+							<dt class="name"><i class="fas fa-map-marker fa-fw"></i> {{ i18n.ts.location }}</dt>
+							<dd class="value">{{ user.location }}</dd>
+						</dl>
+						<dl v-if="user.birthday" class="field">
+							<dt class="name"><i class="fas fa-birthday-cake fa-fw"></i> {{ i18n.ts.birthday }}</dt>
+							<dd class="value">{{ user.birthday.replace('-', '/').replace('-', '/') }} ({{
+								$t('yearsOld', { age })
+							}})</dd>
+						</dl>
+						<dl class="field">
+							<dt class="name"><i class="fas fa-calendar-alt fa-fw"></i> {{ i18n.ts.registeredDate }}
+							</dt>
+							<dd class="value">{{ new Date(user.createdAt).toLocaleString() }} (
+								<MkTime :time="user.createdAt" />)
+							</dd>
+						</dl>
+					</div>
+					<div v-if="user.fields.length > 0" class="fields">
+						<dl v-for="(field, i) in user.fields" :key="i" class="field">
+							<dt class="name">
+								<Mfm :text="field.name" :plain="true" :custom-emojis="user.emojis"
+									:colored="false" />
+							</dt>
+							<dd class="value">
+								<Mfm :text="field.value" :author="user" :i="$i" :custom-emojis="user.emojis"
+									:colored="false" />
+							</dd>
+						</dl>
+					</div>
+					<div class="status">
+						<MkA v-click-anime :to="userPage(user)" :class="{ active: page === 'index' }">
+							<b>{{ number(user.notesCount) }}</b>
+							<span>{{ i18n.ts.notes }}</span>
+						</MkA>
+						<MkA v-click-anime :to="userPage(user, 'following')"
+							:class="{ active: page === 'following' }">
+							<b>{{ number(user.followingCount) }}</b>
+							<span>{{ i18n.ts.following }}</span>
+						</MkA>
+						<MkA v-click-anime :to="userPage(user, 'followers')"
+							:class="{ active: page === 'followers' }">
+							<b>{{ number(user.followersCount) }}</b>
+							<span>{{ i18n.ts.followers }}</span>
+						</MkA>
+					</div>
 				</div>
 			</div>
-			<div v-if="!narrow" class="sub">
-				<XPhotos :key="user.id" :user="user" />
-				<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
+
+			<div class="contents">
+				<div v-if="user.pinnedNotes.length > 0" class="_gap">
+					<XNote v-for="note in user.pinnedNotes" :key="note.id" class="note _block" :note="note"
+						:pinned="true" />
+				</div>
+				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
+				<template v-if="narrow">
+					<XPhotos :key="user.id" :user="user" />
+					<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
+				</template>
+			</div>
+			<div>
+				<XUserTimeline :user="user" />
 			</div>
 		</div>
-	</MkSpacer>
+		<div v-if="!narrow" class="sub">
+			<XPhotos :key="user.id" :user="user" />
+			<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
+		</div>
+	</div>
+</MkSpacer>
 </template>
 
 <script lang="ts" setup>
