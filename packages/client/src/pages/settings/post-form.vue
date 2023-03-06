@@ -1,19 +1,19 @@
 <template>
 <div class="_formRoot">
 	<FormSection>
-		<template #label>ヘッダー</template>
-		<FormSwitch v-model="postFormHeaderPostButtonEnabled" class="_formBlock">投稿画面のヘッダーに投稿ボタンを表示する</FormSwitch>
+		<template #label>{{ i18n.ts.header }}</template>
+		<FormSwitch v-model="postFormHeaderPostButtonEnabled" class="_formBlock">{{ i18n.ts.showPostFormHeaderPostButton }}</FormSwitch>
 	</FormSection>
 
 	<FormSection>
-		<template #label>フッター</template>
-		<FormSwitch v-model="postFormFooterPostButtonEnabled" class="_formBlock">投稿画面のフッターに投稿ボタンを表示する</FormSwitch>
-		<FormSwitch v-model="postFormFooterEmojiIconEnabled" class="_formBlock">投稿画面のフッターに絵文字ボタンを表示する</FormSwitch>
+		<template #label>{{ i18n.ts.footer }}</template>
+		<FormSwitch v-model="postFormFooterPostButtonEnabled" class="_formBlock">{{ i18n.ts.showPostFormFooterPostButton }}</FormSwitch>
+		<FormSwitch v-model="postFormFooterEmojiIconEnabled" class="_formBlock">{{ i18n.ts.showPostFormFooterEmojiButton }}</FormSwitch>
 	</FormSection>
 
 	<FormSection>
-		<template #label>絵文字ピッカー</template>
-		<FormSwitch v-model="postFormEmojiPickerNewStyleEnabled">新しい絵文字ピッカーを使用する</FormSwitch>
+		<template #label>{{ i18n.ts.emojiPicker }}</template>
+		<FormSwitch v-model="postFormEmojiPickerNewStyleEnabled">{{ i18n.ts.useNewStyleEmojiPicker }}</FormSwitch>
 	</FormSection>
 </div>
 </template>
