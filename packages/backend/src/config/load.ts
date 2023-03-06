@@ -16,7 +16,7 @@ const _dirname = dirname(_filename);
  */
 const dir = `${_dirname}/../../../../.config`;
 
-//うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得している（起動中に編集されたらたぶんこわれる）
+//うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得しちゃってる（起動中に編集されたらたぶんこわれる）
 const package_path = `${_dirname}/../../../../package.json`;
 
 /**
