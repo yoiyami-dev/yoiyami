@@ -902,7 +902,7 @@ hideInstanceTickerShadow: "InstanceTickerのシャドウを非表示にする"
 showPostFormHeaderPostButton: "投稿画面のヘッダーに投稿ボタンを表示する"
 showPostFormFooterPostButton: "投稿画面のフッターに投稿ボタンを表示する"
 showPostFormFooterEmojiButton: "投稿画面のフッターに絵文字ボタンを表示する"
-useNewStyleEmojiPickerOnPostForm: "投稿画面で新しい絵文字ピッカーを使用する"
+useNewStyleEmojiPicker: "新しい絵文字ピッカーを使用する"
 
 _sensitiveMediaDetection:
   description: "機械学習を使って自動でセンシティブなメディアを検出し、モデレーションに役立てることができます。サーバーの負荷が少し増えます。"
