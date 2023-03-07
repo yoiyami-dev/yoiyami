@@ -19,6 +19,8 @@ const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
 const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/meta.json`, 'utf-8'));
+//うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得しちゃってる（起動中に編集されたらたぶんこわれる）
+const package_json = JSON.parse(fs.readFileSync(`${_dirname}/../../../../package.json`, 'utf-8'));
 
 const logger = new Logger('core', 'cyan');
 const bootLogger = logger.createSubLogger('boot', 'magenta', false);
@@ -29,22 +31,39 @@ function greet() {
 	if (!envOption.quiet) {
 		//#region Misskey logo
 		const v = `v${meta.version}`;
-		console.log(themeColor('  _____ _         _           '));
-		console.log(themeColor(' |     |_|___ ___| |_ ___ _ _ '));
-		console.log(themeColor(' | | | | |_ -|_ -| \'_| -_| | |'));
-		console.log(themeColor(' |_|_|_|_|___|___|_,_|___|_  |'));
-		console.log(' ' + chalk.gray(v) + themeColor('                        |___|\n'.substr(v.length)));
+		const yy_v = `${package_json.yy_version}`;
+		// console.log(themeColor('  _____ _         _           '));
+		// console.log(themeColor(' |     |_|___ ___| |_ ___ _ _ '));
+		// console.log(themeColor(' | | | | |_ -|_ -| \'_| -_| | |'));
+		// console.log(themeColor(' |_|_|_|_|___|___|_,_|___|_  |'));
+		// console.log(' ' + chalk.gray(v) + themeColor('                        |___|\n'.substr(v.length)));
 		//#endregion
 
-		console.log(' Misskey is an open-source decentralized microblogging platform.');
-		console.log(chalk.rgb(255, 136, 0)(' If you like Misskey, please donate to support development. https://www.patreon.com/syuilo'));
+		console.log(themeColor('                #                        #'));
+		console.log(themeColor('                                          '));
+		console.log(themeColor('  #   #   ###   # #   #  ####  #### ###  #'));
+		console.log(themeColor('   #  #  #   #  #  #  #     #  #  ##  #  #'));
+		console.log(themeColor('   #  #  #   #  #  #  #  ####  #   #  #  #'));
+		console.log(themeColor('   # #   #   #  #  # #   #  #  #   #  #  #'));
+		console.log(themeColor('    ##   #   #  #   ##  ##  #  #   #  #  #'));
+		console.log(themeColor('    ##    ###   #   ##   ####  #   #  #  #'));
+		console.log(themeColor('    #               #                     '));
+		console.log(themeColor('    #               #  ' + chalk.gray(yy_v)));
+		console.log(themeColor('  ##              ##   ' + chalk.gray('based on Misskey ' + v)));
+		console.log('');
+
+		// console.log(' Misskey is an open-source decentralized microblogging platform.');
+		console.log(' yoiyami is a fork of Misskey.');
+		console.log(chalk.rgb(255, 136, 0)(' If you like this fork, please donate to support Misskey development. https://www.patreon.com/syuilo'));
+		console.log(chalk.gray(' Original Misskey repository: https://github.com/misskey-dev/misskey'));
 
 		console.log('');
 		console.log(chalkTemplate`--- ${os.hostname()} {gray (PID: ${process.pid.toString()})} ---`);
 	}
 
-	bootLogger.info('Welcome to Misskey!');
-	bootLogger.info(`Misskey v${meta.version}`, null, true);
+	bootLogger.info('Welcome to yoiyami!');
+	bootLogger.info(`Version : yoiyami ${package_json.yy_version}`, null, true);
+	bootLogger.info(`Based on: Misskey v${meta.version}`, null, true);
 }
 
 /**
@@ -66,7 +85,7 @@ export async function masterMain() {
 		process.exit(1);
 	}
 
-	bootLogger.succ('Misskey initialized');
+	bootLogger.succ('yoiyami initialized!');
 
 	if (!envOption.disableClustering) {
 		await spawnWorkers(config.clusterLimit);
