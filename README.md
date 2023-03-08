@@ -11,8 +11,8 @@
   ■                 ■                        
  ■■                ■■                                                 
 ```
-**yoiyami** based on Misskey v12.119.2
-
+**yoiyami** based on Misskey v12.119.2  
+~~ロゴはまだない~~
 # Introduction
 - これは何？
 	- [ろむ猫](https://github.com/r-ca)が技術習得を目的として開発しているMisskeyフォークです
