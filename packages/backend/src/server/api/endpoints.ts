@@ -319,6 +319,7 @@ import * as ep___fetchRss from './endpoints/fetch-rss.js';
 import * as ep___admin_driveCapOverride from './endpoints/admin/drive-capacity-override.js';
 import * as ep___entrance from './endpoints/entrance.js';
 import * as ep___admin_entrance_add from './endpoints/admin/entrance/add.js';
+import * as ep___admin_entrance_delete from './endpoints/admin/entrance/delete.js';
 
 const eps = [
 	['admin/meta', ep___admin_meta],
@@ -640,6 +641,7 @@ const eps = [
 	['fetch-rss', ep___fetchRss],
 	['entrance', ep___entrance],
 	['admin/entrance/add', ep___admin_entrance_add],
+	['admin/entrance/delete', ep___admin_entrance_delete],
 ];
 
 export interface IEndpointMeta {
