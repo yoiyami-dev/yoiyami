@@ -25,9 +25,9 @@
 // SPECIFICATION: https://misskey-hub.net/docs/features/share-form.html
 
 import { } from 'vue';
-import { noteVisibilities } from 'misskey-js';
-import * as Acct from 'misskey-js/built/acct';
-import * as Misskey from 'misskey-js';
+import { noteVisibilities } from '@r-ca/yoiyami-js';
+import * as Acct from '@r-ca/yoiyami-js/built/acct';
+import * as Misskey from '@r-ca/yoiyami-js';
 import MkButton from '@/components/MkButton.vue';
 import XPostForm from '@/components/MkPostForm.vue';
 import * as os from '@/os';

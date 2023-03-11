@@ -1,4 +1,4 @@
-import * as Misskey from 'misskey-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import { Ref } from 'vue';
 
 export type MenuAction = (ev: MouseEvent) => void;
