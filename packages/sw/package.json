@@ -7,7 +7,6 @@
 	},
 	"resolutions": {},
 	"dependencies": {
-		"@r-ca/yoiyami-js": "1.0.0",
 		"esbuild": "^0.14.13",
 		"idb-keyval": "^6.0.3",
 		"misskey-js": "0.0.14"

@@ -51,7 +51,7 @@
 
 <script lang="ts" setup>
 import { computed, watch, onMounted, nextTick, onBeforeUnmount } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import * as Acct from '@r-ca/yoiyami-js/built/acct';
 import XMessage from './messaging-room.message.vue';
 import XForm from './messaging-room.form.vue';

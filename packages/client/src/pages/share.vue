@@ -27,7 +27,7 @@
 import { } from 'vue';
 import { noteVisibilities } from '@r-ca/yoiyami-js';
 import * as Acct from '@r-ca/yoiyami-js/built/acct';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import MkButton from '@/components/MkButton.vue';
 import XPostForm from '@/components/MkPostForm.vue';
 import * as os from '@/os';

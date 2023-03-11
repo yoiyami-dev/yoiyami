@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import { } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import XDrive from '@/components/MkDrive.vue';
 import XWindow from '@/components/MkWindow.vue';
 import { i18n } from '@/i18n';

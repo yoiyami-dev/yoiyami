@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import { readAndCompressImage } from 'browser-image-resizer';
 import { defaultStore } from '@/store';
 import { apiUrl } from '@/config';

@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from '@r-ca/yoiyami-js';
 import XWindow from '@/components/MkWindow.vue';
 import MkTextarea from '@/components/form/textarea.vue';
 import MkButton from '@/components/MkButton.vue';
