@@ -92,6 +92,15 @@ os.api('federation/instances', {
 	instances = _instances;
 });
 
+os.api('entrance').then(res => {
+	const backgroundUrl = res?.backgroundUrl;
+	const registerWindowMarginRight = res.registerWindowMarginRight;
+	const registerWindowMarginBottom = res.registerWindowMarginBottom;
+	const registerWindowMarginLeft = res.registerWindowMarginLeft;
+	const registerWindowMarginTop = res.registerWindowMarginTop;
+	const registerWindowType = res.registerWindowType;
+});
+
 function signin() {
 	os.popup(XSigninDialog, {
 		autoSet: true,

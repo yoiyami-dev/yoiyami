@@ -1,16 +1,23 @@
 <template>
-<div v-if="meta" class="xfbouadm" :style="{ backgroundImage: `url(${ meta.backgroundImageUrl })` }"></div>
+<div v-if="true" class="xfbouadm" :style="{ backgroundImage: 'url('+ backgroundUrl +')' }"></div>
 </template>
 
 <script lang="ts" setup>
+import { Url } from 'url';
 import { ref } from 'vue';
 import * as Misskey from '@r-ca/yoiyami-js';
 import * as os from '@/os';
 
-const meta = ref<Misskey.entities.DetailedInstanceMetadata>();
+let backgroundUrl = ref<Url>();
 
-os.api('meta', { detail: true }).then(gotMeta => {
-	meta.value = gotMeta;
+// const meta = ref<Misskey.entities.DetailedInstanceMetadata>();
+
+// os.api('meta', { detail: true }).then(gotMeta => {
+// 	meta.value = gotMeta;
+// });
+
+os.api('entrance').then(res => {
+	backgroundUrl.value = res?.backgroundUrl || 'https://beta.romneko.net/files/686e036f-e2f4-4b38-a9f7-237649a3dd98';
 });
 </script>
 
