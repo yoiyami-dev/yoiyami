@@ -31,6 +31,15 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@r-ca/yoiyami-js@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@r-ca/yoiyami-js/-/yoiyami-js-1.0.0.tgz#09a0bfd2a9f4290efad34976a89e01ab9a0516db"
+  integrity sha512-n6F6mUEjf5c+GHC8JzOJpUOdBzwIMZ63VezS3RDv4Nl1thdBrabQSZ4lSF+4iDEHk6wjjs1jaMPbnaJk7YGsyA==
+  dependencies:
+    autobind-decorator "^2.4.0"
+    eventemitter3 "^4.0.7"
+    reconnecting-websocket "^4.4.0"
+
 acorn-jsx@^5.3.1:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"

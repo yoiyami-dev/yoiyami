@@ -107,7 +107,7 @@
 <script lang="ts" setup>
 import { computed, inject, onMounted, onUnmounted, reactive, ref, Ref } from 'vue';
 import * as mfm from 'mfm-js';
-import * as misskey from 'misskey-js';
+import * as misskey from '@r-ca/yoiyami-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
 import XNoteHeader from '@/components/MkNoteHeader.vue';
 import XNoteSimple from '@/components/MkNoteSimple.vue';

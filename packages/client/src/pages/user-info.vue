@@ -154,7 +154,7 @@
 
 <script lang="ts" setup>
 import { computed, watch } from 'vue';
-import * as misskey from 'misskey-js';
+import * as misskey from '@r-ca/yoiyami-js';
 import MkChart from '@/components/MkChart.vue';
 import MkObjectView from '@/components/MkObjectView.vue';
 import FormTextarea from '@/components/form/textarea.vue';
