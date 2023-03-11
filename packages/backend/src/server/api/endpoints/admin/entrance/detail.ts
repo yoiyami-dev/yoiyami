@@ -3,8 +3,6 @@ import define from '../../../define.js';
 import { ApiError } from '../../../error.js';
 import { Entrance } from '@/models/entities/entrance.js';
 
-// TODO: 他のエンドポイントに習ってshowとかにするべきかも
-
 export const meta = {
 	tags: ['admin'],
 
@@ -21,15 +19,19 @@ export const meta = {
 } as const;
 export const paramDef = {
 	type: 'object',
-	properties: {},
-	required: [],
+	properties: {
+		id: {
+			type: 'string',
+		},
+	},
+	required: ['id'],
 } as const;
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps) => {
-	const list = Entrances.createQueryBuilder('entrance')
-		.select('entrance.id, entrance.name')
-		.getRawMany();
+	const theme = await Entrances.createQueryBuilder('entrance')
+		.select('*')
+		.getRawOne();
 
-	return await list;
+	return await theme;
 });
