@@ -32,7 +32,7 @@
 	
 	<script lang="ts" setup>
 	import { } from 'vue';
-	import { permissions as kinds } from 'misskey-js';
+	import { permissions as kinds } from '@r-ca/yoiyami-js';
 	import MkInput from './form/input.vue';
 	import MkSwitch from './form/switch.vue';
 	import MkButton from './MkButton.vue';
