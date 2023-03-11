@@ -287,15 +287,6 @@
     jsprim "^1.2.2"
     sshpk "^1.14.1"
 
-"@r-ca/yoiyami-js@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@r-ca/yoiyami-js/-/yoiyami-js-1.0.0.tgz#09a0bfd2a9f4290efad34976a89e01ab9a0516db"
-  integrity sha512-n6F6mUEjf5c+GHC8JzOJpUOdBzwIMZ63VezS3RDv4Nl1thdBrabQSZ4lSF+4iDEHk6wjjs1jaMPbnaJk7YGsyA==
-  dependencies:
-    autobind-decorator "^2.4.0"
-    eventemitter3 "^4.0.7"
-    reconnecting-websocket "^4.4.0"
-
 "@redocly/ajv@^8.6.5":
   version "8.6.5"
   resolved "https://registry.yarnpkg.com/@redocly/ajv/-/ajv-8.6.5.tgz#b6e737248b791905b3f600fb329779a807f0f774"

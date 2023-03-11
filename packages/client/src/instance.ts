@@ -1,5 +1,5 @@
 import { computed, reactive } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from 'misskey-js';
 import { api } from './os';
 
 // TODO: 他のタブと永続化されたstateを同期

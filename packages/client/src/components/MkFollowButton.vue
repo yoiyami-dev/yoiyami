@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Misskey from 'misskey-js';
 import * as os from '@/os';
 import { stream } from '@/stream';
 import { i18n } from '@/i18n';

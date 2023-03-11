@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import { } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import MkContainer from '@/components/MkContainer.vue';
 import MkChart from '@/components/MkChart.vue';
 import * as os from '@/os';

@@ -1,4 +1,4 @@
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import { i18n } from '@/i18n';
 
 /**

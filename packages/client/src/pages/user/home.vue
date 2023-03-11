@@ -132,7 +132,7 @@
 <script lang="ts" setup>
 import { defineAsyncComponent, computed, inject, onMounted, onUnmounted, watch } from 'vue';
 import calcAge from 's-age';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import XUserTimeline from './index.timeline.vue';
 import XNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';

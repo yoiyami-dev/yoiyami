@@ -1,4 +1,4 @@
-import * as Acct from '@r-ca/yoiyami-js/built/acct';
+import * as Acct from 'misskey-js/built/acct';
 import { i18n } from '@/i18n';
 import * as os from '@/os';
 

@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 
 const props = withDefaults(defineProps<{
 	user: misskey.entities.User;

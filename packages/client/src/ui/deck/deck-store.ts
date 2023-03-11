@@ -1,6 +1,6 @@
 import { throttle } from 'throttle-debounce';
 import { markRaw } from 'vue';
-import { notificationTypes } from '@r-ca/yoiyami-js';
+import { notificationTypes } from 'misskey-js';
 import { Storage } from '../../pizzax';
 import { i18n } from '@/i18n';
 import { api } from '@/os';

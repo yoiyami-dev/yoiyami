@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, computed, inject, onMounted, onUnmounted, watch } from 'vue';
-import * as Acct from '@r-ca/yoiyami-js/built/acct';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as Acct from 'misskey-js/built/acct';
+import * as misskey from 'misskey-js';
 import XFollowList from './follow-list.vue';
 import * as os from '@/os';
 import { definePageMetadata } from '@/scripts/page-metadata';

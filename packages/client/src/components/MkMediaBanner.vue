@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { onMounted } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import { ColdDeviceStorage } from '@/store';
 
 const props = withDefaults(defineProps<{

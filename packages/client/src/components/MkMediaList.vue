@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';

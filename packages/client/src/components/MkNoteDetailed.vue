@@ -116,7 +116,7 @@
 <script lang="ts" setup>
 import { computed, inject, onMounted, onUnmounted, reactive, ref } from 'vue';
 import * as mfm from 'mfm-js';
-import * as misskey from '@r-ca/yoiyami-js';
+import * as misskey from 'misskey-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
 import XNoteSimple from '@/components/MkNoteSimple.vue';
 import XReactionsViewer from '@/components/MkReactionsViewer.vue';
