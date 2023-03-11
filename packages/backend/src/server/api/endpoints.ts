@@ -320,6 +320,7 @@ import * as ep___admin_driveCapOverride from './endpoints/admin/drive-capacity-o
 import * as ep___entrance from './endpoints/entrance.js';
 import * as ep___admin_entrance_add from './endpoints/admin/entrance/add.js';
 import * as ep___admin_entrance_delete from './endpoints/admin/entrance/delete.js';
+import * as ep___admin_entrance_list from './endpoints/admin/entrance/list.js';
 
 const eps = [
 	['admin/meta', ep___admin_meta],
@@ -642,6 +643,7 @@ const eps = [
 	['entrance', ep___entrance],
 	['admin/entrance/add', ep___admin_entrance_add],
 	['admin/entrance/delete', ep___admin_entrance_delete],
+	['admin/entrance/list', ep___admin_entrance_list],
 ];
 
 export interface IEndpointMeta {
