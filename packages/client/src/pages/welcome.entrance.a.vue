@@ -62,9 +62,10 @@ import number from '@/filters/number';
 import { i18n } from '@/i18n';
 
 let meta = $ref();
-let stats = $ref();
-let tags = $ref();
-let onlineUsersCount = $ref();
+// Unused
+// let stats = $ref();
+// let tags = $ref();
+// let onlineUsersCount = $ref();
 let instances = $ref();
 
 let backgroundUrl;
