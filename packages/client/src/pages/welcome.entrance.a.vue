@@ -360,6 +360,6 @@ function showMenu(ev) {
 	--register-window-margin-left: auto;
 	--register-window-margin-top: auto;
 
-	--entrance-background-url: url("https://beta.romneko.net/files/686e036f-e2f4-4b38-a9f7-237649a3dd98"); //とりあえずいらない
+	--entrance-background-url: none;
 }
 </style>
