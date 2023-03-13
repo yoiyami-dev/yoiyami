@@ -233,21 +233,21 @@ function react(viaKeyboard = false): void {
 	});
 }
 
-function undoReact(note): void {
-	const oldReaction = note.myReaction;
+function undoReact(note_): void {
+	const oldReaction = note_.myReaction;
 	if (!oldReaction) return;
 	os.api('notes/reactions/delete', {
-		noteId: note.id,
+		noteId: note_.id,
 	});
 }
 
 const currentClipPage = inject<Ref<misskey.entities.Clip> | null>('currentClipPage', null);
 
 function onContextmenu(ev: MouseEvent): void {
-	const isLink = (el: HTMLElement) => {
-		if (el.tagName === 'A') return true;
-		if (el.parentElement) {
-			return isLink(el.parentElement);
+	const isLink = (el_: HTMLElement) => {
+		if (el_.tagName === 'A') return true;
+		if (el_.parentElement) {
+			return isLink(el_.parentElement);
 		}
 	};
 	if (isLink(ev.target)) return;

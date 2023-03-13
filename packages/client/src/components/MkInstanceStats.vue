@@ -106,7 +106,7 @@ let pubDoughnutEl = $ref<HTMLCanvasElement>();
 const { handler: externalTooltipHandler1 } = useChartTooltip();
 const { handler: externalTooltipHandler2 } = useChartTooltip();
 
-function createDoughnut(chartEl, tooltip, data) {
+function createDoughnut(chartEl, tooltip, data): void {
 	const chartInstance = new Chart(chartEl, {
 		type: 'doughnut',
 		data: {
@@ -129,9 +129,9 @@ function createDoughnut(chartEl, tooltip, data) {
 					bottom: 16,
 				},
 			},
-			onClick: (ev) => {
+			onClick: (ev): void => {
 				const hit = chartInstance.getElementsAtEventForMode(ev, 'nearest', { intersect: true }, false)[0];
-				if (hit && data[hit.index].onClick) {
+				if (data[hit.index].onClick) {
 					data[hit.index].onClick();
 				}
 			},
@@ -160,7 +160,7 @@ onMounted(() => {
 			name: x.host,
 			color: x.themeColor,
 			value: x.followersCount,
-			onClick: () => {
+			onClick: (): void => {
 				os.pageWindow(`/instance-info/${x.host}`);
 			},
 		})).concat([{ name: '(other)', color: '#80808080', value: fedStats.otherFollowersCount }]));
@@ -169,7 +169,7 @@ onMounted(() => {
 			name: x.host,
 			color: x.themeColor,
 			value: x.followingCount,
-			onClick: () => {
+			onClick: (): void => {
 				os.pageWindow(`/instance-info/${x.host}`);
 			},
 		})).concat([{ name: '(other)', color: '#80808080', value: fedStats.otherFollowingCount }]));
