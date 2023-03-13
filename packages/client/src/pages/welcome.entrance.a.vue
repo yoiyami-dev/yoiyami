@@ -121,35 +121,35 @@ os.api('entrance').then(res => {
 
 console.log('backgroundUrl', backgroundUrl);
 
-function signin() {
+function signin(): void {
 	os.popup(XSigninDialog, {
 		autoSet: true,
 	}, {}, 'closed');
 }
 
-function signup() {
+function signup(): void {
 	os.popup(XSignupDialog, {
 		autoSet: true,
 	}, {}, 'closed');
 }
 
-function showMenu(ev) {
+function showMenu(ev): void {
 	os.popupMenu([{
 		text: i18n.ts.instanceInfo,
 		icon: 'fas fa-info-circle',
-		action: () => {
+		action: (): void => {
 			os.pageWindow('/about');
 		},
 	}, {
 		text: i18n.ts.aboutMisskey,
 		icon: 'fas fa-info-circle',
-		action: () => {
+		action: (): void => {
 			os.pageWindow('/about-misskey');
 		},
 	}, null, {
 		text: i18n.ts.help,
 		icon: 'fas fa-question-circle',
-		action: () => {
+		action: (): void => {
 			window.open('https://misskey-hub.net/help.md', '_blank');
 		},
 	}], ev.currentTarget ?? ev.target);
