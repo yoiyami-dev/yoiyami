@@ -19,7 +19,7 @@ const apiClient = new Misskey.api.APIClient({
 export const api = ((endpoint: string, data: Record<string, any> = {}, token?: string | null | undefined) => {
 	pendingApiRequestsCount.value++;
 
-	const onFinally = () => {
+	const onFinally = (): void => {
 		pendingApiRequestsCount.value--;
 	};
 
@@ -163,7 +163,7 @@ export async function popup(component: Component, props: Record<string, any>, ev
 	markRaw(component);
 
 	const id = ++popupIdCount;
-	const dispose = () => {
+	const dispose = (): void => {
 		// このsetTimeoutが無いと挙動がおかしくなる(autocompleteが閉じなくなる)。Vueのバグ？
 		window.setTimeout(() => {
 			popups.value = popups.value.filter(popup => popup.id !== id);
@@ -186,19 +186,19 @@ export async function popup(component: Component, props: Record<string, any>, ev
 	};
 }
 
-export function pageWindow(path: string) {
+export function pageWindow(path: string): void {
 	popup(defineAsyncComponent(() => import('@/components/MkPageWindow.vue')), {
 		initialPath: path,
 	}, {}, 'closed');
 }
 
-export function modalPageWindow(path: string) {
+export function modalPageWindow(path: string): void {
 	popup(defineAsyncComponent(() => import('@/components/MkModalPageWindow.vue')), {
 		initialPath: path,
 	}, {}, 'closed');
 }
 
-export function toast(message: string) {
+export function toast(message: string): void {
 	popup(defineAsyncComponent(() => import('@/components/MkToast.vue')), {
 		message,
 	}, {}, 'closed');
@@ -348,7 +348,7 @@ export function select<C = any>(props: {
 	});
 }
 
-export function success() {
+export function success(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const showing = ref(true);
 		window.setTimeout(() => {
@@ -363,7 +363,7 @@ export function success() {
 	});
 }
 
-export function waiting() {
+export function waiting(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const showing = ref(true);
 		popup(defineAsyncComponent(() => import('@/components/MkWaitingDialog.vue')), {
@@ -375,7 +375,7 @@ export function waiting() {
 	});
 }
 
-export function form(title, form) {
+export function form(title, form): Promise<void> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkFormDialog.vue')), { title, form }, {
 			done: result => {
@@ -385,7 +385,7 @@ export function form(title, form) {
 	});
 }
 
-export async function selectUser() {
+export async function selectUser(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkUserSelectDialog.vue')), {}, {
 			ok: user => {
@@ -395,7 +395,7 @@ export async function selectUser() {
 	});
 }
 
-export async function selectDriveFile(multiple: boolean) {
+export async function selectDriveFile(multiple: boolean): Promise<void> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkDriveSelectDialog.vue')), {
 			type: 'file',
@@ -410,7 +410,7 @@ export async function selectDriveFile(multiple: boolean) {
 	});
 }
 
-export async function selectDriveFolder(multiple: boolean) {
+export async function selectDriveFolder(multiple: boolean): Promise<void> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkDriveSelectDialog.vue')), {
 			type: 'folder',
@@ -425,7 +425,7 @@ export async function selectDriveFolder(multiple: boolean) {
 	});
 }
 
-export async function pickEmoji(src: HTMLElement | null, opts) {
+export async function pickEmoji(src: HTMLElement | null, opts): Promise<void> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkEmojiPickerDialog.vue')), {
 			src,
