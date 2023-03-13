@@ -183,19 +183,19 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 let totalReactions = 0;
 
 const keymap = {
-	'r': () => reply(true),
-	'e|a|plus': () => react(true),
-	'q': () => renoteButton.value.renote(true),
+	'r': (): void => reply(true),
+	'e|a|plus': (): void => react(true),
+	'q': (): void => renoteButton.value.renote(true),
 	'up|k|shift+tab': focusBefore,
 	'down|j|tab': focusAfter,
 	'esc': blur,
-	'm|o': () => menu(true),
-	's': () => showContent.value !== showContent.value,
+	'm|o': (): void => menu(true),
+	's': (): void => showContent.value !== showContent.value,
 };
 
 updateReactionCount(); //ノート読み込んだ時点で一回実行しておきたいので
 
-function updateReactionCount() { //非効率的かも (r-ca)
+function updateReactionCount(): void { //非効率的かも (r-ca)
 	totalReactions = 0;
 	if (appearNote.reactions != null) {
 		for (let n = 0; n < Object.entries(appearNote.reactions).length; n++) {
@@ -273,7 +273,7 @@ function showRenoteMenu(viaKeyboard = false): void {
 		text: i18n.ts.unrenote,
 		icon: 'fas fa-trash-alt',
 		danger: true,
-		action: () => {
+		action: (): void => {
 			os.api('notes/delete', {
 				noteId: note.id,
 			});
@@ -284,23 +284,23 @@ function showRenoteMenu(viaKeyboard = false): void {
 	});
 }
 
-function focus() {
+function focus(): void {
 	el.value.focus();
 }
 
-function blur() {
+function blur(): void {
 	el.value.blur();
 }
 
-function focusBefore() {
+function focusBefore(): void {
 	focusPrev(el.value);
 }
 
-function focusAfter() {
+function focusAfter(): void {
 	focusNext(el.value);
 }
 
-function readPromo() {
+function readPromo(): void {
 	os.api('promo/read', {
 		noteId: appearNote.id,
 	});
