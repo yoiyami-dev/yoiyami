@@ -185,6 +185,7 @@ function showMenu(ev) {
 		}
 
 		> .tl {
+			visibility: hidden; //暫定
 			position: absolute;
 			top: 0;
 			bottom: 0;
