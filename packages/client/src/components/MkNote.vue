@@ -105,7 +105,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, onUnmounted, reactive, ref, Ref } from 'vue';
+import { inject, onMounted, ref, Ref } from 'vue';
 import * as mfm from 'mfm-js';
 import * as misskey from '@r-ca/yoiyami-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
@@ -285,19 +285,27 @@ function showRenoteMenu(viaKeyboard = false): void {
 }
 
 function focus(): void {
-	el.value.focus();
+	if (el.value !== undefined) { //Undefinedになったら実行されないように(でもその場合の処理が存在しないのであんま意味ないかも)
+		el.value.focus();
+	}
 }
 
 function blur(): void {
-	el.value.blur();
+	if (el.value !== undefined) {
+		el.value.blur();
+	}
 }
 
 function focusBefore(): void {
-	focusPrev(el.value);
+	if (el.value !== undefined) {
+		focusPrev(el.value);
+	}
 }
 
 function focusAfter(): void {
-	focusNext(el.value);
+	if (el.value !== undefined) {
+		focusNext(el.value);
+	}
 }
 
 function readPromo(): void {
