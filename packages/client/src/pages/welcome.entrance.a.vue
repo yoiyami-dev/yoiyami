@@ -1,7 +1,8 @@
 <template>
 <div v-if="meta" class="rsqzvsbo">
 	<div class="top">
-		<MkFeaturedPhotos class="bg"/>
+		<!-- <MkFeaturedPhotos class="bg"/> --> <!-- API自体がランダムな値を渡してくるため -->
+		<div v-if="true" class="xfbouadm bg"></div>
 		<XTimeline class="tl"/>
 		<div class="shape1"></div>
 		<div class="shape2"></div>
@@ -66,6 +67,13 @@ let tags = $ref();
 let onlineUsersCount = $ref();
 let instances = $ref();
 
+let backgroundUrl;
+let registerWindowMarginRight;
+let registerWindowMarginBottom;
+let registerWindowMarginLeft;
+let registerWindowMarginTop;
+let registerWindowType;
+
 os.api('meta', { detail: true }).then(_meta => {
 	meta = _meta;
 });
@@ -92,14 +100,26 @@ os.api('federation/instances', {
 	instances = _instances;
 });
 
+//テーマ適用
 os.api('entrance').then(res => {
-	const backgroundUrl = res?.backgroundUrl;
-	const registerWindowMarginRight = res.registerWindowMarginRight;
-	const registerWindowMarginBottom = res.registerWindowMarginBottom;
-	const registerWindowMarginLeft = res.registerWindowMarginLeft;
-	const registerWindowMarginTop = res.registerWindowMarginTop;
-	const registerWindowType = res.registerWindowType;
+	backgroundUrl = res?.backgroundUrl;
+	registerWindowMarginRight = res?.registerWindowMarginRight;
+	registerWindowMarginBottom = res?.registerWindowMarginBottom;
+	registerWindowMarginLeft = res?.registerWindowMarginLeft;
+	registerWindowMarginTop = res?.registerWindowMarginTop;
+	registerWindowType = res?.registerWindowType;
+	
+	document.documentElement.style.setProperty('--register-window-margin-bottom', registerWindowMarginBottom);
+	document.documentElement.style.setProperty('--register-window-margin-right', registerWindowMarginRight);
+	document.documentElement.style.setProperty('--register-window-margin-bottom', registerWindowMarginBottom);
+	document.documentElement.style.setProperty('--register-window-margin-left', registerWindowMarginLeft);
+	document.documentElement.style.setProperty('--register-window-margin-top', registerWindowMarginTop);
+	document.documentElement.style.setProperty('--entrance-background-url', 'url(' + backgroundUrl + ')');
+	console.log('backgroundUrl', backgroundUrl);
 });
+
+
+console.log('backgroundUrl', backgroundUrl);
 
 function signin() {
 	os.popup(XSigninDialog, {
@@ -137,6 +157,15 @@ function showMenu(ev) {
 </script>
 
 <style lang="scss" scoped>
+
+// :root {
+
+// }
+
+.xfbouadm{
+	background-position: center;
+	background-size: cover;
+}
 .rsqzvsbo {
 	> .top {
 		display: flex;
@@ -149,8 +178,10 @@ function showMenu(ev) {
 			position: absolute;
 			top: 0;
 			right: 0;
-			width: 80%; // 100%からshapeの幅を引いている
+			//width: 80%; // 100%からshapeの幅を引いている
 			height: 100%;
+			width: 100%;
+			background-image: var(--entrance-background-url);
 		}
 
 		> .tl {
@@ -178,6 +209,7 @@ function showMenu(ev) {
 			height: 100%;
 			background: var(--accent);
 			clip-path: polygon(0% 0%, 45% 0%, 20% 100%, 0% 100%);
+			visibility: hidden; //暫定
 		}
 		> .shape2 {
 			position: absolute;
@@ -188,6 +220,7 @@ function showMenu(ev) {
 			background: var(--accent);
 			clip-path: polygon(0% 0%, 25% 0%, 35% 100%, 0% 100%);
 			opacity: 0.5;
+			visibility: hidden; //暫定
 		}
 
 		> .misskey {
@@ -218,7 +251,11 @@ function showMenu(ev) {
 		> .main {
 			position: relative;
 			width: min(480px, 100%);
-			margin: auto auto auto 128px;
+			// margin: auto auto auto 128px;
+			margin-left: var(--register-window-margin-left);
+			margin-right: var(--register-window-margin-right);
+			margin-top: var(--register-window-margin-top);
+			margin-bottom: var(--register-window-margin-bottom);
 			background: var(--panel);
 			border-radius: var(--radius);
 			box-shadow: 0 12px 32px rgb(0 0 0 / 25%);
@@ -314,5 +351,15 @@ function showMenu(ev) {
 		margin-right: 5px;
 		border-radius: 999px;
 	}
+}
+
+:root {
+	// 未指定時はautoを渡す
+	--register-window-margin-right: auto;
+	--register-window-margin-bottom: auto;
+	--register-window-margin-left: auto;
+	--register-window-margin-top: auto;
+
+	--entrance-background-url: url("https://beta.romneko.net/files/686e036f-e2f4-4b38-a9f7-237649a3dd98"); //とりあえずいらない
 }
 </style>
