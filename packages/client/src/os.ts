@@ -213,6 +213,7 @@ export function alert(props: {
 		popup(defineAsyncComponent(() => import('@/components/MkDialog.vue')), props, {
 			done: result => {
 				resolve();
+				reject(new Error('Rejected: 08e18861-4ac8-45f2-aba6-ce8609bc500d'));
 			},
 		}, 'closed');
 	});
@@ -230,6 +231,7 @@ export function confirm(props: {
 		}, {
 			done: result => {
 				resolve(result ? result : { canceled: true });
+				reject(new Error('Rejected: ae690a07-cf71-498a-8a3f-d54319e590f9'));
 			},
 		}, 'closed');
 	});
@@ -256,6 +258,7 @@ export function inputText(props: {
 		}, {
 			done: result => {
 				resolve(result ? result : { canceled: true });
+				reject(new Error('Rejected: 761fbd62-0ee1-4279-8f0f-709aa0dd308f'));
 			},
 		}, 'closed');
 	});
@@ -281,6 +284,7 @@ export function inputNumber(props: {
 		}, {
 			done: result => {
 				resolve(result ? result : { canceled: true });
+				reject(new Error('Rejected: 1196604f-550e-4e71-b092-067830fdf317'));
 			},
 		}, 'closed');
 	});
@@ -306,6 +310,7 @@ export function inputDate(props: {
 		}, {
 			done: result => {
 				resolve(result ? { result: new Date(result.result), canceled: false } : { canceled: true });
+				reject(new Error('Rejected: 3181be03-88bf-4d31-929e-8bf5469f74db'));
 			},
 		}, 'closed');
 	});
@@ -343,6 +348,7 @@ export function select<C = any>(props: {
 		}, {
 			done: result => {
 				resolve(result ? result : { canceled: true });
+				reject(new Error('Rejected: e1f84762-c480-456b-9b52-f247b9aec962'));
 			},
 		}, 'closed');
 	});
@@ -358,7 +364,10 @@ export function success(): Promise<void> {
 			success: true,
 			showing: showing,
 		}, {
-			done: () => resolve(),
+			done: () => {
+				resolve();
+				reject(new Error('Rejected: a681045b-2949-44bd-a9a5-496746672c1c'));
+			},
 		}, 'closed');
 	});
 }
@@ -370,16 +379,20 @@ export function waiting(): Promise<void> {
 			success: false,
 			showing: showing,
 		}, {
-			done: () => resolve(),
+			done: () => {
+				resolve();
+				reject(new Error('Rejected: 9efca1b9-3a8c-459a-a005-d392bcc0f824'));
+			},
 		}, 'closed');
 	});
 }
 
-export function form(title, form): Promise<void> {
+export function form(title, form_): Promise<void> {
 	return new Promise((resolve, reject) => {
-		popup(defineAsyncComponent(() => import('@/components/MkFormDialog.vue')), { title, form }, {
+		popup(defineAsyncComponent(() => import('@/components/MkFormDialog.vue')), { title, form_ }, {
 			done: result => {
 				resolve(result);
+				reject(new Error('Rejected: 26292ffe-b93a-4ce7-a1ef-fd1271fcc70a'));
 			},
 		}, 'closed');
 	});
@@ -390,6 +403,7 @@ export async function selectUser(): Promise<void> {
 		popup(defineAsyncComponent(() => import('@/components/MkUserSelectDialog.vue')), {}, {
 			ok: user => {
 				resolve(user);
+				reject(new Error('Rejected: 6190f5cb-b49b-458e-b153-869effb1e5e0'));
 			},
 		}, 'closed');
 	});
@@ -405,6 +419,7 @@ export async function selectDriveFile(multiple: boolean): Promise<void> {
 				if (files) {
 					resolve(multiple ? files : files[0]);
 				}
+				reject(new Error('Rejected: 5b5c1b5f-5f9f-4b0f-9b1f-5f9f4b0f9b1f'));
 			},
 		}, 'closed');
 	});
@@ -419,6 +434,7 @@ export async function selectDriveFolder(multiple: boolean): Promise<void> {
 			done: folders => {
 				if (folders) {
 					resolve(multiple ? folders : folders[0]);
+					reject(new Error('Rejected: 7ee19786-d58c-4a91-a559-6188bb79cd61'));
 				}
 			},
 		}, 'closed');
@@ -433,6 +449,7 @@ export async function pickEmoji(src: HTMLElement | null, opts): Promise<void> {
 		}, {
 			done: emoji => {
 				resolve(emoji);
+				reject(new Error('Rejected: 1160c556-1072-4d57-9225-1326a3e8d76b'));
 			},
 		}, 'closed');
 	});
@@ -450,6 +467,7 @@ export async function cropImage(image: Misskey.entities.DriveFile, options: {
 		}, {
 			ok: x => {
 				resolve(x);
+				reject(new Error('Rejected: 6f8b458c-38c0-489c-a8d1-0e02c9b3098f'));
 			},
 		}, 'closed');
 	});
@@ -526,6 +544,7 @@ export function popupMenu(items: MenuItem[] | Ref<MenuItem[]>, src?: HTMLElement
 			closed: () => {
 				resolve();
 				dispose();
+				reject(new Error('Rejected: bc6889e2-f640-495d-9085-2120c646737f'));
 			},
 		}).then(res => {
 			dispose = res.dispose;
@@ -544,6 +563,7 @@ export function contextMenu(items: MenuItem[] | Ref<MenuItem[]>, ev: MouseEvent)
 			closed: () => {
 				resolve();
 				dispose();
+				reject(new Error('Rejected: 66829f5b-a4e7-4ff8-84ab-434fe8c6ebb3'));
 			},
 		}).then(res => {
 			dispose = res.dispose;
@@ -563,6 +583,7 @@ export function post(props: Record<string, any> = {}) {
 			closed: () => {
 				resolve();
 				dispose();
+				reject(new Error('Rejected: b42f84bf-0302-4af7-b6c9-d760e33ad715'));
 			},
 		}).then(res => {
 			dispose = res.dispose;
