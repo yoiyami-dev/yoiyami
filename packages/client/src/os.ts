@@ -493,12 +493,12 @@ export async function openEmojiPicker(src?: HTMLElement, opts, initialTextarea: 
 
 	const observer = new MutationObserver(records => {
 		for (const record of records) {
-			for (const node of Array.from(record.addedNodes).filter(node => node instanceof HTMLElement) as HTMLElement[]) {
-				const textareas = node.querySelectorAll('textarea, input') as NodeListOf<NonNullable<typeof activeTextarea>>;
-				for (const textarea of Array.from(textareas).filter(textarea => textarea.dataset.preventEmojiInsert == null)) {
-					if (document.activeElement === textarea) activeTextarea = textarea;
-					textarea.addEventListener('focus', () => {
-						activeTextarea = textarea;
+			for (const node of Array.from(record.addedNodes).filter(node_ => node_ instanceof HTMLElement) as HTMLElement[]) {
+				const textareas_ = node.querySelectorAll('textarea, input') as NodeListOf<NonNullable<typeof activeTextarea>>;
+				for (const textarea_ of Array.from(textareas_).filter(textarea__ => textarea__.dataset.preventEmojiInsert == null)) {
+					if (document.activeElement === textarea_) activeTextarea = textarea_;
+					textarea_.addEventListener('focus', () => {
+						activeTextarea = textarea_;
 					});
 				}
 			}
