@@ -1,11 +1,11 @@
 <template>
 <div class="buttons">
 	<div class="tabs_area">
-		<button class="button nav _button" @click="drawerMenuShowing = true"><i class="fas fa-bars"></i><span v-if="menuIndicated" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
+		<button class="button nav _button" @click="$emit('drawer-menu-showing-change')"><i class="fas fa-bars"></i><span v-if="menuIndicated" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
 		<button class="button home _button" @click="mainRouter.currentRoute.value.name === 'index' ? top() : mainRouter.push('/')"><i class="fas fa-home"></i></button>
 		<button class="button notifications _button" @click="mainRouter.push('/my/notifications')"><i class="fas fa-bell"></i><span v-if="$i?.hasUnreadNotification" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
 		<button v-if="$store.state.navBarChatIcon" class="button messaging _button" @click="mainRouter.push('/my/messaging')"><i class="fas fa-comments"></i><span v-if="$i?.hasUnreadMessagingMessage" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
-		<button v-if="$store.state.navBarWidgetIcon" class="button widget _button" @click="widgetsShowing = true"><i class="fas fa-layer-group"></i></button>
+		<button v-if="$store.state.navBarWidgetIcon" class="button widget _button" @click="$emit('widgets-showing-change')"><i class="fas fa-layer-group"></i></button>
 		<button v-if="$store.state.navBarReloadIcon" class="button reload _button" @click="reloadPage()"><i class="fas fa-redo"></i><span v-if="hasDisconnected" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
 	</div>
 	<div class="post_area">

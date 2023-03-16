@@ -19,22 +19,11 @@
 	<button v-if="!isDesktop && !isMobile" class="widgetButton _button" @click="widgetsShowing = true"><i class="fas fa-layer-group"></i></button>
 
 	<div v-if="isMobile" class="buttons">
-		<div class="tabs_area">
-			<button class="button nav _button" @click="drawerMenuShowing = true"><i class="fas fa-bars"></i><span v-if="menuIndicated" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
-			<button class="button home _button" @click="mainRouter.currentRoute.value.name === 'index' ? top() : mainRouter.push('/')"><i class="fas fa-home"></i></button>
-			<button class="button notifications _button" @click="mainRouter.push('/my/notifications')"><i class="fas fa-bell"></i><span v-if="$i?.hasUnreadNotification" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
-			<button class="button messaging _button" @click="mainRouter.push('/my/messaging')" v-if="$store.state.navBarChatIcon"><i class="fas fa-comments"></i><span v-if="$i?.hasUnreadMessagingMessage" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
-			<button class="button widget _button" @click="widgetsShowing = true" v-if="$store.state.navBarWidgetIcon"><i class="fas fa-layer-group"></i></button>
-			<button class="button reload _button" @click="reloadPage()" v-if="$store.state.navBarReloadIcon"><i class="fas fa-redo"></i><span v-if="hasDisconnected" class="indicator navbar"><i class="fas fa-circle"></i></span></button>
-		</div>
-		<div class="post_area">
-			<div class="post_button">
-				<!-- <button class="button post _button" @click="os.post()"><i class="fas fa-pencil-alt"></i></button> -->
-				<button class="button post _button" data-cy-open-post-form @click="os.post">
-					<i class="icon fas fa-pencil-alt fa-fw"></i>
-				</button>
-			</div>
-		</div>
+		<YyMobileNavbarStyle1
+			@drawer-menu-showing-change="drawerMenuShowing = true"
+			@widgets-showing-change="widgetsShowing = true"
+		>
+		</YyMobileNavbarStyle1>
 	</div>
 
 	<transition :name="$store.state.animation ? 'menuDrawer-back' : ''">
@@ -83,6 +72,7 @@ import { mainRouter } from '@/router';
 import { PageMetadata, provideMetadataReceiver, setPageMetadata } from '@/scripts/page-metadata';
 import { deviceKind } from '@/scripts/device-kind';
 import { stream } from '@/stream';
+import YyMobileNavbarStyle1 from '@/components/YyMobileNavbar.style1.vue';
 const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
