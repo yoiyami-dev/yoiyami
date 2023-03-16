@@ -13,6 +13,11 @@
 	<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
 	<FormSwitch v-model="postFormFooterPostButtonEnabled" class="_formBlock">投稿画面のフッターに投稿ボタンを表示する</FormSwitch>
 	<FormSwitch v-model="postFormHeaderPostButtonEnabled" class="_formBlock">投稿画面のヘッダーに投稿ボタンを表示する</FormSwitch>
+	<FormRadios v-model="navBarStyle">
+		<template #label>ナビゲーションバーのスタイル</template>
+		<option value="style1">スタイル1(yoiyamiオリジナル)</option>
+		<option value="style2">スタイル2(Misskey-v12 Vanilla)</option>
+	</FormRadios>
 </div>
 </template>
 	
@@ -21,6 +26,7 @@ import { computed } from 'vue';
 import { defaultStore } from '@/store';
 import FormInfo from '@/components/MkInfo.vue';
 import FormSwitch from '@/components/form/switch.vue';
+import FormRadios from '@/components/form/radios.vue';
 
 const navBarChatIcon = computed(defaultStore.makeGetterSetter('navBarChatIcon'));
 const navBarReloadIcon = computed(defaultStore.makeGetterSetter('navBarReloadIcon'));
@@ -33,4 +39,5 @@ const showReactionsCount = computed(defaultStore.makeGetterSetter('showReactions
 const hideInstanceTickerShadow = computed(defaultStore.makeGetterSetter('hideInstanceTickerShadow'));
 const postFormFooterPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormFooterPostButtonEnabled'));
 const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormHeaderPostButtonEnabled'));
+const navBarStyle = computed(defaultStore.makeGetterSetter('navBarStyle'));
 </script>
