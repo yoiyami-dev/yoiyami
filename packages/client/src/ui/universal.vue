@@ -19,12 +19,22 @@
 	<button v-if="!isDesktop && !isMobile" class="widgetButton _button" @click="widgetsShowing = true"><i class="fas fa-layer-group"></i></button>
 
 	<div v-if="isMobile">
-		<YyMobileNavbarStyle1
-			@drawer-menu-showing-change="drawerMenuShowing = true"
-			@widgets-showing-change="widgetsShowing = true"
-			@move-to-top="top()"
-		>
-		</YyMobileNavbarStyle1>
+		<div v-if="$store.state.navBarStyle === 'style1'">
+			<YyMobileNavbarStyle1
+				@drawer-menu-showing-change="drawerMenuShowing = true"
+				@widgets-showing-change="widgetsShowing = true"
+				@move-to-top="top()"
+			>
+			</YyMobileNavbarStyle1>
+		</div>
+		<div v-if="$store.state.navBarStyle === 'style2'">
+			<YyMobileNavBarStyle2
+				@drawer-menu-showing-change="drawerMenuShowing = true"
+				@widgets-showing-change="widgetsShowing = true"
+				@move-to-top="top()"
+			>
+			</YyMobileNavBarStyle2>
+		</div>
 	</div>
 
 	<transition :name="$store.state.animation ? 'menuDrawer-back' : ''">
@@ -70,6 +80,7 @@ import { mainRouter } from '@/router';
 import { PageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata';
 import { deviceKind } from '@/scripts/device-kind';
 import YyMobileNavbarStyle1 from '@/components/YyMobileNavbar.style1.vue';
+import YyMobileNavBarStyle2 from '@/components/YyMobileNavBar.style2.vue';
 const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));

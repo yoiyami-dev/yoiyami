@@ -303,6 +303,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	navBarStyle: {
+		where: 'device',
+		default: 'style1' as 'style1' | 'style2',
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期
