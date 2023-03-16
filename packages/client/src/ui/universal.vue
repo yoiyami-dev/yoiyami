@@ -22,6 +22,7 @@
 		<YyMobileNavbarStyle1
 			@drawer-menu-showing-change="drawerMenuShowing = true"
 			@widgets-showing-change="widgetsShowing = true"
+			@move-to-top="top()"
 		>
 		</YyMobileNavbarStyle1>
 	</div>
@@ -155,6 +156,10 @@ const attachSticky = (el) => {
 };
 
 const wallpaper = localStorage.getItem('wallpaper') != null;
+
+function top() {
+	window.scroll({ top: 0, behavior: 'smooth' });
+}
 
 </script>
 
