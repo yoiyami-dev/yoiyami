@@ -42,7 +42,7 @@ os.api('admin/announcements/list').then(announcementResponse => {
 	announcements = announcementResponse;
 });
 
-function add() {
+function add(): void {
 	announcements.unshift({
 		id: null,
 		title: '',
@@ -51,7 +51,7 @@ function add() {
 	});
 }
 
-function remove(announcement) {
+function remove(announcement): void {
 	os.confirm({
 		type: 'warning',
 		text: i18n.t('removeAreYouSure', { x: announcement.title }),
@@ -62,7 +62,7 @@ function remove(announcement) {
 	});
 }
 
-function save(announcement) {
+function save(announcement): void {
 	if (announcement.id == null) {
 		os.api('admin/announcements/create', announcement).then(() => {
 			os.alert({

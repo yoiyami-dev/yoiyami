@@ -48,17 +48,18 @@
 
 <script lang="ts" setup>
 import { } from 'vue';
-import { toUnicode } from 'punycode/';
+// import { toUnicode } from 'punycode/';
 import XTimeline from './welcome.timeline.vue';
 import MarqueeText from '@/components/MkMarquee.vue';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
 import MkButton from '@/components/MkButton.vue';
-import XNote from '@/components/MkNote.vue';
-import MkFeaturedPhotos from '@/components/MkFeaturedPhotos.vue';
-import { host, instanceName } from '@/config';
+// import XNote from '@/components/MkNote.vue';
+// import MkFeaturedPhotos from '@/components/MkFeaturedPhotos.vue';
+// import { host, instanceName } from '@/config';
+import { instanceName } from '@/config';
 import * as os from '@/os';
-import number from '@/filters/number';
+// import number from '@/filters/number';
 import { i18n } from '@/i18n';
 
 let meta = $ref();
@@ -121,35 +122,35 @@ os.api('entrance').then(res => {
 
 console.log('backgroundUrl', backgroundUrl);
 
-function signin() {
+function signin(): void {
 	os.popup(XSigninDialog, {
 		autoSet: true,
 	}, {}, 'closed');
 }
 
-function signup() {
+function signup(): void {
 	os.popup(XSignupDialog, {
 		autoSet: true,
 	}, {}, 'closed');
 }
 
-function showMenu(ev) {
+function showMenu(ev): void {
 	os.popupMenu([{
 		text: i18n.ts.instanceInfo,
 		icon: 'fas fa-info-circle',
-		action: () => {
+		action: (): void => {
 			os.pageWindow('/about');
 		},
 	}, {
 		text: i18n.ts.aboutMisskey,
 		icon: 'fas fa-info-circle',
-		action: () => {
+		action: (): void => {
 			os.pageWindow('/about-misskey');
 		},
 	}, null, {
 		text: i18n.ts.help,
 		icon: 'fas fa-question-circle',
-		action: () => {
+		action: (): void => {
 			window.open('https://misskey-hub.net/help.md', '_blank');
 		},
 	}], ev.currentTarget ?? ev.target);

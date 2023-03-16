@@ -105,7 +105,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, onUnmounted, reactive, ref, Ref } from 'vue';
+import { inject, onMounted, ref, Ref } from 'vue';
 import * as mfm from 'mfm-js';
 import * as misskey from '@r-ca/yoiyami-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
@@ -183,19 +183,19 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 let totalReactions = 0;
 
 const keymap = {
-	'r': () => reply(true),
-	'e|a|plus': () => react(true),
-	'q': () => renoteButton.value.renote(true),
+	'r': (): void => reply(true),
+	'e|a|plus': (): void => react(true),
+	'q': (): void => renoteButton.value.renote(true),
 	'up|k|shift+tab': focusBefore,
 	'down|j|tab': focusAfter,
 	'esc': blur,
-	'm|o': () => menu(true),
-	's': () => showContent.value !== showContent.value,
+	'm|o': (): void => menu(true),
+	's': (): void => showContent.value !== showContent.value,
 };
 
 updateReactionCount(); //ノート読み込んだ時点で一回実行しておきたいので
 
-function updateReactionCount() { //非効率的かも (r-ca)
+function updateReactionCount(): void { //非効率的かも (r-ca)
 	totalReactions = 0;
 	if (appearNote.reactions != null) {
 		for (let n = 0; n < Object.entries(appearNote.reactions).length; n++) {
@@ -233,21 +233,21 @@ function react(viaKeyboard = false): void {
 	});
 }
 
-function undoReact(note): void {
-	const oldReaction = note.myReaction;
+function undoReact(note_): void {
+	const oldReaction = note_.myReaction;
 	if (!oldReaction) return;
 	os.api('notes/reactions/delete', {
-		noteId: note.id,
+		noteId: note_.id,
 	});
 }
 
 const currentClipPage = inject<Ref<misskey.entities.Clip> | null>('currentClipPage', null);
 
 function onContextmenu(ev: MouseEvent): void {
-	const isLink = (el: HTMLElement) => {
-		if (el.tagName === 'A') return true;
-		if (el.parentElement) {
-			return isLink(el.parentElement);
+	const isLink = (el_: HTMLElement) => {
+		if (el_.tagName === 'A') return true;
+		if (el_.parentElement) {
+			return isLink(el_.parentElement);
 		}
 	};
 	if (isLink(ev.target)) return;
@@ -273,7 +273,7 @@ function showRenoteMenu(viaKeyboard = false): void {
 		text: i18n.ts.unrenote,
 		icon: 'fas fa-trash-alt',
 		danger: true,
-		action: () => {
+		action: (): void => {
 			os.api('notes/delete', {
 				noteId: note.id,
 			});
@@ -284,23 +284,31 @@ function showRenoteMenu(viaKeyboard = false): void {
 	});
 }
 
-function focus() {
-	el.value.focus();
+function focus(): void {
+	if (el.value !== undefined) { //Undefinedになったら実行されないように(でもその場合の処理が存在しないのであんま意味ないかも)
+		el.value.focus();
+	}
 }
 
-function blur() {
-	el.value.blur();
+function blur(): void {
+	if (el.value !== undefined) {
+		el.value.blur();
+	}
 }
 
-function focusBefore() {
-	focusPrev(el.value);
+function focusBefore(): void {
+	if (el.value !== undefined) {
+		focusPrev(el.value);
+	}
 }
 
-function focusAfter() {
-	focusNext(el.value);
+function focusAfter(): void {
+	if (el.value !== undefined) {
+		focusNext(el.value);
+	}
 }
 
-function readPromo() {
+function readPromo(): void {
 	os.api('promo/read', {
 		noteId: appearNote.id,
 	});

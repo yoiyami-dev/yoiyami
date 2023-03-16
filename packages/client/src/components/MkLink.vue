@@ -1,5 +1,9 @@
 <template>
-<component :is="self ? 'MkA' : 'a'" ref="el" class="xlcxczvw _link" :[attr]="self ? url.substr(local.length) : url" :rel="rel" :target="target"
+<component 
+	:is="self ? 'MkA' : 'a'" 
+	ref="el" class="xlcxczvw _link" 
+	:[attr]="self ? url.substr(local.length) : url" 
+	:rel="rel" :target="target"
 	:title="url"
 >
 	<slot></slot>
@@ -15,6 +19,7 @@ import * as os from '@/os';
 
 const props = withDefaults(defineProps<{
 	url: string;
+	// eslint-disable-next-line vue/require-default-prop
 	rel?: null | string;
 }>(), {
 });

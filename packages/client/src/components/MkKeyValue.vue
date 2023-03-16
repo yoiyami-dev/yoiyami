@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 	oneline: false,
 });
 
-const copy_ = () => {
+const copy_ = (): void => {
 	copyToClipboard(props.copy);
 	os.success();
 };
