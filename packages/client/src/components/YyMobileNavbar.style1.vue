@@ -22,17 +22,12 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, provide, onMounted, computed, ref, watch, ComputedRef } from 'vue';
+import { computed, ref } from 'vue';
 import * as os from '@/os';
-import { defaultStore } from '@/store';
 import { navbarItemDef } from '@/navbar';
-import { i18n } from '@/i18n';
 import { $i } from '@/account';
 import { mainRouter } from '@/router';
 import { stream } from '@/stream';
-
-const widgetsShowing = $ref(false);
-const hasDisconnected = ref(false);
 
 const menuIndicated = computed(() => {
 	for (const def in navbarItemDef) {
@@ -42,15 +37,11 @@ const menuIndicated = computed(() => {
 	return false;
 });
 
-const drawerMenuShowing = ref(false);
-
-mainRouter.on('change', () => {
-	drawerMenuShowing.value = false;
-});
-
 function reloadPage(): void {
 	window.location.reload();
 }
+
+const hasDisconnected = ref(false);
 
 stream.on('_disconnected_', async () => {
 	hasDisconnected.value = true;
