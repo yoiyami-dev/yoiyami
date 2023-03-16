@@ -18,7 +18,7 @@
 
 	<button v-if="!isDesktop && !isMobile" class="widgetButton _button" @click="widgetsShowing = true"><i class="fas fa-layer-group"></i></button>
 
-	<div v-if="isMobile" class="buttons">
+	<div v-if="isMobile">
 		<YyMobileNavbarStyle1
 			@drawer-menu-showing-change="drawerMenuShowing = true"
 			@widgets-showing-change="widgetsShowing = true"
@@ -57,21 +57,17 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, provide, onMounted, computed, ref, watch, ComputedRef } from 'vue';
+import { defineAsyncComponent, provide, onMounted, ref, ComputedRef } from 'vue';
 import XCommon from './_common_/common.vue';
 import { instanceName } from '@/config';
 import { StickySidebar } from '@/scripts/sticky-sidebar';
 import XDrawerMenu from '@/ui/_common_/navbar-for-mobile.vue';
 import * as os from '@/os';
 import { defaultStore } from '@/store';
-import { navbarItemDef } from '@/navbar';
 import { i18n } from '@/i18n';
-import { $i } from '@/account';
-import { Router } from '@/nirax';
 import { mainRouter } from '@/router';
-import { PageMetadata, provideMetadataReceiver, setPageMetadata } from '@/scripts/page-metadata';
+import { PageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata';
 import { deviceKind } from '@/scripts/device-kind';
-import { stream } from '@/stream';
 import YyMobileNavbarStyle1 from '@/components/YyMobileNavbar.style1.vue';
 const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
@@ -97,14 +93,6 @@ provideMetadataReceiver((info) => {
 	if (pageMetadata.value) {
 		document.title = `${pageMetadata.value.title} | ${instanceName}`;
 	}
-});
-
-const menuIndicated = computed(() => {
-	for (const def in navbarItemDef) {
-		if (def === 'notifications') continue; // 通知は下にボタンとして表示されてるから
-		if (navbarItemDef[def].indicated) return true;
-	}
-	return false;
 });
 
 const drawerMenuShowing = ref(false);
@@ -166,21 +154,7 @@ const attachSticky = (el) => {
 	}, { passive: true });
 };
 
-function top() {
-	window.scroll({ top: 0, behavior: 'smooth' });
-}
-
 const wallpaper = localStorage.getItem('wallpaper') != null;
-
-function reloadPage() {
-  window.location.reload();
-}
-
-const hasDisconnected = ref(false);
-
-stream.on('_disconnected_', async () => {
-	hasDisconnected.value = true;
-});
 
 </script>
 
@@ -294,146 +268,6 @@ stream.on('_disconnected_', async () => {
 		overscroll-behavior: contain;
 		background: var(--bg);
 	}
-
-	> .buttons {
-		position: fixed;
-		z-index: 1000;
-		bottom: 0;
-		left: 0;
-		padding: 4px 4px calc(env(safe-area-inset-bottom, 0px) + 4px) 4px;
-		display: flex;
-		width: 100%;
-		box-sizing: border-box;
-		-webkit-backdrop-filter: var(--blur, blur(32px));
-		backdrop-filter: var(--blur, blur(32px));
-		background-color: var(--header);
-		border-top: solid 0.5px var(--divider);
-
-		> .tabs_area {
-			width: 85%;
-			display: flex;
-			justify-content: space-around;
-			padding-right: 12px;
-		}
-
-		> .post_area {
-			width: 15%;
-			padding-right: 16px;
-			margin-bottom: env(safe-area-inset-bottom);
-		
-			> .post_button {
-				width: 64px;
-				background: linear-gradient(90deg,var(--buttonGradateA),var(--buttonGradateB));
-				border-radius: 999px;
-				height: 64px;
-				position: absolute;
-				bottom: calc( env(safe-area-inset-bottom) + 12px);
-			}
-		}
-		.fa-pencil-alt {
-			margin-left: 12px;
-			margin-right: 12px;
-		}
-
-		.button.post {
-			height: 100%;
-			color: var(--bg);
-			width: 100%;
-    	text-align: center;
-		}
-
-		.button {
-			&.nav {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-			&.home {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-			&.notifications {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-			&.messaging {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-			&.widget {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-			&.reload {
-				padding: 12px;
-				font-size: 1.2em;
-			}
-		}
-
-		.indicator {
-			&.navbar {
-				font-size: 8px;
-				position: relative;
-				bottom: 40%;
-			}
-		}
-
-		> .button {
-			position: relative;
-			flex: 1;
-			padding: 0;
-			margin: auto;
-			height: 48px;
-			border-radius: 8px;
-			background: var(--panel);
-			color: var(--fg);
-
-			&:not(:last-child) {
-				margin-right: 12px;
-			}
-
-			@media (max-width: 400px) {
-				height: 60px;
-
-				&:not(:last-child) {
-					margin-right: 8px;
-				}
-			}
-
-			&:hover {
-				background: var(--X2);
-			}
-
-			> .indicator {
-				position: absolute;
-				top: 0;
-				left: 0;
-				color: var(--indicator);
-				font-size: 16px;
-				animation: blink 1s infinite;
-			}
-
-			&:first-child {
-				margin-left: 0;
-			}
-
-			&:last-child {
-				margin-right: 0;
-			}
-
-			> * {
-				font-size: 20px;
-			}
-
-			&:disabled {
-				cursor: default;
-
-				> * {
-					opacity: 0.5;
-				}
-			}
-		}
-	}
-
 	> .menuDrawer-back {
 		z-index: 1001;
 	}
