@@ -382,9 +382,7 @@ function updateFileToCropped(file, cropped) {
 }
 
 function upload(file: File, name?: string) {
-	console.log('upload', file.name, name);
 	const id = Math.random().toString();
-	console.log('id', id);
 	files.push({ // placeholder
 		id: id,
 		name: 'Uploading...',
@@ -404,7 +402,6 @@ function upload(file: File, name?: string) {
 }
 
 function replacePlaceHolder(file: misskey.entities.DriveFile, id: string) {
-	console.log('replacePlaceHolder', file);
 	files[files.findIndex(x => x.id === id)] = file;
 }
 
