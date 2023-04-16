@@ -6,6 +6,7 @@ import { apiUrl } from '@/config';
 import { $i } from '@/account';
 import { alert } from '@/os';
 import { i18n } from '@/i18n';
+import { checkQueue } from './post-queue';
 
 type Uploading = {
 	id: string;
@@ -33,11 +34,18 @@ export function uploadFile(
 	folder?: any,
 	name?: string,
 	keepOriginal: boolean = defaultStore.state.keepOriginalUploading,
-): Promise<Misskey.entities.DriveFile> {
+	uploadId?: string, //投稿するときにアップロードを追跡したいので
+): Promise<any> { //TODO: よろしくないのでなんとかする
 	if (folder && typeof folder === 'object') folder = folder.id;
 
 	return new Promise((resolve, reject) => {
-		const id = Math.random().toString();
+		let id;
+		if (uploadId === undefined) {
+			id = Math.random().toString();
+		}
+		else {
+			id = uploadId;
+		}
 
 		const reader = new FileReader();
 		reader.onload = async (ev) => {
@@ -119,8 +127,15 @@ export function uploadFile(
 
 				const driveFile = JSON.parse(ev.target.response);
 
-				resolve(driveFile);
-
+				// uploadIdが指定されてるのはわたしが書いたコードだけなので、uploadIdが指定されてるときは独自に(配列で)返す
+				// (そうではないときは純Misskeyと同じものを返す)
+				if (uploadId === undefined) {
+					resolve(driveFile);
+				}
+				else {
+					resolve([driveFile, id]);
+				}
+				checkQueue(id, driveFile.id); //アップロードが完了したら投稿キューをチェックさせる
 				uploads.value = uploads.value.filter(x => x.id !== id);
 			};
 

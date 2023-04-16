@@ -7,7 +7,10 @@
 	v-on="popup.events"
 />
 
-<XUpload v-if="uploads.length > 0"/>
+<div>
+	<XUpload v-if="uploads.length > 0"/>
+	<XPostQueue v-if="postQueues.length > 0"/>
+</div>
 
 <XStreamIndicator/>
 
@@ -21,12 +24,14 @@ import { defineAsyncComponent } from 'vue';
 import { swInject } from './sw-inject';
 import { popup, popups, pendingApiRequestsCount } from '@/os';
 import { uploads } from '@/scripts/upload';
+import { postQueues } from '@/scripts/post-queue';
 import * as sound from '@/scripts/sound';
 import { $i } from '@/account';
 import { stream } from '@/stream';
 
 const XStreamIndicator = defineAsyncComponent(() => import('./stream-indicator.vue'));
 const XUpload = defineAsyncComponent(() => import('./upload.vue'));
+const XPostQueue = defineAsyncComponent(() => import('./post-queue.vue'));
 
 const dev = _DEV_;
 
