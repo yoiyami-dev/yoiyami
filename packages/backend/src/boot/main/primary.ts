@@ -5,8 +5,6 @@ import Logger from '@/services/logger.js';
 import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
 import { envOption } from '../../env.js';
-import { db, initDb } from '../../db/postgre.js';
-import boot from '../index.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
@@ -17,7 +15,6 @@ export async function initPrimary() {
 	try {
 		bootLogger.info('Booting...');
 		config = loadConfigBoot();
-		await connectDb();
 	}
 	catch (e) {
 		bootLogger.error('Cannot boot', null, true);
@@ -29,22 +26,6 @@ export async function initPrimary() {
  
 	if (!envOption.disableClustering) {
 		await spawnWorkers(config.clusterLimit);
-	}
-}
-
-async function connectDb(): Promise<void> {
-	const dbLogger = bootLogger.createSubLogger('db');
-
-	// Try to connect to DB
-	try {
-		dbLogger.info('Connecting...');
-		await initDb();
-		const v = await db.query('SHOW server_version').then(x => x[0].server_version);
-		dbLogger.succ(`Connected: v${v}`);
-	} catch (e) {
-		dbLogger.error('Cannot connect', null, true);
-		dbLogger.error(e);
-		process.exit(1);
 	}
 }
 
