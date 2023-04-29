@@ -5,6 +5,7 @@ import Logger from '@/services/logger.js';
 import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
 import { envOption } from '../../env.js';
+import { initDb } from '@/db/postgre.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
@@ -15,6 +16,7 @@ export async function initPrimary() {
 	try {
 		bootLogger.info('Booting...');
 		config = loadConfigBoot();
+		initDb(); //ないとプロセス終了しちゃう...？（そんなことないかも、まだ監視できてない）
 	}
 	catch (e) {
 		bootLogger.error('Cannot boot', null, true);

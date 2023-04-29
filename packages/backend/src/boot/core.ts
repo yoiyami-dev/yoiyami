@@ -3,7 +3,7 @@ import * as child_process from 'child_process';
 import chalk from 'chalk';
 import Logger from '@/services/logger.js';
 import { envOption } from '../env.js';
-import { initDb } from '@/db/postgre.js';
+import { initDb, db } from '@/db/postgre.js';
 import Xev from 'xev';
 
 // TypeORM
