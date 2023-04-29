@@ -1,4 +1,5 @@
 import cluster from 'node:cluster';
+import EventEmitter from 'node:events';
 import chalk from 'chalk';
 import Xev from 'xev';
 import Logger from '@/services/logger.js';
@@ -7,15 +8,17 @@ import { initPrimary } from './primary.js';
 import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
-
 const ev = new Xev();
 
 initMainGroup();
 
-export async function initMainGroup(): Promise<void> {
+async function initMainGroup(): Promise<void> {
 	process.title = `yoiyami-main (${cluster.isPrimary ? 'master' : 'worker'})`;
 
+	EventEmitter.defaultMaxListeners = 50; //リークしてないけど警告出るので
+
 	if (cluster.isPrimary || envOption.disableClustering) {
+		logger.debug('Initializing primary process...');
 		await initPrimary();
 
 		if (cluster.isPrimary) {
@@ -23,6 +26,7 @@ export async function initMainGroup(): Promise<void> {
 		}
 	}
 	if (cluster.isWorker || envOption.disableClustering) {
+		logger.debug('Initializing worker process...');
 		await initWorker();
 	}
 }
