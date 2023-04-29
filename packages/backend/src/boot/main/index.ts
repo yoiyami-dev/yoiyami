@@ -21,9 +21,9 @@ async function initMainGroup(): Promise<void> {
 		logger.debug('Initializing primary process...');
 		await initPrimary();
 
-		if (cluster.isPrimary) {
-			ev.mount();
-		}
+		// if (cluster.isPrimary) {
+		// 	ev.mount();
+		// }
 	}
 	if (cluster.isWorker || envOption.disableClustering) {
 		logger.debug('Initializing worker process...');

@@ -4,9 +4,12 @@ import chalk from 'chalk';
 import Logger from '@/services/logger.js';
 import { envOption } from '../env.js';
 import { initDb } from '@/db/postgre.js';
+import Xev from 'xev';
 
 // TypeORM
 import 'reflect-metadata';
+
+const ev = new Xev();
 
 const coreLogger = new Logger('core', 'cyan');
 
@@ -24,13 +27,8 @@ export async function initCore(): Promise<void> {
 		}
 	});
 
-	console.log(process.title);
+	ev.mount();
 
-	if (!envOption.noDaemons) {
-		import('../daemons/server-stats.js').then(x => x.default());
-		import('../daemons/queue-stats.js').then(x => x.default());
-		import('../daemons/janitor.js').then(x => x.default());
-	}
 }
 
 function greet() {
