@@ -10,7 +10,7 @@ export async function initWorker() {
 
 	// import('../../queue/index.js').then(x => x.default());
 	await server();
-	await initQueue();
+	initQueue();
 
 	if (cluster.isWorker) {
 		process.send!('worker-ready');

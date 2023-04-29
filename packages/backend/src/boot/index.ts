@@ -4,9 +4,11 @@ import { initCore } from './core.js';
 
 export default async function() {
 	// Core Process Entry Point
+	process.title = 'yoiyami-core';
 
 	if (cluster.isPrimary) {
 		await initCore();
 	}
 	// TODO: 増やせるようにするべきかも
 }
+

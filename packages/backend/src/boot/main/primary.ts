@@ -27,9 +27,9 @@ export async function initPrimary() {
 
 	bootLogger.succ('Check point 1 passed');
  
-	// Greetとかはここのプロセスを起動する前(Core)でやっているので、
-	// そもそもクラスタリング無効ときここを呼び出す必要がない
-	spawnWorkers(config.clusterLimit);
+	if (!envOption.disableClustering) {
+		await spawnWorkers(config.clusterLimit);
+	}
 }
 
 async function connectDb(): Promise<void> {
@@ -86,7 +86,7 @@ function spawnWorker(): Promise<void> {
 				bootLogger.error(`The server Listen failed due to the previous error.`);
 				process.exit(1);
 			}
-			if (message !== 'ready') return;
+			if (message !== 'worker-ready') return;
 			res();
 		});
 	});

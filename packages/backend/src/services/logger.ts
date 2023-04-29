@@ -59,7 +59,8 @@ export default class Logger {
 		}
 
 		const time = dateFormat(new Date(), 'HH:mm:ss');
-		const worker = cluster.isPrimary ? '*' : cluster.worker.id;
+		// const worker = cluster.isPrimary ? '*' : cluster.worker.id;
+		const worker = process.title; //debug
 		const l =
 			level === 'error' ? important ? chalk.bgRed.white('ERR ') : chalk.red('ERR ') :
 			level === 'warning' ? chalk.yellow('WARN') :

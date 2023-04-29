@@ -11,7 +11,7 @@ const coreLogger = new Logger('core', 'cyan');
 // Process Manager
 export async function initCore(): Promise<void> {
 	greet();
-	
+
 	const main = child_process.fork('./built/boot/main/index.js');
 
 	main.on('message', (message) => {
@@ -19,6 +19,8 @@ export async function initCore(): Promise<void> {
 			coreLogger.info('Main process is ready.');
 		}
 	});
+
+	console.log(process.title);
 }
 
 function greet() {
