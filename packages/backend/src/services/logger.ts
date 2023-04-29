@@ -6,6 +6,7 @@ import { envOption } from '../env.js';
 import config from '@/config/index.js';
 
 import * as SyslogPro from 'syslog-pro';
+import { OffsetWithoutLimitNotSupportedError } from 'typeorm';
 
 type Domain = {
 	name: string;
@@ -76,7 +77,14 @@ export default class Logger {
 			level === 'info' ? message :
 			null;
 
-		let log = `${l} ${worker}\t[${domains.join(' ')}]\t${m}`;
+		// もうちょっとなんとかしたい
+		const group = 
+			process.title === 'yoiyami-core' ? chalk.bgMagenta('core') :
+			process.title === 'yoiyami-main (master)' ? chalk.bgCyan('main') :
+			process.title === 'yoiyami-main (worker)' ? chalk.bgCyan('main') :
+			chalk.bgYellow(process.title); 
+
+		let log = `${group} [${l}] ${worker}\t[${domains.join(' ')}]\t${m}`;
 		if (envOption.withLogTime) log = chalk.gray(time) + ' ' + log;
 
 		console.log(important ? chalk.bold(log) : log);
