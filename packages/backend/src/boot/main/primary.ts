@@ -1,6 +1,5 @@
 import * as os from 'node:os';
 import cluster from 'node:cluster';
-
 import Logger from '@/services/logger.js';
 import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
@@ -28,6 +27,12 @@ export async function initPrimary() {
  
 	if (!envOption.disableClustering) {
 		await spawnWorkers(config.clusterLimit);
+	}
+
+	if (!envOption.noDaemons) {
+		import('@/daemons/server-stats.js').then(x => x.default());
+		import('@/daemons/queue-stats.js').then(x => x.default());
+		import('@/daemons/janitor.js').then(x => x.default());
 	}
 }
 
