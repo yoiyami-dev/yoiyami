@@ -8,7 +8,7 @@ import { initPrimary } from './primary.js';
 import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
-const ev = new Xev();
+const ev = new Xev('main');
 
 initMainGroup();
 
@@ -21,9 +21,9 @@ async function initMainGroup(): Promise<void> {
 		logger.debug('Initializing primary process...');
 		await initPrimary();
 
-		// if (cluster.isPrimary) {
-		// 	ev.mount();
-		// }
+		if (cluster.isPrimary) {
+			ev.mount();
+		}
 	}
 	if (cluster.isWorker || envOption.disableClustering) {
 		logger.debug('Initializing worker process...');

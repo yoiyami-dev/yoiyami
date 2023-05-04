@@ -2,7 +2,7 @@ import si from 'systeminformation';
 import Xev from 'xev';
 import * as osUtils from 'os-utils';
 
-const ev = new Xev();
+const ev = new Xev('main');
 
 const interval = 2000;
 

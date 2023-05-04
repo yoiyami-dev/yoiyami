@@ -4,19 +4,15 @@ import chalk from 'chalk';
 import Logger from '@/services/logger.js';
 import { envOption } from '../env.js';
 import { initDb, db } from '@/db/postgre.js';
-import Xev from 'xev';
 
 // TypeORM
 import 'reflect-metadata';
-
-const ev = new Xev();
 
 const bootupLogger = new Logger('boot', 'cyan');
 const exitLogger = new Logger('exit', 'red');
 
 // Process Manager
 export async function initCore(): Promise<void> {
-
 	greet();
 	envInfo();
 	await connectDb();
@@ -28,9 +24,6 @@ export async function initCore(): Promise<void> {
 			bootupLogger.info('Main process is ready.');
 		}
 	});
-
-	ev.mount();
-
 }
 
 function greet() {
@@ -61,7 +54,6 @@ function envInfo() {
 	envLogger.debug(`  PID: ${process.pid}`);
 	envLogger.debug(`  PWD: ${process.cwd()}`);
 	envLogger.debug(`  ExecPath: ${process.execPath}`);
-
 }
 
 async function connectDb(): Promise<void> {
@@ -83,5 +75,3 @@ async function connectDb(): Promise<void> {
 process.on('exit', code => {
 	exitLogger.info(`The process is going to exit with code ${code}`);
 });
-
-
