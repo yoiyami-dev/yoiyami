@@ -13,6 +13,11 @@ export type Source = {
 		url: string;
 		port: number;
 	};
+	processes: {
+		core: number;
+		main: number;
+		v12c: number;
+	};
 	disableHsts?: boolean;
 	db: {
 		host: string;

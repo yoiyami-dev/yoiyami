@@ -5,16 +5,16 @@ import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
 import { envOption } from '../../env.js';
 import { initDb } from '@/db/postgre.js';
+import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
 
 export async function initPrimary() {
-	let config!: Config;
+	const config: Config = loadConfig();
 
 	try {
 		bootLogger.info('Booting...');
-		config = loadConfigBoot();
 		initDb(); //ないとプロセス終了しちゃう...？（そんなことないかも、まだ監視できてない）
 	}
 	catch (e) {
@@ -26,7 +26,14 @@ export async function initPrimary() {
 	bootLogger.succ('Check point 1 passed');
  
 	if (!envOption.disableClustering) {
-		await spawnWorkers(config.clusterLimit);
+		if (config.processes.main === 1) {
+			//1プロセスで起動してほしいのでforkせずにWorkerになってもらう
+			bootLogger.info('Initiating worker function...');
+			initWorker();
+		}
+		else {
+			await spawnWorkers(config.processes.main);
+		}
 	}
 
 	if (!envOption.noDaemons) {
@@ -34,29 +41,6 @@ export async function initPrimary() {
 		import('@/daemons/queue-stats.js').then(x => x.default());
 		import('@/daemons/janitor.js').then(x => x.default());
 	}
-}
-
-function loadConfigBoot(): Config {
-	const configLogger = bootLogger.createSubLogger('config');
-	let config;
-
-	try {
-		config = loadConfig();
-	} catch (exception) {
-		if (typeof exception === 'string') {
-			configLogger.error(exception);
-			process.exit(1);
-		}
-		if (exception.code === 'ENOENT') {
-			configLogger.error('Configuration file not found', null, true);
-			process.exit(1);
-		}
-		throw exception;
-	}
-
-	configLogger.succ('Loaded');
-
-	return config;
 }
 
 async function spawnWorkers(limit: number = 1) {
