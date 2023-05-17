@@ -12,6 +12,14 @@ v12c:
   url: http://localhost:3001/
   port: 3001
 
+# milti-process config -------------------------------------------------
+# WARNING: This feature is experimental.
+
+processes:
+  core: 1
+  main: 1
+  v12c: 1
+
 # database config ------------------------------------------------------
 
 # PostgreSQL configuration
@@ -119,4 +127,4 @@ id: 'aid'
 
 # Config template version (DO NOT CHANGE THIS) ------------------------- 
 
-configTemplateVersion: 0.1.0
+configTemplateVersion: 0.2.0
