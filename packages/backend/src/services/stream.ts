@@ -21,7 +21,7 @@ import {
 	NoteStreamTypes,
 	UserListStreamTypes,
 	UserStreamTypes,
-} from '@/server/api/stream/types.js';
+} from '@/servers/main/api/stream/types.js';
 import { Packed } from '@/misc/schema.js';
 
 class Publisher {
@@ -30,7 +30,7 @@ class Publisher {
 			{ type: type, body: null } :
 			{ type: type, body: value };
 
-		redisClient.publish(config.host, JSON.stringify({
+		redisClient.publish(config.main_host, JSON.stringify({
 			channel: channel,
 			message: message,
 		}));

@@ -1,7 +1,7 @@
 {
 	"name": "yoiyami",
-	"version": "12.119.2",
-	"yy_version": "v6-beta15",
+	"version": "v6-beta16-alpha11",
+	"based_version": "12.119.2",
 	"codename": "indigo",
 	"repository": {
 		"type": "git",
@@ -31,6 +31,7 @@
 		"cleanall": "npm run clean-all"
 	},
 	"dependencies": {
+		"@r-ca/yoiyami-js": "1.0.2",
 		"execa": "5.1.1",
 		"gulp": "4.0.2",
 		"gulp-cssnano": "2.1.3",
