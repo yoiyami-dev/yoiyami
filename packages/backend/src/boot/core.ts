@@ -35,6 +35,7 @@ export async function initCore(): Promise<void> {
 	}
 	catch (e) {
 		bootupLogger.error('!Core process startup Failure!', null, true);
+	}
 
 	const main = child_process.fork('./built/boot/main/index.js');
 	const v12c = child_process.fork('./built/boot/v12c/index.js');
@@ -126,7 +127,6 @@ function loadConfigFile(): Config {
 	if (config.configTemplateVersion < '0.2.0') {
 		configLogger.warn('Configuration file is old. Please update it.');
 		configLogger.debug('Configuration file version: ' + config.configTemplateVersion);
-		configLogger.debug('Trying load old configuration file...');
 	}
 	else {
 		configLogger.succ('Configuration file loaded.(version: ' + config.configTemplateVersion + ')');

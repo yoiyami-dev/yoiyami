@@ -5,6 +5,7 @@ import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
 import { envOption } from '../../env.js';
 import { initDb } from '@/db/postgre.js';
+import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
@@ -25,7 +26,14 @@ export async function initPrimary() {
 	bootLogger.succ('Check point 1 passed');
  
 	if (!envOption.disableClustering) {
-		await spawnWorkers(config.clusterLimit);
+		if (config.processes.main === 1) {
+			//1プロセスで起動してほしいのでforkせずにWorkerになってもらう
+			bootLogger.info('Initiating worker function...');
+			initWorker();
+		}
+		else {
+			await spawnWorkers(config.processes.main);
+		}
 	}
 
 	if (!envOption.noDaemons) {
