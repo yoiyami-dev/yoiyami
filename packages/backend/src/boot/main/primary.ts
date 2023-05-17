@@ -14,7 +14,6 @@ export async function initPrimary() {
 
 	try {
 		bootLogger.info('Booting...');
-		config = loadConfigBoot();
 		initDb(); //ないとプロセス終了しちゃう...？（そんなことないかも、まだ監視できてない）
 	}
 	catch (e) {
@@ -34,29 +33,6 @@ export async function initPrimary() {
 		import('@/daemons/queue-stats.js').then(x => x.default());
 		import('@/daemons/janitor.js').then(x => x.default());
 	}
-}
-
-function loadConfigBoot(): Config {
-	const configLogger = bootLogger.createSubLogger('config');
-	let config;
-
-	try {
-		config = loadConfig();
-	} catch (exception) {
-		if (typeof exception === 'string') {
-			configLogger.error(exception);
-			process.exit(1);
-		}
-		if (exception.code === 'ENOENT') {
-			configLogger.error('Configuration file not found', null, true);
-			process.exit(1);
-		}
-		throw exception;
-	}
-
-	configLogger.succ('Loaded');
-
-	return config;
 }
 
 async function spawnWorkers(limit: number = 1) {

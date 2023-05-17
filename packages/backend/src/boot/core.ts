@@ -3,10 +3,12 @@ import * as os from 'node:os';
 import * as child_process from 'child_process';
 import chalk from 'chalk';
 import Logger from '@/services/logger.js';
+import loadConfig from '@/config/load.js';
 import { envOption } from '../env.js';
 import { initDb, db } from '@/db/postgre.js';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { Config } from '@/config/types';
 
 // TypeORM
 import 'reflect-metadata';
@@ -17,15 +19,22 @@ const exitLogger = new Logger('exit', 'red');
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
+let config!: Config;
+
 //うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得しちゃってる（起動中に編集されたらたぶんこわれる）
 // 古いのから一旦そのまま持ってきているので、このへんのロジックは大きく変わるかも
 const package_json = JSON.parse(fs.readFileSync(`${_dirname}/../../../../package.json`, 'utf-8'));
 
 // Process Manager
 export async function initCore(): Promise<void> {
-	greet();
-	envInfo();
-	await versionInfo();
+	try {
+		greet();
+		envInfo();
+		await versionInfo();
+		config = loadConfigFile();
+	}
+	catch (e) {
+		bootupLogger.error('!Core process startup Failure!', null, true);
 
 	const main = child_process.fork('./built/boot/main/index.js');
 	const v12c = child_process.fork('./built/boot/v12c/index.js');
@@ -95,6 +104,35 @@ async function getDbVersion(): Promise<string> {
 		bootupLogger.error(e);
 		process.exit(1);
 	}
+}
+
+function loadConfigFile(): Config {
+	const configLogger = bootupLogger.createSubLogger('conf', 'green');
+	try {
+		config = loadConfig();
+	} catch (exception) {
+		if (typeof exception === 'string') {
+			configLogger.error(exception);
+			process.exit(1);
+		}
+		if (exception.code === 'ENOENT') {
+			configLogger.error('Configuration file not found', null, true);
+			process.exit(1);
+		}
+		throw exception;
+	}
+
+	//TODO: ハードコーディングやめる、もちょっとちゃんと分岐する
+	if (config.configTemplateVersion < '0.2.0') {
+		configLogger.warn('Configuration file is old. Please update it.');
+		configLogger.debug('Configuration file version: ' + config.configTemplateVersion);
+		configLogger.debug('Trying load old configuration file...');
+	}
+	else {
+		configLogger.succ('Configuration file loaded.(version: ' + config.configTemplateVersion + ')');
+	}
+
+	return config;
 }
 
 // Dying away...
