@@ -10,7 +10,7 @@ const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
 
 export async function initPrimary() {
-	let config!: Config;
+	const config: Config = loadConfig();
 
 	try {
 		bootLogger.info('Booting...');
