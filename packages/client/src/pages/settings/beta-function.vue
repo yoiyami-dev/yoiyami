@@ -13,6 +13,7 @@
 	<FormSwitch v-model="hideInstanceTickerShadow" class="_formBlock">InstanceTickerのシャドウを非表示にする</FormSwitch>
 	<FormSwitch v-model="postFormFooterPostButtonEnabled" class="_formBlock">投稿画面のフッターに投稿ボタンを表示する</FormSwitch>
 	<FormSwitch v-model="postFormHeaderPostButtonEnabled" class="_formBlock">投稿画面のヘッダーに投稿ボタンを表示する</FormSwitch>
+	<FormSwitch v-model="debugMode" class="_formBlock">デバッグモードを有効にする</FormSwitch>
 	<FormRadios v-model="navBarStyle">
 		<template #label>ナビゲーションバーのスタイル</template>
 		<option value="style1">スタイル1(yoiyamiオリジナル)</option>
@@ -40,4 +41,5 @@ const hideInstanceTickerShadow = computed(defaultStore.makeGetterSetter('hideIns
 const postFormFooterPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormFooterPostButtonEnabled'));
 const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormHeaderPostButtonEnabled'));
 const navBarStyle = computed(defaultStore.makeGetterSetter('navBarStyle'));
+const debugMode = computed(defaultStore.makeGetterSetter('debugMode'));
 </script>
