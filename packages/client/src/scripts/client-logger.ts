@@ -8,28 +8,36 @@
 // 型セーフじゃないので、基本的にはデバッグ用途で使うことを想定しています, 型によって動作を振り分けているけど...
 // 第二引数にタグを指定すると、そのタグがついて出力されます（ファイル名とか書くとお得かも）
 // （（自動で取得したかったけどあんまりうまくいかなそうだったので...））
+import { defaultStore } from '@/store';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 //Objectを出力したいこともあるし、stringを出力したいこともあるし、そもそもデバッグ用で型セーフじゃなくてもよさそうなのでany
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function warn(obj: any, tag?: string): void {
-	outLog('warn', obj, tag);
+	if (defaultStore.state.debugMode) {
+		outLog('warn', obj, tag);
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function error(obj: any, tag?: string): void {
-	outLog('warn', obj, tag);
+	if (defaultStore.state.debugMode) {
+		outLog('error', obj, tag);
+	}
 }
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function info(obj: any, tag?: string): void {
-	outLog('warn', obj, tag);
+	if (defaultStore.state.debugMode) {
+		outLog('info', obj, tag);
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debug(obj: any, tag?: string): void {
-	outLog('warn', obj, tag);
+	if (defaultStore.state.debugMode) {
+		outLog('debug', obj, tag);
+	}
 }
 
 //logger

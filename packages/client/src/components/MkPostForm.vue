@@ -78,6 +78,7 @@ import XNotePreview from '@/components/MkNotePreview.vue';
 import XPostFormAttaches from '@/components/MkPostFormAttaches.vue';
 import XPollEditor from '@/components/MkPollEditor.vue';
 import MkEmojiPicker from '@/components/MkEmojiPicker.vue';
+import * as clientLogger from '@/scripts/client-logger';
 import { host, url } from '@/config';
 import { erase, unique } from '@/scripts/array';
 import { extractMentions } from '@/scripts/extract-mentions';
@@ -121,6 +122,8 @@ const emit = defineEmits<{
 	(ev: 'cancel'): void;
 	(ev: 'esc'): void;
 }>();
+
+clientLogger.info('post-form', "postform");
 
 const textareaEl = $ref<HTMLTextAreaElement | null>(null);
 const cwInputEl = $ref<HTMLInputElement | null>(null);
