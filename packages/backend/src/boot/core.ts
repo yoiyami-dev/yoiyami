@@ -158,13 +158,17 @@ function loadConfigFile(): Config {
 			configLogger.error(exception);
 			process.exit(1);
 		}
-		if (exception.code === 'ENOENT') {
-			configLogger.error('Configuration file not found', null, true);
-			process.exit(1);
+		// if (exception.code === 'ENOENT') { // TODO: ちゃんとハンドリングする
+		// configLogger.error('Configuration file not found', null, true);
+		// process.exit(1);
+		// }
+		configLogger.error('A problem occurred while loading the configuration file.', null, true);
+		if (exception instanceof Error) { //debug
+			configLogger.error(exception.message); 
 		}
 		throw exception;
 	}
-
+		
 	//TODO: ハードコーディングやめる、もちょっとちゃんと分岐する
 	if (config.configTemplateVersion < '0.2.0') {
 		configLogger.warn('Configuration file is old. Please update it.');

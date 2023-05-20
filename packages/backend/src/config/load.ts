@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import * as yaml from 'js-yaml';
 import { Source, Mixin } from './types.js';
+import { th } from 'date-fns/locale';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -21,12 +22,23 @@ const path = process.env.NODE_ENV === 'production'
 export default function load() {
 	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/meta.json`, 'utf-8'));
 	const clientManifest = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/_client_dist_/manifest.json`, 'utf-8'));
-	const config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source; //暫定
+	let config = {} as Source;
+	try {
+		config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source;
+	}
+	catch (e) {
+		if (e instanceof yaml.YAMLException) {
+			// if (e.reason) { 
+			// TODO: ちゃんとハンドリングしたい(Throwableなreasonがいまいちわからないのでそのうち調査する？)
+			throw new Error(e.reason);
+			// }
+		}
+	}
 
-	const mixin = {} as Mixin; //暫定
-
+	const mixin = {} as Mixin;
+	
 	const main_url = tryCreateUrl(config.main.url);
-	const v12c_url = tryCreateUrl(config.v12c.url);
+	const v12c_url = tryCreateUrl(config.v12c.url);		
 
 	config.main.url = main_url.origin;
 	config.v12c.url = v12c_url.origin;
@@ -58,10 +70,10 @@ export default function load() {
 	return Object.assign(config, mixin);
 }
 
-function tryCreateUrl(url: string) {
+function tryCreateUrl(url: string): URL {
 	try {
 		return new URL(url);
 	} catch (e) {
-		throw `url="${url}" is not a valid URL.`;
+		throw new Error(`url="${url}" is not a valid URL.`);
 	}
 }
