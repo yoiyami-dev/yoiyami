@@ -43,10 +43,13 @@ export async function initCore(): Promise<void> {
 	let main;
 	let v12c;
 
+	// この先使う可能性があって変数に入れてるのでとりあえず黙らせておく
 	try {
 		const processes = startChiledProcess();
 		if (processes instanceof Array) { //警告が出るので明示的にinstanceofでチェック(そもそも引数がなかったら配列以外帰ってこないけど)
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			main = processes[0];
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			v12c = processes[1];
 		}
 	}
