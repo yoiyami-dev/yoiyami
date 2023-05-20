@@ -55,28 +55,17 @@ export async function initCore(): Promise<void> {
 	catch (e) {
 		bootupLogger.error('!Child process startup Failure!', null, true);
 	}
-
-	// クラスタリング無効だとハングしたときPrimaryが死ぬので（監視して復活させたいけどforkじゃないので死んだあと監視を再開させるのがむずかしそう
-	// Listen
-	main?.on('exit', code => {
-		exitLogger.error(`Main-primary process died: ${code}`);
-		process.exit(1);
-	});
-	v12c?.on('exit', code => {
-		exitLogger.error(`v12c-primary process died: ${code}`);
-		process.exit(1);
-	});
 }
 
 function startChiledProcess(target?: servers): child_process.ChildProcess | child_process.ChildProcess[] {
 	if (target) { //targetが指定されてるときはプロセスが死亡した場合なのでそれだけ起動したい
 		if (target === 'main') {
-			return child_process.fork('./built/boot/main/index.js');
+			return setExitListener(child_process.fork('./built/boot/main/index.js'), 'main');
 		}
 		// まだ増やすかもしれないのでno-unnecessary-conditionはひねり潰しておく
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		else if (target === 'v12c') {
-			return child_process.fork('./built/boot/v12c/index.js');
+			return setExitListener(child_process.fork('./built/boot/v12c/index.js'), 'v12c');
 		}
 		else {
 			throw new Error('Invalid target');
@@ -84,10 +73,18 @@ function startChiledProcess(target?: servers): child_process.ChildProcess | chil
 	}
 	else {
 		return [
-			child_process.fork('./built/boot/main/index.js'),
-			child_process.fork('./built/boot/v12c/index.js'),
+			setExitListener(child_process.fork('./built/boot/main/index.js'), 'main'),
+			setExitListener(child_process.fork('./built/boot/v12c/index.js'), 'v12c'),
 		];
 	}
+}
+
+function setExitListener(target: child_process.ChildProcess, server_name: servers): child_process.ChildProcess {
+	target.on('exit', code => {
+		exitLogger.error(`${server_name}-Primary process died: ${code}`);
+		startChiledProcess(server_name);
+	});
+	return target;
 }
 
 function greet(): void {
