@@ -81,7 +81,7 @@ function startChiledProcess(target?: servers): child_process.ChildProcess | chil
 
 function setExitListener(target: child_process.ChildProcess, server_name: servers): child_process.ChildProcess {
 	target.on('exit', code => {
-		if (code === 0 || config.recover_on_normal_exit === false) {
+		if (code === 0 && config.recover_on_normal_exit === false) {
 			exitLogger.info(`${server_name}-Primary process exited normally`);
 		}
 		else {
