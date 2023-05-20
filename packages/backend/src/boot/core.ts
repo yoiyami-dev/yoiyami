@@ -12,6 +12,7 @@ import { Config } from '@/config/types';
 
 // TypeORM
 import 'reflect-metadata';
+import { ChildEntity } from 'typeorm';
 
 const bootupLogger = new Logger('boot', 'cyan');
 const exitLogger = new Logger('exit', 'red');
@@ -20,6 +21,8 @@ const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
 let config!: Config;
+
+export type servers = 'main' | 'v12c';
 
 //うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得しちゃってる（起動中に編集されたらたぶんこわれる）
 // 古いのから一旦そのまま持ってきているので、このへんのロジックは大きく変わるかも
@@ -37,20 +40,54 @@ export async function initCore(): Promise<void> {
 		bootupLogger.error('!Core process startup Failure!', null, true);
 	}
 
-	const main = child_process.fork('./built/boot/main/index.js');
-	const v12c = child_process.fork('./built/boot/v12c/index.js');
+	// start Processes
 
-	main.on('message', (message) => {
-		if (message === 'worker-ready') {
-			bootupLogger.info('Main process is ready.');
-		}
-	});
+	let main;
+	let v12c;
 
-	v12c.on('message', (message) => {
-		if (message === 'worker-ready') {
-			bootupLogger.info('v12c process is ready.');
+	try {
+		const processes = startChiledProcess();
+		if (processes instanceof Array) { //警告が出るので明示的にinstanceofでチェック(そもそも引数がなかったら配列以外帰ってこないけど)
+			main = processes[0];
+			v12c = processes[1];
 		}
+	}
+	catch (e) {
+		bootupLogger.error('!Child process startup Failure!', null, true);
+	}
+
+	// クラスタリング無効だとハングしたときPrimaryが死ぬので（監視して復活させたいけどforkじゃないので死んだあと監視を再開させるのがむずかしそう
+	// Listen
+	main?.on('exit', code => {
+		exitLogger.error(`Main-primary process died: ${code}`);
+		process.exit(1);
 	});
+	v12c?.on('exit', code => {
+		exitLogger.error(`v12c-primary process died: ${code}`);
+		process.exit(1);
+	});
+}
+
+function startChiledProcess(target?: servers): child_process.ChildProcess | child_process.ChildProcess[] {
+	if (target) { //targetが指定されてるときはプロセスが死亡した場合なのでそれだけ起動したい
+		if (target === 'main') {
+			return child_process.fork('./built/boot/main/index.js');
+		}
+		// まだ増やすかもしれないのでno-unnecessary-conditionはひねり潰しておく
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		else if (target === 'v12c') {
+			return child_process.fork('./built/boot/v12c/index.js');
+		}
+		else {
+			throw new Error('Invalid target');
+		}
+	}
+	else {
+		return [
+			child_process.fork('./built/boot/main/index.js'),
+			child_process.fork('./built/boot/v12c/index.js'),
+		];
+	}
 }
 
 function greet(): void {
