@@ -10,7 +10,8 @@ import { Users, Followings, UserProfiles } from '@/models/index.js';
 import { Following } from '@/models/entities/following.js';
 import { setResponseType } from '../activitypub.js';
 
-export default async (ctx: Router.RouterContext) => {
+// eslint-disable-next-line import/no-default-export
+export default async (ctx: Router.RouterContext): Promise<void> => {
 	const userId = ctx.params.user;
 
 	const cursor = ctx.request.query.cursor;
