@@ -18,6 +18,7 @@ export type Source = {
 		main: number;
 		v12c: number;
 	};
+	recover_on_normal_exit: boolean;
 	disableHsts?: boolean;
 	db: {
 		host: string;

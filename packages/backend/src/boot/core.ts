@@ -81,8 +81,14 @@ function startChiledProcess(target?: servers): child_process.ChildProcess | chil
 
 function setExitListener(target: child_process.ChildProcess, server_name: servers): child_process.ChildProcess {
 	target.on('exit', code => {
-		exitLogger.error(`${server_name}-Primary process died: ${code}`);
-		startChiledProcess(server_name);
+		if (code === 0 || config.recover_on_normal_exit === false) {
+			exitLogger.info(`${server_name}-Primary process exited normally`);
+		}
+		else {
+			exitLogger.error(`${server_name}-Primary process died: ${code}`);
+			exitLogger.info(`${server_name}-Primary restarting...`);
+			startChiledProcess(server_name);
+		}
 	});
 	return target;
 }
