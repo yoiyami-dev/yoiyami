@@ -1,13 +1,14 @@
 import Router from '@koa/router';
+import { IsNull } from 'typeorm';
 import config from '@/config/index.js';
 import { renderActivity } from '@/remote/activitypub/renderer/index.js';
 import renderOrderedCollection from '@/remote/activitypub/renderer/ordered-collection.js';
-import { setResponseType } from '../activitypub.js';
 import renderNote from '@/remote/activitypub/renderer/note.js';
 import { Users, Notes, UserNotePinings } from '@/models/index.js';
-import { IsNull } from 'typeorm';
+import { setResponseType } from '../activitypub.js';
 
-export default async (ctx: Router.RouterContext) => {
+// eslint-disable-next-line import/no-default-export
+export default async (ctx: Router.RouterContext): Promise<void> => {
 	const userId = ctx.params.user;
 
 	const user = await Users.findOneBy({

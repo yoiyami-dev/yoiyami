@@ -1,8 +1,8 @@
 import cluster from 'node:cluster';
-import Logger from '@/services/logger.js';
 import { initCore } from './core.js';
 
-export default async function() {
+// eslint-disable-next-line import/no-default-export
+export default async function(): Promise<void> {
 	// Core Process Entry Point
 	process.title = 'yoiyami-core';
 

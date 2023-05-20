@@ -4,8 +4,7 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import * as yaml from 'js-yaml';
-import { Source, Mixin } from './types.js';
-import { th } from 'date-fns/locale';
+import { Source, Mixin, Config } from './types.js';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -19,7 +18,8 @@ const path = process.env.NODE_ENV === 'production'
 		? `${dir}/test.yml`
 		: `${dir}/default.yml`;
 
-export default function load() {
+// eslint-disable-next-line import/no-default-export
+export default function load(): Config {
 	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/meta.json`, 'utf-8'));
 	const clientManifest = JSON.parse(fs.readFileSync(`${_dirname}/../../../../built/_client_dist_/manifest.json`, 'utf-8'));
 	let config = {} as Source;
