@@ -13,6 +13,7 @@ export async function initWorker() {
 	// initQueue();
 
 	if (cluster.isWorker) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		process.send!('worker-ready');
 	}
 }

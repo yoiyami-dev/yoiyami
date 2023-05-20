@@ -55,6 +55,8 @@ export async function initCore(): Promise<void> {
 	catch (e) {
 		bootupLogger.error('!Child process startup Failure!', null, true);
 	}
+
+	// TODO: リスナ設置していろいろしたい
 }
 
 function startChiledProcess(target?: servers): child_process.ChildProcess | child_process.ChildProcess[] {
