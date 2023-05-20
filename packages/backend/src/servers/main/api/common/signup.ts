@@ -1,23 +1,26 @@
-import bcrypt from 'bcryptjs';
 import { generateKeyPair } from 'node:crypto';
-import generateUserToken from './generate-native-user-token.js';
+import bcrypt from 'bcryptjs';
+import { IsNull } from 'typeorm';
 import { User } from '@/models/entities/user.js';
 import { Users, UsedUsernames } from '@/models/index.js';
 import { UserProfile } from '@/models/entities/user-profile.js';
-import { IsNull } from 'typeorm';
 import { genId } from '@/misc/gen-id.js';
 import { toPunyNullable } from '@/misc/convert-host.js';
 import { UserKeypair } from '@/models/entities/user-keypair.js';
 import { usersChart } from '@/services/chart/index.js';
 import { UsedUsername } from '@/models/entities/used-username.js';
 import { db } from '@/db/postgre.js';
+import generateUserToken from './generate-native-user-token.js';
 
 export async function signup(opts: {
 	username: User['username'];
 	password?: string | null;
 	passwordHash?: UserProfile['password'] | null;
 	host?: string | null;
-}) {
+}): Promise<{
+	account: User,
+	secret: string,
+}> {
 	const { username, password, passwordHash, host } = opts;
 	let hash = passwordHash;
 
@@ -64,7 +67,7 @@ export async function signup(opts: {
 				passphrase: undefined,
 			},
 		} as any, (err, publicKey, privateKey) =>
-			err ? rej(err) : res([publicKey, privateKey])
+			err ? rej(err) : res([publicKey, privateKey]),
 		));
 
 	let account!: User;

@@ -2,7 +2,7 @@ import { SelectQueryBuilder, Brackets } from 'typeorm';
 import { User } from '@/models/entities/user.js';
 import { Mutings, UserProfiles } from '@/models/index.js';
 
-export function generateMutedUserQuery(q: SelectQueryBuilder<any>, me: { id: User['id'] }, exclude?: User) {
+export function generateMutedUserQuery(q: SelectQueryBuilder<any>, me: { id: User['id'] }, exclude?: User): void {
 	const mutingQuery = Mutings.createQueryBuilder('muting')
 		.select('muting.muteeId')
 		.where('muting.muterId = :muterId', { muterId: me.id });
@@ -46,7 +46,7 @@ export function generateMutedUserQuery(q: SelectQueryBuilder<any>, me: { id: Use
 	q.setParameters(mutingInstanceQuery.getParameters());
 }
 
-export function generateMutedUserQueryForUsers(q: SelectQueryBuilder<any>, me: { id: User['id'] }) {
+export function generateMutedUserQueryForUsers(q: SelectQueryBuilder<any>, me: { id: User['id'] }): void {
 	const mutingQuery = Mutings.createQueryBuilder('muting')
 		.select('muting.muteeId')
 		.where('muting.muterId = :muterId', { muterId: me.id });

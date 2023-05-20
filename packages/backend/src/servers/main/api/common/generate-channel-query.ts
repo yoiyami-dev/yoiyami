@@ -1,8 +1,8 @@
+import { Brackets, SelectQueryBuilder } from 'typeorm';
 import { User } from '@/models/entities/user.js';
 import { ChannelFollowings } from '@/models/index.js';
-import { Brackets, SelectQueryBuilder } from 'typeorm';
 
-export function generateChannelQuery(q: SelectQueryBuilder<any>, me?: { id: User['id'] } | null) {
+export function generateChannelQuery(q: SelectQueryBuilder<any>, me?: { id: User['id'] } | null): void {
 	if (me == null) {
 		q.andWhere('note.channelId IS NULL');
 	} else {

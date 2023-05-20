@@ -3,7 +3,7 @@ import { Note } from '@/models/entities/note.js';
 import { User } from '@/models/entities/user.js';
 import { PromoReads, PromoNotes, Notes, Users } from '@/models/index.js';
 
-export async function injectPromo(timeline: Note[], user?: User | null) {
+export async function injectPromo(timeline: Note[], user?: User | null): Promise<void> {
 	if (timeline.length < 5) return;
 
 	// TODO: readやexpireフィルタはクエリ側でやる

@@ -1,9 +1,9 @@
+import { Brackets, SelectQueryBuilder } from 'typeorm';
 import { User } from '@/models/entities/user.js';
 import { Blockings } from '@/models/index.js';
-import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 // ここでいうBlockedは被Blockedの意
-export function generateBlockedUserQuery(q: SelectQueryBuilder<any>, me: { id: User['id'] }) {
+export function generateBlockedUserQuery(q: SelectQueryBuilder<any>, me: { id: User['id'] }): void {
 	const blockingQuery = Blockings.createQueryBuilder('blocking')
 		.select('blocking.blockerId')
 		.where('blocking.blockeeId = :blockeeId', { blockeeId: me.id });
@@ -14,18 +14,18 @@ export function generateBlockedUserQuery(q: SelectQueryBuilder<any>, me: { id: U
 	q
 		.andWhere(`note.userId NOT IN (${ blockingQuery.getQuery() })`)
 		.andWhere(new Brackets(qb => { qb
-			.where(`note.replyUserId IS NULL`)
+			.where('note.replyUserId IS NULL')
 			.orWhere(`note.replyUserId NOT IN (${ blockingQuery.getQuery() })`);
 		}))
 		.andWhere(new Brackets(qb => { qb
-			.where(`note.renoteUserId IS NULL`)
+			.where('note.renoteUserId IS NULL')
 			.orWhere(`note.renoteUserId NOT IN (${ blockingQuery.getQuery() })`);
 		}));
 
 	q.setParameters(blockingQuery.getParameters());
 }
 
-export function generateBlockQueryForUsers(q: SelectQueryBuilder<any>, me: { id: User['id'] }) {
+export function generateBlockQueryForUsers(q: SelectQueryBuilder<any>, me: { id: User['id'] }): void {
 	const blockingQuery = Blockings.createQueryBuilder('blocking')
 		.select('blocking.blockeeId')
 		.where('blocking.blockerId = :blockerId', { blockerId: me.id });

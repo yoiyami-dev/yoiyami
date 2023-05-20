@@ -6,7 +6,7 @@ import { Notes, Users } from '@/models/index.js';
 /**
  * Get note for API processing
  */
-export async function getNote(noteId: Note['id']) {
+export async function getNote(noteId: Note['id']): Promise<Note> {
 	const note = await Notes.findOneBy({ id: noteId });
 
 	if (note == null) {
@@ -19,7 +19,7 @@ export async function getNote(noteId: Note['id']) {
 /**
  * Get user for API processing
  */
-export async function getUser(userId: User['id']) {
+export async function getUser(userId: User['id']): Promise<User> {
 	const user = await Users.findOneBy({ id: userId });
 
 	if (user == null) {
@@ -32,7 +32,7 @@ export async function getUser(userId: User['id']) {
 /**
  * Get remote user for API processing
  */
-export async function getRemoteUser(userId: User['id']) {
+export async function getRemoteUser(userId: User['id']): Promise<User> {
 	const user = await getUser(userId);
 
 	if (!Users.isRemoteUser(user)) {
@@ -45,7 +45,7 @@ export async function getRemoteUser(userId: User['id']) {
 /**
  * Get local user for API processing
  */
-export async function getLocalUser(userId: User['id']) {
+export async function getLocalUser(userId: User['id']): Promise<User> {
 	const user = await getUser(userId);
 
 	if (!Users.isLocalUser(user)) {

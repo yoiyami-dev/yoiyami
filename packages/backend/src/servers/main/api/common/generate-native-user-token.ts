@@ -1,3 +1,4 @@
 import { secureRndstr } from '@/misc/secure-rndstr.js';
 
-export default () => secureRndstr(16, true);
+// eslint-disable-next-line import/no-default-export
+export default (): string => secureRndstr(16, true);

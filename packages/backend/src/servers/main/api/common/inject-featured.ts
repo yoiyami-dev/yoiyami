@@ -7,7 +7,7 @@ import { generateBlockedUserQuery } from './generate-block-query.js';
 
 // TODO: リアクション、Renote、返信などをしたノートは除外する
 
-export async function injectFeatured(timeline: Note[], user?: User | null) {
+export async function injectFeatured(timeline: Note[], user?: User | null): Promise<void> {
 	if (timeline.length < 5) return;
 
 	if (user) {
@@ -21,9 +21,9 @@ export async function injectFeatured(timeline: Note[], user?: User | null) {
 	const query = Notes.createQueryBuilder('note')
 		.addSelect('note.score')
 		.where('note.userHost IS NULL')
-		.andWhere(`note.score > 0`)
-		.andWhere(`note.createdAt > :date`, { date: new Date(Date.now() - day) })
-		.andWhere(`note.visibility = 'public'`)
+		.andWhere('note.score > 0')
+		.andWhere('note.createdAt > :date', { date: new Date(Date.now() - day) })
+		.andWhere('note.visibility = \'public\'')
 		.innerJoinAndSelect('note.user', 'user');
 
 	if (user) {
