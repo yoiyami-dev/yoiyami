@@ -1,18 +1,16 @@
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as child_process from 'child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import chalk from 'chalk';
 import Logger from '@/services/logger.js';
 import loadConfig from '@/config/load.js';
-import { envOption } from '../env.js';
-import { initDb, db } from '@/db/postgre.js';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import { Config } from '@/config/types';
+import { initDb, db } from '@/db/postgre.js';
 
 // TypeORM
 import 'reflect-metadata';
-import { ChildEntity } from 'typeorm';
 
 const bootupLogger = new Logger('boot', 'cyan');
 const exitLogger = new Logger('exit', 'red');
