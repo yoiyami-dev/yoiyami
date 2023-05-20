@@ -18,9 +18,16 @@ export async function initPrimary() {
 		initDb(); //ないとプロセス終了しちゃう...？（そんなことないかも、まだ監視できてない）
 	}
 	catch (e) {
-		bootLogger.error('Cannot boot', null, true);
-		bootLogger.error(e);
-		process.exit(1);
+		if (e instanceof Error || typeof e === 'string') {
+			bootLogger.error('Cannot boot', null, true);
+			bootLogger.error(e);
+			process.exit(1);
+		}
+		else {
+			bootLogger.error('Cannot boot', null, true);
+			bootLogger.error('UNKNOWN ERROR!(Error type is not Error or string)');
+			process.exit(1);
+		}
 	}
 
 	bootLogger.succ('Check point 1 passed');
