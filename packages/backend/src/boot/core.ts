@@ -141,9 +141,14 @@ async function getDbVersion(): Promise<string> {
 		const v = await db.query('SHOW server_version').then(x => x[0].server_version);
 		return v;
 	} catch (e) {
-		bootupLogger.error('Database connection failed...', null, true);
-		bootupLogger.error(e);
-		process.exit(1);
+		if (e instanceof Error || typeof e === 'string') {
+			bootupLogger.error('Database connection failed...', null, true);
+			bootupLogger.error(e);
+			process.exit(1);
+		}
+		else {
+			throw e;
+		}
 	}
 }
 
