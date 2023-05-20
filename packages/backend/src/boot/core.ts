@@ -12,6 +12,7 @@ import { Config } from '@/config/types';
 
 // TypeORM
 import 'reflect-metadata';
+import { ChildEntity } from 'typeorm';
 
 const bootupLogger = new Logger('boot', 'cyan');
 const exitLogger = new Logger('exit', 'red');
@@ -20,6 +21,8 @@ const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
 let config!: Config;
+
+export type servers = 'main' | 'v12c';
 
 //うまく取得する方法がまだわからないので暫定でpackage.jsonから直接取得しちゃってる（起動中に編集されたらたぶんこわれる）
 // 古いのから一旦そのまま持ってきているので、このへんのロジックは大きく変わるかも
@@ -37,20 +40,59 @@ export async function initCore(): Promise<void> {
 		bootupLogger.error('!Core process startup Failure!', null, true);
 	}
 
-	const main = child_process.fork('./built/boot/main/index.js');
-	const v12c = child_process.fork('./built/boot/v12c/index.js');
+	// start Processes
 
-	main.on('message', (message) => {
-		if (message === 'worker-ready') {
-			bootupLogger.info('Main process is ready.');
+	let main;
+	let v12c;
+
+	try {
+		const processes = startChiledProcess();
+		if (processes instanceof Array) { //警告が出るので明示的にinstanceofでチェック(そもそも引数がなかったら配列以外帰ってこないけど)
+			main = processes[0];
+			v12c = processes[1];
+		}
+	}
+	catch (e) {
+		bootupLogger.error('!Child process startup Failure!', null, true);
+	}
+
+	// TODO: リスナ設置していろいろしたい
+}
+
+function startChiledProcess(target?: servers): child_process.ChildProcess | child_process.ChildProcess[] {
+	if (target) { //targetが指定されてるときはプロセスが死亡した場合なのでそれだけ起動したい
+		if (target === 'main') {
+			return setExitListener(child_process.fork('./built/boot/main/index.js'), 'main');
+		}
+		// まだ増やすかもしれないのでno-unnecessary-conditionはひねり潰しておく
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		else if (target === 'v12c') {
+			return setExitListener(child_process.fork('./built/boot/v12c/index.js'), 'v12c');
+		}
+		else {
+			throw new Error('Invalid target');
+		}
+	}
+	else {
+		return [
+			setExitListener(child_process.fork('./built/boot/main/index.js'), 'main'),
+			setExitListener(child_process.fork('./built/boot/v12c/index.js'), 'v12c'),
+		];
+	}
+}
+
+function setExitListener(target: child_process.ChildProcess, server_name: servers): child_process.ChildProcess {
+	target.on('exit', code => {
+		if (code === 0 && config.recover_on_normal_exit === false) {
+			exitLogger.info(`${server_name}-Primary process exited normally`);
+		}
+		else {
+			exitLogger.error(`${server_name}-Primary process died: ${code}`);
+			exitLogger.info(`${server_name}-Primary restarting...`);
+			startChiledProcess(server_name);
 		}
 	});
-
-	v12c.on('message', (message) => {
-		if (message === 'worker-ready') {
-			bootupLogger.info('v12c process is ready.');
-		}
-	});
+	return target;
 }
 
 function greet(): void {

@@ -20,6 +20,9 @@ processes:
   main: 1
   v12c: 1
 
+# Recovery process if the process is exited normally (default: true)
+recover_on_normal_exit: true
+
 # database config ------------------------------------------------------
 
 # PostgreSQL configuration
