@@ -3,14 +3,14 @@ import cluster from 'node:cluster';
 import Logger from '@/services/logger.js';
 import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types';
-import { envOption } from '../../env.js';
 import { initDb } from '@/db/postgre.js';
+import { envOption } from '../../env.js';
 import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
 
-export async function initPrimary() {
+export async function initPrimary(): Promise<void> {
 	const config: Config = loadConfig();
 
 	try {
@@ -50,7 +50,7 @@ export async function initPrimary() {
 	}
 }
 
-async function spawnWorkers(limit: number = 1) {
+async function spawnWorkers(limit = 1): Promise<void> {
 	const workers = Math.min(limit, os.cpus().length);
 	bootLogger.info(`Starting ${workers} worker${workers === 1 ? '' : 's'}...`);
 	await Promise.all([...Array(workers)].map(spawnWorker));
@@ -62,7 +62,7 @@ function spawnWorker(): Promise<void> {
 		const worker = cluster.fork();
 		worker.on('message', message => {
 			if (message === 'listenFailed') {
-				bootLogger.error(`The server Listen failed due to the previous error.`);
+				bootLogger.error('The server Listen failed due to the previous error.');
 				process.exit(1);
 			}
 			if (message !== 'worker-ready') return;
