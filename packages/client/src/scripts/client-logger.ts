@@ -1,7 +1,7 @@
 // yoiyami client logger (v1)
 //
 // How to use:
-// import clientLogger from '@/scripts/client-logger';
+// import * as clientLogger from '@/scripts/client-logger';
 // clientLogger.info('Hello, world!');
 // clientLogger.info('Hello, world!', 'my-tag');
 //
