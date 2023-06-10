@@ -24,7 +24,7 @@ export async function initPrimary() {
 		process.exit(1);
 	}
 
-	bootLogger.succ('Check point 1 passed');
+	bootLogger.succ('initialization completed!');
  
 	if (!envOption.disableClustering) {
 		if (config.processes.v12c === 1) {
