@@ -34,8 +34,8 @@ db:
   db: yoiyami
 
   # Auth
-  user: nemchan
-  pass: tomoya1230
+  user: yoiyami
+  pass: example-password
 
   # Whether disable Caching queries
   #disableCache: true
