@@ -19,6 +19,14 @@
 		<option value="style1">スタイル1(yoiyamiオリジナル)</option>
 		<option value="style2">スタイル2(Misskey-v12 Vanilla)</option>
 	</FormRadios>
+	<FormRadios v-model="visibilityWarning">
+		<template #label>投稿画面での公開範囲の警告</template>
+		<option value="public">警告しない(public)</option>
+		<option value="home">home</option>
+		<option value="followers">followers</option>
+		<option value="specified">specified(ダイレクト)</option>
+	</FormRadios>
+
 </div>
 </template>
 	
@@ -42,4 +50,5 @@ const postFormFooterPostButtonEnabled = computed(defaultStore.makeGetterSetter('
 const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('postFormHeaderPostButtonEnabled'));
 const navBarStyle = computed(defaultStore.makeGetterSetter('navBarStyle'));
 const debugMode = computed(defaultStore.makeGetterSetter('debugMode'));
+const visibilityWarning = computed(defaultStore.makeGetterSetter('visibilityWarning'));
 </script>

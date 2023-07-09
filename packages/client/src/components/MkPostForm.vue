@@ -93,6 +93,7 @@ import { instance } from '@/instance';
 import { $i, getAccounts, openAccountMenu as openAccountMenu_ } from '@/account';
 import { uploadFile } from '@/scripts/upload';
 import { addPostQueue } from '@/scripts/post-queue';
+import * as clientLogger from '@/scripts/client-logger';
 
 const modal = inject('modal');
 
@@ -478,7 +479,7 @@ function onCompositionEnd(ev: CompositionEvent):void {
 	imeText = '';
 }
 
-async function onPaste(ev: ClipboardEvent):void {
+async function onPaste(ev: ClipboardEvent):Promise<void> {
 	for (const { item, i } of Array.from(ev.clipboardData.items).map((item, i) => ({ item, i }))) {
 		if (item.kind === 'file') {
 			const file = item.getAsFile();
@@ -614,6 +615,8 @@ async function post():Promise<void> {
 			postData = await interruptor.handler(JSON.parse(JSON.stringify(postData)));
 		}
 	}
+	
+	if (await checkVisibilityWarning(postData.visibility)) return;
 
 	let token = undefined;
 
@@ -651,6 +654,49 @@ async function post():Promise<void> {
 			});
 		});
 	}
+}
+
+async function checkVisibilityWarning(visibility):Promise<boolean> {
+	const warningLevel = defaultStore.state.visibilityWarning;
+	clientLogger.debug("warningLevel: " + warningLevel + ", visibility: " + visibility, "postform");
+	if (warningLevel == 'public') { //publicはそれ以上の公開範囲がないため警告しない
+		clientLogger.debug("visivility warning: false (public)", "postform");
+		return false;
+	}
+	//TODO: i18n対応する
+	let cancel = false;
+	switch (warningLevel) {
+		case 'home':
+			if (visibility == 'public') {
+				let { canceled } = await os.confirm({
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
+					type: 'warning',
+				});
+				cancel = canceled;
+			}
+			break;
+		case 'followers':
+			if (visibility == 'public' || visibility == 'home') {
+				let { canceled } = await os.confirm({
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
+					type: 'warning',
+				});
+				cancel = canceled;
+			}
+			break;
+		case 'specified':
+			if (visibility == 'public' || visibility == 'home' || visibility == 'followers') {
+				let { canceled } = await os.confirm({
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
+					type: 'warning',
+				});
+				cancel = canceled;
+			}
+			break;
+	}
+
+	clientLogger.debug("visivility warning: " + cancel, "postform");
+	return cancel;
 }
 
 function cancel():void {

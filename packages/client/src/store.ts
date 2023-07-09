@@ -311,6 +311,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	visibilityWarning: { //publicのときはそれ以上の公開範囲がないので無効（として扱う）
+		where: 'deviceAccount',
+		default: 'public' as 'public' | 'home' | 'followers' | 'specified',
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期
