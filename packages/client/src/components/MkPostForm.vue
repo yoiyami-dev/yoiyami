@@ -660,14 +660,16 @@ async function checkVisibilityWarning(visibility):Promise<boolean> {
 	const warningLevel = defaultStore.state.visibilityWarning;
 	clientLogger.debug("warningLevel: " + warningLevel + ", visibility: " + visibility, "postform");
 	if (warningLevel == 'public') { //publicはそれ以上の公開範囲がないため警告しない
+		clientLogger.debug("visivility warning: false (public)", "postform");
 		return false;
 	}
+	//TODO: i18n対応する
 	let cancel = false;
 	switch (warningLevel) {
 		case 'home':
 			if (visibility == 'public') {
 				let { canceled } = await os.confirm({
-					text: '公開範囲が設定された上限を超えています',
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
 					type: 'warning',
 				});
 				cancel = canceled;
@@ -676,7 +678,7 @@ async function checkVisibilityWarning(visibility):Promise<boolean> {
 		case 'followers':
 			if (visibility == 'public' || visibility == 'home') {
 				let { canceled } = await os.confirm({
-					text: '公開範囲が設定された上限を超えています',
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
 					type: 'warning',
 				});
 				cancel = canceled;
@@ -685,7 +687,7 @@ async function checkVisibilityWarning(visibility):Promise<boolean> {
 		case 'specified':
 			if (visibility == 'public' || visibility == 'home' || visibility == 'followers') {
 				let { canceled } = await os.confirm({
-					text: '公開範囲が設定された上限を超えています',
+					text: "公開範囲が設定された上限を超えています\n投稿しますか?",
 					type: 'warning',
 				});
 				cancel = canceled;
@@ -693,6 +695,7 @@ async function checkVisibilityWarning(visibility):Promise<boolean> {
 			break;
 	}
 
+	clientLogger.debug("visivility warning: " + cancel, "postform");
 	return cancel;
 }
 
