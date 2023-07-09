@@ -479,7 +479,7 @@ function onCompositionEnd(ev: CompositionEvent):void {
 	imeText = '';
 }
 
-async function onPaste(ev: ClipboardEvent):void {
+async function onPaste(ev: ClipboardEvent):Promise<void> {
 	for (const { item, i } of Array.from(ev.clipboardData.items).map((item, i) => ({ item, i }))) {
 		if (item.kind === 'file') {
 			const file = item.getAsFile();
@@ -615,9 +615,8 @@ async function post():Promise<void> {
 			postData = await interruptor.handler(JSON.parse(JSON.stringify(postData)));
 		}
 	}
-
-	// Visibility Warning
-	checkVisibilityWarning(postData.visibility);
+	
+	if (await checkVisibilityWarning(postData.visibility)) return;
 
 	let token = undefined;
 
@@ -657,38 +656,44 @@ async function post():Promise<void> {
 	}
 }
 
-function checkVisibilityWarning(visibility):void {
+async function checkVisibilityWarning(visibility):Promise<boolean> {
 	const warningLevel = defaultStore.state.visibilityWarning;
 	clientLogger.debug("warningLevel: " + warningLevel + ", visibility: " + visibility, "postform");
 	if (warningLevel == 'public') { //publicはそれ以上の公開範囲がないため警告しない
-		return;
+		return false;
 	}
+	let cancel = false;
 	switch (warningLevel) {
 		case 'home':
 			if (visibility == 'public') {
-				os.alert({
+				let { canceled } = await os.confirm({
 					text: '公開範囲が設定された上限を超えています',
 					type: 'warning',
 				});
+				cancel = canceled;
 			}
 			break;
 		case 'followers':
 			if (visibility == 'public' || visibility == 'home') {
-				os.alert({
+				let { canceled } = await os.confirm({
 					text: '公開範囲が設定された上限を超えています',
 					type: 'warning',
 				});
+				cancel = canceled;
 			}
 			break;
 		case 'specified':
 			if (visibility == 'public' || visibility == 'home' || visibility == 'followers') {
-				os.alert({
+				let { canceled } = await os.confirm({
 					text: '公開範囲が設定された上限を超えています',
 					type: 'warning',
 				});
+				cancel = canceled;
 			}
 			break;
 	}
+
+	return cancel;
 }
 
 function cancel():void {
