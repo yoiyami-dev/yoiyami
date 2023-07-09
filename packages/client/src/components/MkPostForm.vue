@@ -93,6 +93,7 @@ import { instance } from '@/instance';
 import { $i, getAccounts, openAccountMenu as openAccountMenu_ } from '@/account';
 import { uploadFile } from '@/scripts/upload';
 import { addPostQueue } from '@/scripts/post-queue';
+import * as clientLogger from '@/scripts/client-logger';
 
 const modal = inject('modal');
 
@@ -615,6 +616,9 @@ async function post():Promise<void> {
 		}
 	}
 
+	// Visibility Warning
+	checkVisibilityWarning(postData.visibility);
+
 	let token = undefined;
 
 	if (postAccount) {
@@ -650,6 +654,40 @@ async function post():Promise<void> {
 				text: err.message + '\n' + (err as any).id,
 			});
 		});
+	}
+}
+
+function checkVisibilityWarning(visibility):void {
+	const warningLevel = defaultStore.state.visibilityWarning;
+	clientLogger.debug("warningLevel: " + warningLevel + ", visibility: " + visibility, "postform");
+	if (warningLevel == 'public') { //publicはそれ以上の公開範囲がないため警告しない
+		return;
+	}
+	switch (warningLevel) {
+		case 'home':
+			if (visibility == 'public') {
+				os.alert({
+					text: '公開範囲が設定された上限を超えています',
+					type: 'warning',
+				});
+			}
+			break;
+		case 'followers':
+			if (visibility == 'public' || visibility == 'home') {
+				os.alert({
+					text: '公開範囲が設定された上限を超えています',
+					type: 'warning',
+				});
+			}
+			break;
+		case 'specified':
+			if (visibility == 'public' || visibility == 'home' || visibility == 'followers') {
+				os.alert({
+					text: '公開範囲が設定された上限を超えています',
+					type: 'warning',
+				});
+			}
+			break;
 	}
 }
 
