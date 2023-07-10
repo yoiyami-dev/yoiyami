@@ -7,12 +7,14 @@ import { envOption } from '../../env.js';
 import { initDb } from '@/db/postgre.js';
 import { initWorker } from './worker.js';
 import boot from '../index.js';
+import { config } from 'node:process';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
+let bootConfig: Config;
 
 export async function initPrimary() {
-	const config: Config = loadConfig();
+	bootConfig = loadConfig();
 
 	try {
 		bootLogger.info('Booting...');
@@ -27,13 +29,13 @@ export async function initPrimary() {
 	bootLogger.succ('initialization completed!');
  
 	if (!envOption.disableClustering) {
-		if (config.processes.v12c === 1) {
+		if (bootConfig.processes.v12c === 1) {
 			//1プロセスで起動してほしいのでforkせずにWorkerになってもらう
 			bootLogger.info('Initiating worker function...');
 			initWorker();
 		}
 		else {
-			await spawnWorkers(config.processes.v12c);
+			await spawnWorkers(bootConfig.processes.v12c);
 		}
 	}
 
@@ -48,7 +50,8 @@ async function spawnWorkers(limit: number = 1) {
 	const workers = Math.min(limit, os.cpus().length);
 	bootLogger.info(`Starting ${workers} worker${workers === 1 ? '' : 's'}...`);
 	await Promise.all([...Array(workers)].map(spawnWorker));
-	bootLogger.succ('All workers started');
+	bootLogger.succ('All workers started!');
+	bootLogger.succ('yoiyami v12c is now listening to ' + bootConfig.v12c.url + '. (Port: ' + bootConfig.v12c.port + ')');
 }
 
 function spawnWorker(): Promise<void> {

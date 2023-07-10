@@ -9,9 +9,10 @@ import { initWorker } from './worker.js';
 
 const logger = new Logger('main', 'purple');
 const bootLogger = logger.createSubLogger('boot', 'orange', false);
+let bootConfig: Config;
 
 export async function initPrimary(): Promise<void> {
-	const config: Config = loadConfig();
+	bootConfig = loadConfig();
 
 	try {
 		bootLogger.info('Booting...');
@@ -33,13 +34,13 @@ export async function initPrimary(): Promise<void> {
 	bootLogger.succ('initialization completed!');
  
 	if (!envOption.disableClustering) {
-		if (config.processes.main === 1) {
+		if (bootConfig.processes.main === 1) {
 			//1プロセスで起動してほしいのでforkせずにWorkerになってもらう
 			bootLogger.info('Initiating worker function...');
 			initWorker();
 		}
 		else {
-			await spawnWorkers(config.processes.main);
+			await spawnWorkers(bootConfig.processes.main);
 		}
 	}
 
@@ -55,6 +56,7 @@ async function spawnWorkers(limit = 1): Promise<void> {
 	bootLogger.info(`Starting ${workers} worker${workers === 1 ? '' : 's'}...`);
 	await Promise.all([...Array(workers)].map(spawnWorker));
 	bootLogger.succ('All workers started');
+	bootLogger.succ('yoiyami main is now listening to ' + bootConfig.main.url + '. (Port: ' + bootConfig.main.port + ')');
 }
 
 function spawnWorker(): Promise<void> {
