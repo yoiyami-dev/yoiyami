@@ -31,6 +31,13 @@ async function initMainGroup(): Promise<void> {
 	}
 }
 
+// Display detail of uncaught exception
+process.on('uncaughtException', err => {
+	try {
+		logger.error(err);
+	} catch { }
+});
+
 // Listen
 cluster.on('fork', worker => {
 	logger.debug(`Process forked: [${worker.id}]`);
