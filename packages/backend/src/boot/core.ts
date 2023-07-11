@@ -26,6 +26,8 @@ export type servers = 'main' | 'v12c';
 // 古いのから一旦そのまま持ってきているので、このへんのロジックは大きく変わるかも
 const package_json = JSON.parse(fs.readFileSync(`${_dirname}/../../../../package.json`, 'utf-8'));
 
+//TODO: ちゃんとconfigチェックしてないのでなんとかする
+
 // Process Manager
 export async function initCore(): Promise<void> {
 	try {
