@@ -310,6 +310,7 @@ function more(ev: MouseEvent) {
 					text-align: left;
 					box-sizing: border-box;
 					color: var(--navFg);
+					margin: 2px 0px;
 
 					> .icon {
 						position: relative;
