@@ -1,0 +1,133 @@
+# yoiyami configuration file
+
+# main server config ---------------------------------------------------
+main:
+  url: http://localhost:3000/
+  port: 3000
+
+# v12c server config ---------------------------------------------------
+# v12-Compatible API server (beta)
+enableV12c: ture
+v12c:
+  url: http://localhost:3001/
+  port: 3001
+
+# milti-process config -------------------------------------------------
+# WARNING: This feature is experimental.
+
+processes:
+  core: 1
+  main: 1
+  v12c: 1
+
+# Recovery process if the process is exited normally (default: true)
+recover_on_normal_exit: true
+
+# database config ------------------------------------------------------
+
+# PostgreSQL configuration
+db:
+  host: localhost
+  port: 5432
+
+  # Database name
+  db: yoiyami
+
+  # Auth
+  user: yoiyami
+  pass: yoiyami
+
+  # Whether disable Caching queries
+  #disableCache: true
+
+  # Extra Connection options
+  #extra:
+  #  ssl: true
+
+# Redis configuration
+redis:
+  host: localhost
+  port: 6379
+  #family: 0  # 0=Both, 4=IPv4, 6=IPv6
+  #pass: example-pass
+  #prefix: example-prefix
+  #db: 1
+ 
+# Common config --------------------------------------------------------
+
+# ID generation
+# You can select the ID generation method.
+# You don't usually need to change this setting, but you can
+# change it according to your preferences.
+
+# Available methods:
+# aid ... Short, Millisecond accuracy
+# meid ... Similar to ObjectID, Millisecond accuracy
+# ulid ... Millisecond accuracy
+# objectid ... This is left for backward compatibility
+
+# ONCE YOU HAVE STARTED THE INSTANCE, DO NOT CHANGE THE
+# ID SETTINGS AFTER THAT!
+
+id: 'aid'
+
+# Other config ---------------------------------------------------------
+
+# Whether disable HSTS
+#disableHsts: true
+
+# Number of worker processes
+#clusterLimit: 1
+
+# Job concurrency per worker
+# deliverJobConcurrency: 128
+# inboxJobConcurrency: 16
+
+# Job rate limiter
+# deliverJobPerSec: 128
+# inboxJobPerSec: 16
+
+# Job attempts
+# deliverJobMaxAttempts: 12
+# inboxJobMaxAttempts: 8
+
+# IP address family used for outgoing request (ipv4, ipv6 or dual)
+#outgoingAddressFamily: ipv4
+
+# Syslog option
+#syslog:
+#  host: localhost
+#  port: 514
+
+# Proxy for HTTP/HTTPS
+#proxy: http://127.0.0.1:3128
+
+#proxyBypassHosts: [
+#  'example.com',
+#  '192.0.2.8'
+#]
+
+# Proxy for SMTP/SMTPS
+#proxySmtp: http://127.0.0.1:3128   # use HTTP/1.1 CONNECT
+#proxySmtp: socks4://127.0.0.1:1080 # use SOCKS4
+#proxySmtp: socks5://127.0.0.1:1080 # use SOCKS5
+
+# Media Proxy
+#mediaProxy: https://example.com/proxy
+
+# Proxy remote files (default: false)
+#proxyRemoteFiles: true
+
+# Sign to ActivityPub GET request (default: false)
+#signToActivityPubGet: true
+
+#allowedPrivateNetworks: [
+#  '127.0.0.1/32'
+#]
+
+# Upload or download file size limits (bytes)
+#maxFileSize: 262144000
+
+# Config template version (DO NOT CHANGE THIS) ------------------------- 
+
+configTemplateVersion: 0.2.0
