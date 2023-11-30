@@ -27,6 +27,19 @@
 		<option value="specified">specified(ダイレクト)</option>
 	</FormRadios>
 
+	<FormSection>
+		<template #label>UI Customizations</template>
+		<FormSwitch v-model="userDetail_hideActivityGraph" class="_formBlock">ユーザーページ: アクティビティグラフを隠す(ローカル)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideActivityGraph_remote" class="_formBlock">ユーザーページ: アクティビティグラフを隠す(リモート)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideFollowers" class="_formBlock">ユーザーページ: フォロワーを隠す(ローカル)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideFollowers_remote" class="_formBlock">ユーザーページ: フォロー中を隠す(リモート)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideFollowing" class="_formBlock">ユーザーページ: フォロー中を隠す(ローカル)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideFollowing_remote" class="_formBlock">ユーザーページ: フォロー中を隠す(リモート)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideNoteCount" class="_formBlock">ユーザーページ: 投稿数を隠す(ローカル)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideNoteCount_remote" class="_formBlock">ユーザーページ: 投稿数を隠す(リモート)</FormSwitch>
+		<FormSwitch v-model="userDetail_hideGallery" class="_formBlock">ユーザーページ: ギャラリーを隠す</FormSwitch>
+	</FormSection>
+
 </div>
 </template>
 	
@@ -36,6 +49,7 @@ import { defaultStore } from '@/store';
 import FormInfo from '@/components/MkInfo.vue';
 import FormSwitch from '@/components/form/switch.vue';
 import FormRadios from '@/components/form/radios.vue';
+import FormSection from '@/components/form/section.vue';
 
 const navBarChatIcon = computed(defaultStore.makeGetterSetter('navBarChatIcon'));
 const navBarReloadIcon = computed(defaultStore.makeGetterSetter('navBarReloadIcon'));
@@ -51,4 +65,15 @@ const postFormHeaderPostButtonEnabled = computed(defaultStore.makeGetterSetter('
 const navBarStyle = computed(defaultStore.makeGetterSetter('navBarStyle'));
 const debugMode = computed(defaultStore.makeGetterSetter('debugMode'));
 const visibilityWarning = computed(defaultStore.makeGetterSetter('visibilityWarning'));
+
+const userDetail_hideActivityGraph = computed(defaultStore.makeGetterSetter('userDetail_hideActivityGraph'));
+const userDetail_hideActivityGraph_remote = computed(defaultStore.makeGetterSetter('userDetail_hideActivityGraph_remote'));
+const userDetail_hideFollowers = computed(defaultStore.makeGetterSetter('userDetail_hideFollowers'));
+const userDetail_hideFollowers_remote = computed(defaultStore.makeGetterSetter('userDetail_hideFollowers_remote'));
+const userDetail_hideFollowing = computed(defaultStore.makeGetterSetter('userDetail_hideFollowing'));
+const userDetail_hideFollowing_remote = computed(defaultStore.makeGetterSetter('userDetail_hideFollowing_remote'));
+const userDetail_hideNoteCount = computed(defaultStore.makeGetterSetter('userDetail_hideNoteCount'));
+const userDetail_hideNoteCount_remote = computed(defaultStore.makeGetterSetter('userDetail_hideNoteCount_remote'));
+const userDetail_hideGallery = computed(defaultStore.makeGetterSetter('userDetail_hideGallery'));
+
 </script>

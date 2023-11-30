@@ -87,18 +87,18 @@
 							</dd>
 						</dl>
 					</div>
-					<div class="status">
-						<MkA v-click-anime :to="userPage(user)" :class="{ active: page === 'index' }">
+					<div class="status" v-if="showStatusArea">
+						<MkA v-click-anime :to="userPage(user)" :class="{ active: page === 'index' }" v-if="showNoteCount">
 							<b>{{ number(user.notesCount) }}</b>
 							<span>{{ i18n.ts.notes }}</span>
 						</MkA>
 						<MkA v-click-anime :to="userPage(user, 'following')"
-							:class="{ active: page === 'following' }">
+							:class="{ active: page === 'following' }" v-if="showFollowing">
 							<b>{{ number(user.followingCount) }}</b>
 							<span>{{ i18n.ts.following }}</span>
 						</MkA>
 						<MkA v-click-anime :to="userPage(user, 'followers')"
-							:class="{ active: page === 'followers' }">
+							:class="{ active: page === 'followers' }" v-if="showFollowers">
 							<b>{{ number(user.followersCount) }}</b>
 							<span>{{ i18n.ts.followers }}</span>
 						</MkA>
@@ -113,17 +113,17 @@
 				</div>
 				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
 				<template v-if="narrow">
-					<XPhotos :key="user.id" :user="user" />
-					<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
+					<XPhotos :key="user.id" :user="user" v-if="showGallery"/>
+					<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" v-if="showActivityGraph"/>
 				</template>
 			</div>
 			<div>
 				<XUserTimeline :user="user" />
 			</div>
 		</div>
-		<div v-if="!narrow" class="sub">
-			<XPhotos :key="user.id" :user="user" />
-			<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" />
+		<div v-if="!narrow && showSubArea" class="sub">
+			<XPhotos :key="user.id" :user="user" v-if="showGallery"/>
+			<XActivity :key="user.id" :user="user" style="margin-top: var(--margin);" v-if="showActivityGraph"/>
 		</div>
 	</div>
 </MkSpacer>
@@ -145,6 +145,7 @@ import { getScrollPosition } from '@/scripts/scroll';
 import { getUserMenu } from '@/scripts/get-user-menu';
 import number from '@/filters/number';
 import { userPage, acct as getAcct } from '@/filters/user';
+import { defaultStore } from '@/store';
 import * as os from '@/os';
 import { useRouter } from '@/router';
 import { i18n } from '@/i18n';
@@ -164,6 +165,52 @@ let parallaxAnimationId = $ref<null | number>(null);
 let narrow = $ref<null | boolean>(null);
 let rootEl = $ref<null | HTMLElement>(null);
 let bannerEl = $ref<null | HTMLElement>(null);
+
+// Customizations
+
+const showActivityGraph = $computed(() => {
+	if (props.user.host != null) {
+		return !defaultStore.state.userDetail_hideActivityGraph_remote;
+	} else {
+		return !defaultStore.state.userDetail_hideActivityGraph;
+	}
+});
+
+const showGallery = $computed(() => {
+	return !defaultStore.state.userDetail_hideGallery;
+});
+
+const showFollowers = $computed(() => {
+	if (props.user.host != null) {
+		return !defaultStore.state.userDetail_hideFollowers_remote;
+	} else {
+		return !defaultStore.state.userDetail_hideFollowers;
+	}
+});
+
+const showFollowing = $computed(() => {
+	if (props.user.host != null) {
+		return !defaultStore.state.userDetail_hideFollowing_remote;
+	} else {
+		return !defaultStore.state.userDetail_hideFollowing;
+	}
+});
+
+const showNoteCount = $computed(() => {
+	if (props.user.host != null) {
+		return !defaultStore.state.userDetail_hideNoteCount_remote;
+	} else {
+		return !defaultStore.state.userDetail_hideNoteCount;
+	}
+});
+
+const showStatusArea = $computed(() => {
+	return showFollowers || showFollowing || showNoteCount;
+});
+
+const showSubArea = $computed(() => {
+	return showGallery || showActivityGraph;
+});
 
 const style = $computed(() => {
 	if (props.user.bannerUrl == null) return {};
