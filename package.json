@@ -2,7 +2,7 @@
 	"name": "yoiyami",
 	"version": "v6-beta26",
 	"based_version": "12.119.2",
-	"codename": "indigo",
+	"codename": "nightscape",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/rca-fedi/yoiyami.git"
