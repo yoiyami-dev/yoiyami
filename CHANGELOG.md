@@ -2,21 +2,44 @@
 ## v1-beta1
 
 ### Note
-- 特になし
+- None
 
 ### Added
+- None
 
 ### Changed
+- None
 
 ### Improved
+- None
 
 ### Fixed
+- None
 
 ### Security
-- 
+- None
 
 You should also include the user name that made the change.
 -->
+## v1-beta2
+
+### Note
+- None
+
+### Added
+- None
+
+### Changed
+- None
+
+### Improved
+- None
+
+### Fixed
+- None
+
+### Security
+- None
 
 ## v1-beta1
 
