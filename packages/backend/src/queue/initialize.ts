@@ -77,7 +77,7 @@ export class Queue<T> extends EventEmitter {
 			delete options.repeat.cron;
 		}
 
-		return this.queue.add(name as never, data, options) as unknown as Promise<Job<T>>;
+		return this.queue.add(name as never, data as never, options) as unknown as Promise<Job<T>>;
 	}
 
 	public process(processor: Processor<T>): void;
