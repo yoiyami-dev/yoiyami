@@ -1,24 +1,35 @@
 import { URL } from 'node:url';
-import S3 from 'aws-sdk/clients/s3.js';
+import { S3Client } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { Meta } from '@/models/entities/meta.js';
 import { getAgentByUrl } from '@/misc/fetch.js';
 
-export function getS3(meta: Meta) {
-	const u = meta.objectStorageEndpoint != null
-		? `${meta.objectStorageUseSSL ? 'https://' : 'http://'}${meta.objectStorageEndpoint}`
-		: `${meta.objectStorageUseSSL ? 'https://' : 'http://'}example.net`;
+export function getObjectStorageEndpoint(meta: Meta): URL | undefined {
+	if (meta.objectStorageEndpoint == null) return undefined;
 
-	return new S3({
-		endpoint: meta.objectStorageEndpoint || undefined,
-		accessKeyId: meta.objectStorageAccessKey!,
-		secretAccessKey: meta.objectStorageSecretKey!,
+	return new URL(`${meta.objectStorageUseSSL ? 'https' : 'http'}://${meta.objectStorageEndpoint}`);
+}
+
+export function getS3(meta: Meta) {
+	const endpoint = getObjectStorageEndpoint(meta);
+	const agentUrl = endpoint ?? new URL(`${meta.objectStorageUseSSL ? 'https' : 'http'}://example.net`);
+
+	const httpAgent = getAgentByUrl(new URL(`http://${agentUrl.host}`), !meta.objectStorageUseProxy);
+	const httpsAgent = getAgentByUrl(new URL(`https://${agentUrl.host}`), !meta.objectStorageUseProxy);
+
+	return new S3Client({
+		endpoint: endpoint?.toString(),
+		credentials: {
+			accessKeyId: meta.objectStorageAccessKey!,
+			secretAccessKey: meta.objectStorageSecretKey!,
+		},
 		region: meta.objectStorageRegion || undefined,
-		sslEnabled: meta.objectStorageUseSSL,
-		s3ForcePathStyle: !meta.objectStorageEndpoint	// AWS with endPoint omitted
+		forcePathStyle: !meta.objectStorageEndpoint	// AWS with endpoint omitted
 			? false
 			: meta.objectStorageS3ForcePathStyle,
-		httpOptions: {
-			agent: getAgentByUrl(new URL(u), !meta.objectStorageUseProxy),
-		},
+		requestHandler: new NodeHttpHandler({
+			httpAgent,
+			httpsAgent,
+		}),
 	});
 }
