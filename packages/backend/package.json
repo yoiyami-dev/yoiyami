@@ -50,7 +50,6 @@
 		"js-yaml": "4.3.2",
 		"jsdom": "20.0.0",
 		"json5": "2.2.3",
-		"json5-loader": "4.0.1",
 		"jsonld": "9.0.0",
 		"jsrsasign": "11.1.5",
 		"koa": "3.2.1",
@@ -65,7 +64,6 @@
 		"mfm-js": "0.23.0",
 		"mime-types": "2.1.35",
 		"misskey-js": "0.0.14",
-		"mocha": "11.7.5",
 		"ms": "3.0.0-canary.1",
 		"multer": "2.3.0",
 		"nested-property": "4.0.0",
@@ -96,7 +94,6 @@
 		"stringz": "2.1.0",
 		"tinycolor2": "1.4.2",
 		"tmp": "0.2.7",
-		"ts-loader": "9.3.1",
 		"ts-node": "10.9.1",
 		"tsc-alias": "1.7.0",
 		"tsconfig-paths": "4.1.0",
@@ -155,6 +152,9 @@
 		"eslint": "8.23.0",
 		"eslint-plugin-import": "2.26.0",
 		"execa": "6.1.0",
+		"json5-loader": "4.0.1",
+		"mocha": "11.7.5",
+		"ts-loader": "9.3.1",
 		"typescript": "5.9.3"
 	}
 }

@@ -185,7 +185,22 @@ overrides:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
+      '@types/gulp':
+        specifier: 4.0.9
+        version: 4.0.9
+      '@types/gulp-rename':
+        specifier: 2.0.1
+        version: 2.0.1
+      '@typescript-eslint/parser':
+        specifier: 5.36.2
+        version: 5.36.2(eslint@8.23.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
+      cypress:
+        specifier: 10.7.0
+        version: 10.7.0
       execa:
         specifier: 5.1.1
         version: 5.1.1
@@ -207,22 +222,6 @@ importers:
       js-yaml:
         specifier: ^4.3.2
         version: 4.3.2
-    devDependencies:
-      '@types/gulp':
-        specifier: 4.0.9
-        version: 4.0.9
-      '@types/gulp-rename':
-        specifier: 2.0.1
-        version: 2.0.1
-      '@typescript-eslint/parser':
-        specifier: 5.36.2
-        version: 5.36.2(eslint@8.23.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
-      cross-env:
-        specifier: 7.0.3
-        version: 7.0.3
-      cypress:
-        specifier: 10.7.0
-        version: 10.7.0
       start-server-and-test:
         specifier: 1.14.0
         version: 1.14.0(supports-color@8.1.1)
@@ -343,9 +342,6 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
-      json5-loader:
-        specifier: 4.0.1
-        version: 4.0.1(webpack@5.111.1(cssnano@3.10.0)(csso@2.3.2)(esbuild@0.15.18)(postcss@8.5.28)(sharp@0.35.4(@types/node@22.20.4))(svgo@0.7.2))
       jsonld:
         specifier: 9.0.0
         version: 9.0.0
@@ -388,9 +384,6 @@ importers:
       misskey-js:
         specifier: 0.0.14
         version: 0.0.14
-      mocha:
-        specifier: 11.7.5
-        version: 11.7.5
       ms:
         specifier: 3.0.0-canary.1
         version: 3.0.0-canary.1
@@ -481,9 +474,6 @@ importers:
       tmp:
         specifier: 0.2.7
         version: 0.2.7
-      ts-loader:
-        specifier: 9.3.1
-        version: 9.3.1(typescript@5.9.3)(webpack@5.111.1(cssnano@3.10.0)(csso@2.3.2)(esbuild@0.15.18)(postcss@8.5.28)(sharp@0.35.4(@types/node@22.20.4))(svgo@0.7.2))
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@types/node@22.20.4)(typescript@5.9.3)
@@ -653,6 +643,15 @@ importers:
       execa:
         specifier: 6.1.0
         version: 6.1.0
+      json5-loader:
+        specifier: 4.0.1
+        version: 4.0.1(webpack@5.111.1(cssnano@3.10.0)(csso@2.3.2)(esbuild@0.15.18)(postcss@8.5.28)(sharp@0.35.4(@types/node@22.20.4))(svgo@0.7.2))
+      mocha:
+        specifier: 11.7.5
+        version: 11.7.5
+      ts-loader:
+        specifier: 9.3.1
+        version: 9.3.1(typescript@5.9.3)(webpack@5.111.1(cssnano@3.10.0)(csso@2.3.2)(esbuild@0.15.18)(postcss@8.5.28)(sharp@0.35.4(@types/node@22.20.4))(svgo@0.7.2))
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -665,21 +664,9 @@ importers:
       '@fortawesome/fontawesome-free':
         specifier: 6.1.2
         version: 6.1.2
-      '@rollup/plugin-alias':
-        specifier: 3.1.9
-        version: 3.1.9(rollup@2.79.0)
-      '@rollup/plugin-json':
-        specifier: 4.1.0
-        version: 4.1.0(rollup@2.79.0)
       '@syuilo/aiscript':
         specifier: 0.11.1
         version: 0.11.1
-      '@vitejs/plugin-vue':
-        specifier: 3.1.0
-        version: 3.1.0(vite@3.1.0(sass@1.54.9)(terser@5.51.2))(vue@3.2.39)
-      '@vue/compiler-sfc':
-        specifier: 3.2.39
-        version: 3.2.39
       autobind-decorator:
         specifier: 2.4.0
         version: 2.4.0
@@ -761,9 +748,6 @@ importers:
       s-age:
         specifier: 1.1.2
         version: 1.1.2
-      sass:
-        specifier: 1.54.9
-        version: 1.54.9
       seedrandom:
         specifier: 3.0.5
         version: 3.0.5
@@ -788,27 +772,15 @@ importers:
       tinycolor2:
         specifier: 1.4.2
         version: 1.4.2
-      tsc-alias:
-        specifier: 1.7.0
-        version: 1.7.0
-      tsconfig-paths:
-        specifier: 4.1.0
-        version: 4.1.0
       twemoji-parser:
         specifier: 14.0.0
         version: 14.0.0
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       uuid:
         specifier: 11.1.1
         version: 11.1.1
       vanilla-tilt:
         specifier: 1.7.2
         version: 1.7.2
-      vite:
-        specifier: 3.1.0
-        version: 3.1.0(sass@1.54.9)(terser@5.51.2)
       vue:
         specifier: 3.2.39
         version: 3.2.39
@@ -819,6 +791,12 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(vue@3.2.39)
     devDependencies:
+      '@rollup/plugin-alias':
+        specifier: 3.1.9
+        version: 3.1.9(rollup@2.79.0)
+      '@rollup/plugin-json':
+        specifier: 4.1.0
+        version: 4.1.0(rollup@2.79.0)
       '@types/escape-regexp':
         specifier: 0.0.1
         version: 0.0.1
@@ -855,6 +833,12 @@ importers:
       '@typescript-eslint/parser':
         specifier: 5.36.2
         version: 5.36.2(eslint@8.23.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@vitejs/plugin-vue':
+        specifier: 3.1.0
+        version: 3.1.0(vite@3.1.0(sass@1.54.9)(terser@5.51.2))(vue@3.2.39)
+      '@vue/compiler-sfc':
+        specifier: 3.2.39
+        version: 3.2.39
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
@@ -873,9 +857,24 @@ importers:
       rollup:
         specifier: 2.79.0
         version: 2.79.0
+      sass:
+        specifier: 1.54.9
+        version: 1.54.9
       start-server-and-test:
         specifier: 1.14.0
         version: 1.14.0(supports-color@8.1.1)
+      tsc-alias:
+        specifier: 1.7.0
+        version: 1.7.0
+      tsconfig-paths:
+        specifier: 4.1.0
+        version: 4.1.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 3.1.0
+        version: 3.1.0(sass@1.54.9)(terser@5.51.2)
 
   packages/sw:
     dependencies:
