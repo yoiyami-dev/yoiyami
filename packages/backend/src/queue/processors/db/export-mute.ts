@@ -12,12 +12,11 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('export-mute');
 
-export async function exportMute(job: Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportMute(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Exporting mute of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -89,6 +88,4 @@ export async function exportMute(job: Job<DbUserJobData>, done: any): Promise<vo
 	} finally {
 		cleanup();
 	}
-
-	done();
 }

@@ -5,7 +5,7 @@ import { driveChart, notesChart, usersChart } from '@/services/chart/index.js';
 
 const logger = queueLogger.createSubLogger('resync-charts');
 
-export async function resyncCharts(job: Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function resyncCharts(job: Job<Record<string, unknown>>): Promise<void> {
 	logger.info(`Resync charts...`);
 
 	// TODO: ユーザーごとのチャートも更新する
@@ -17,5 +17,4 @@ export async function resyncCharts(job: Job<Record<string, unknown>>, done: any)
 	]);
 
 	logger.succ(`All charts successfully resynced.`);
-	done();
 }

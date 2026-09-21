@@ -1,3 +1,4 @@
+import { QueueEvents, Worker, type Job, type Queue } from 'bullmq';
 import httpSignature from '@peertube/http-signature';
 import { v4 as uuid } from 'uuid';
 
@@ -9,22 +10,70 @@ import { envOption } from '../env.js';
 
 import processDeliver from './processors/deliver.js';
 import processInbox from './processors/inbox.js';
-import processDb from './processors/db/index.js';
-import processObjectStorage from './processors/object-storage/index.js';
-import processSystemQueue from './processors/system/index.js';
+import { dbProcessors } from './processors/db/index.js';
+import { objectStorageProcessors } from './processors/object-storage/index.js';
+import { systemProcessors } from './processors/system/index.js';
 import processWebhookDeliver from './processors/webhook-deliver.js';
 import { endedPollNotification } from './processors/ended-poll-notification.js';
 import { queueLogger } from './logger.js';
 import { getJobInfo } from './get-job-info.js';
 import { systemQueue, dbQueue, deliverQueue, inboxQueue, objectStorageQueue, endedPollNotificationQueue, webhookDeliverQueue } from './queues.js';
 import { ThinUser } from './types.js';
+import { queuePrefix, redisConnection } from './connection.js';
 
-function renderError(e: Error): any {
+type JobHandler<T> = (job: Job<T>) => Promise<unknown> | unknown;
+
+function renderError(error: unknown): { stack?: string; message: string; name: string } {
+	const normalized = error instanceof Error ? error : new Error(String(error));
 	return {
-		stack: e.stack,
-		message: e.message,
-		name: e.name,
+		stack: normalized.stack,
+		message: normalized.message,
+		name: normalized.name,
 	};
+}
+
+function startWorker<T>(queue: Queue<T>, processors: Record<string, JobHandler<T>>, concurrency: number, limiter?: { max: number; duration: number }): Worker<T> {
+	const worker = new Worker<T>(queue.name, async job => {
+		const processor = processors[job.name];
+		if (processor == null) throw new Error(`No processor registered for ${job.name}`);
+		return processor(job);
+	}, {
+		connection: redisConnection(),
+		prefix: queuePrefix,
+		concurrency,
+		limiter,
+		settings: {
+			backoffStrategy: apBackoff,
+		},
+	});
+
+	return worker;
+}
+
+function attachQueueLogging<T>(
+	queue: Queue<T>,
+	worker: Worker<T>,
+	logger: ReturnType<typeof queueLogger.createSubLogger>,
+	formatJob: (job: Job<T>, includeTarget?: boolean) => string = job => `id=${job.id}`,
+) {
+	const events = new QueueEvents(queue.name, {
+		connection: redisConnection(),
+		prefix: queuePrefix,
+	});
+
+	events.on('waiting', ({ jobId }) => logger.debug(`waiting id=${jobId}`));
+	events.on('error', error => logger.error(`queue events error ${error}`, { e: renderError(error) }));
+	worker.on('active', job => logger.debug(`active ${formatJob(job, true)}`));
+	worker.on('completed', (job, result) => logger.debug(`completed(${result}) ${formatJob(job, true)}`));
+	worker.on('failed', (job, error) => {
+		if (job == null) {
+			logger.warn(`failed(${error})`);
+		} else {
+			logger.warn(`failed(${error}) ${formatJob(job)}`, { job, e: renderError(error) });
+		}
+	});
+	worker.on('error', error => logger.error(`worker error ${error}`, { e: renderError(error) }));
+	worker.on('stalled', jobId => logger.warn(`stalled id=${jobId}`));
 }
 
 const systemLogger = queueLogger.createSubLogger('system');
@@ -34,237 +83,100 @@ const inboxLogger = queueLogger.createSubLogger('inbox');
 const dbLogger = queueLogger.createSubLogger('db');
 const objectStorageLogger = queueLogger.createSubLogger('objectStorage');
 
-systemQueue
-	.on('waiting', (jobId) => systemLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => systemLogger.debug(`active id=${job.id}`))
-	.on('completed', (job, result) => systemLogger.debug(`completed(${result}) id=${job.id}`))
-	.on('failed', (job, err) => systemLogger.warn(`failed(${err}) id=${job.id}`, { job, e: renderError(err) }))
-	.on('error', (job: any, err: Error) => systemLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => systemLogger.warn(`stalled id=${job.id}`));
-
-deliverQueue
-	.on('waiting', (jobId) => deliverLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => deliverLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`))
-	.on('completed', (job, result) => deliverLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`))
-	.on('failed', (job, err) => deliverLogger.warn(`failed(${err}) ${getJobInfo(job)} to=${job.data.to}`))
-	.on('error', (job: any, err: Error) => deliverLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => deliverLogger.warn(`stalled ${getJobInfo(job)} to=${job.data.to}`));
-
-inboxQueue
-	.on('waiting', (jobId) => inboxLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => inboxLogger.debug(`active ${getJobInfo(job, true)}`))
-	.on('completed', (job, result) => inboxLogger.debug(`completed(${result}) ${getJobInfo(job, true)}`))
-	.on('failed', (job, err) => inboxLogger.warn(`failed(${err}) ${getJobInfo(job)} activity=${job.data.activity ? job.data.activity.id : 'none'}`, { job, e: renderError(err) }))
-	.on('error', (job: any, err: Error) => inboxLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => inboxLogger.warn(`stalled ${getJobInfo(job)} activity=${job.data.activity ? job.data.activity.id : 'none'}`));
-
-dbQueue
-	.on('waiting', (jobId) => dbLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => dbLogger.debug(`active id=${job.id}`))
-	.on('completed', (job, result) => dbLogger.debug(`completed(${result}) id=${job.id}`))
-	.on('failed', (job, err) => dbLogger.warn(`failed(${err}) id=${job.id}`, { job, e: renderError(err) }))
-	.on('error', (job: any, err: Error) => dbLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => dbLogger.warn(`stalled id=${job.id}`));
-
-objectStorageQueue
-	.on('waiting', (jobId) => objectStorageLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => objectStorageLogger.debug(`active id=${job.id}`))
-	.on('completed', (job, result) => objectStorageLogger.debug(`completed(${result}) id=${job.id}`))
-	.on('failed', (job, err) => objectStorageLogger.warn(`failed(${err}) id=${job.id}`, { job, e: renderError(err) }))
-	.on('error', (job: any, err: Error) => objectStorageLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => objectStorageLogger.warn(`stalled id=${job.id}`));
-
-webhookDeliverQueue
-	.on('waiting', (jobId) => webhookLogger.debug(`waiting id=${jobId}`))
-	.on('active', (job) => webhookLogger.debug(`active ${getJobInfo(job, true)} to=${job.data.to}`))
-	.on('completed', (job, result) => webhookLogger.debug(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`))
-	.on('failed', (job, err) => webhookLogger.warn(`failed(${err}) ${getJobInfo(job)} to=${job.data.to}`))
-	.on('error', (job: any, err: Error) => webhookLogger.error(`error ${err}`, { job, e: renderError(err) }))
-	.on('stalled', (job) => webhookLogger.warn(`stalled ${getJobInfo(job)} to=${job.data.to}`));
-
 export function deliver(user: ThinUser, content: unknown, to: string | null) {
-	if (content == null) return null;
-	if (to == null) return null;
+	if (content == null || to == null) return null;
 
-	const data = {
-		user: {
-			id: user.id,
-		},
+	return deliverQueue.add('deliver', {
+		user: { id: user.id },
 		content,
 		to,
-	};
-
-	return deliverQueue.add(data, {
+	}, {
 		attempts: config.deliverJobMaxAttempts || 12,
-		timeout: 1 * 60 * 1000,	// 1min
-		backoff: {
-			type: 'apBackoff',
-		},
+		backoff: { type: 'apBackoff' },
 		removeOnComplete: true,
 		removeOnFail: true,
 	});
 }
 
 export function inbox(activity: IActivity, signature: httpSignature.IParsedSignature) {
-	const data = {
-		activity: activity,
+	return inboxQueue.add('inbox', {
+		activity,
 		signature,
-	};
-
-	return inboxQueue.add(data, {
+	}, {
 		attempts: config.inboxJobMaxAttempts || 8,
-		timeout: 5 * 60 * 1000,	// 5min
-		backoff: {
-			type: 'apBackoff',
-		},
+		backoff: { type: 'apBackoff' },
 		removeOnComplete: true,
 		removeOnFail: true,
 	});
 }
 
+const transientJobOptions = {
+	removeOnComplete: true,
+	removeOnFail: true,
+} as const;
+
 export function createDeleteDriveFilesJob(user: ThinUser) {
-	return dbQueue.add('deleteDriveFiles', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('deleteDriveFiles', { user }, transientJobOptions);
 }
 
 export function createExportCustomEmojisJob(user: ThinUser) {
-	return dbQueue.add('exportCustomEmojis', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportCustomEmojis', { user }, transientJobOptions);
 }
 
 export function createExportNotesJob(user: ThinUser) {
-	return dbQueue.add('exportNotes', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportNotes', { user }, transientJobOptions);
 }
 
 export function createExportFollowingJob(user: ThinUser, excludeMuting = false, excludeInactive = false) {
-	return dbQueue.add('exportFollowing', {
-		user: user,
-		excludeMuting,
-		excludeInactive,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportFollowing', { user, excludeMuting, excludeInactive }, transientJobOptions);
 }
 
 export function createExportMuteJob(user: ThinUser) {
-	return dbQueue.add('exportMute', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportMute', { user }, transientJobOptions);
 }
 
 export function createExportBlockingJob(user: ThinUser) {
-	return dbQueue.add('exportBlocking', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportBlocking', { user }, transientJobOptions);
 }
 
 export function createExportUserListsJob(user: ThinUser) {
-	return dbQueue.add('exportUserLists', {
-		user: user,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('exportUserLists', { user }, transientJobOptions);
 }
 
 export function createImportFollowingJob(user: ThinUser, fileId: DriveFile['id']) {
-	return dbQueue.add('importFollowing', {
-		user: user,
-		fileId: fileId,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('importFollowing', { user, fileId }, transientJobOptions);
 }
 
 export function createImportMutingJob(user: ThinUser, fileId: DriveFile['id']) {
-	return dbQueue.add('importMuting', {
-		user: user,
-		fileId: fileId,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('importMuting', { user, fileId }, transientJobOptions);
 }
 
 export function createImportBlockingJob(user: ThinUser, fileId: DriveFile['id']) {
-	return dbQueue.add('importBlocking', {
-		user: user,
-		fileId: fileId,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('importBlocking', { user, fileId }, transientJobOptions);
 }
 
 export function createImportUserListsJob(user: ThinUser, fileId: DriveFile['id']) {
-	return dbQueue.add('importUserLists', {
-		user: user,
-		fileId: fileId,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('importUserLists', { user, fileId }, transientJobOptions);
 }
 
 export function createImportCustomEmojisJob(user: ThinUser, fileId: DriveFile['id']) {
-	return dbQueue.add('importCustomEmojis', {
-		user: user,
-		fileId: fileId,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return dbQueue.add('importCustomEmojis', { user, fileId }, transientJobOptions);
 }
 
-export function createDeleteAccountJob(user: ThinUser, opts: { soft?: boolean; } = {}) {
-	return dbQueue.add('deleteAccount', {
-		user: user,
-		soft: opts.soft,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+export function createDeleteAccountJob(user: ThinUser, opts: { soft?: boolean } = {}) {
+	return dbQueue.add('deleteAccount', { user, soft: opts.soft }, transientJobOptions);
 }
 
 export function createDeleteObjectStorageFileJob(key: string) {
-	return objectStorageQueue.add('deleteFile', {
-		key: key,
-	}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return objectStorageQueue.add('deleteFile', { key }, transientJobOptions);
 }
 
 export function createCleanRemoteFilesJob() {
-	return objectStorageQueue.add('cleanRemoteFiles', {}, {
-		removeOnComplete: true,
-		removeOnFail: true,
-	});
+	return objectStorageQueue.add('cleanRemoteFiles', {}, transientJobOptions);
 }
 
 export function webhookDeliver(webhook: Webhook, type: typeof webhookEventTypes[number], content: unknown) {
-	const data = {
+	return webhookDeliverQueue.add('webhookDeliver', {
 		type,
 		content,
 		webhookId: webhook.id,
@@ -273,14 +185,9 @@ export function webhookDeliver(webhook: Webhook, type: typeof webhookEventTypes[
 		secret: webhook.secret,
 		createdAt: Date.now(),
 		eventId: uuid(),
-	};
-
-	return webhookDeliverQueue.add(data, {
+	}, {
 		attempts: 4,
-		timeout: 1 * 60 * 1000,	// 1min
-		backoff: {
-			type: 'apBackoff',
-		},
+		backoff: { type: 'apBackoff' },
 		removeOnComplete: true,
 		removeOnFail: true,
 	});
@@ -289,54 +196,36 @@ export function webhookDeliver(webhook: Webhook, type: typeof webhookEventTypes[
 export default function() {
 	if (envOption.onlyServer) return;
 
-	deliverQueue.process(config.deliverJobConcurrency || 128, processDeliver);
-	inboxQueue.process(config.inboxJobConcurrency || 16, processInbox);
-	endedPollNotificationQueue.process(endedPollNotification);
-	webhookDeliverQueue.process(64, processWebhookDeliver);
-	processDb(dbQueue);
-	processObjectStorage(objectStorageQueue);
+	const deliverWorker = startWorker(deliverQueue, { deliver: processDeliver }, config.deliverJobConcurrency || 128, { max: config.deliverJobPerSec || 128, duration: 1000 });
+	const inboxWorker = startWorker(inboxQueue, { inbox: processInbox }, config.inboxJobConcurrency || 16, { max: config.inboxJobPerSec || 16, duration: 1000 });
+	const endedPollWorker = startWorker(endedPollNotificationQueue, { endedPollNotification }, 1);
+	const webhookWorker = startWorker(webhookDeliverQueue, { webhookDeliver: processWebhookDeliver }, 64, { max: 64, duration: 1000 });
+	const dbWorker = startWorker(dbQueue, dbProcessors, 1);
+	const objectStorageWorker = startWorker(objectStorageQueue, objectStorageProcessors, 16, { max: 16, duration: 1000 });
+	const systemWorker = startWorker(systemQueue, systemProcessors, 1);
 
-	systemQueue.add('tickCharts', {
-	}, {
-		repeat: { cron: '55 * * * *' },
-		removeOnComplete: true,
-	});
-
-	systemQueue.add('resyncCharts', {
-	}, {
-		repeat: { cron: '0 0 * * *' },
-		removeOnComplete: true,
-	});
-
-	systemQueue.add('cleanCharts', {
-	}, {
-		repeat: { cron: '0 0 * * *' },
-		removeOnComplete: true,
-	});
-
-	systemQueue.add('clean', {
-	}, {
-		repeat: { cron: '0 0 * * *' },
-		removeOnComplete: true,
-	});
-
-	systemQueue.add('checkExpiredMutings', {
-	}, {
-		repeat: { cron: '*/5 * * * *' },
-		removeOnComplete: true,
-	});
-
-	processSystemQueue(systemQueue);
+	attachQueueLogging(systemQueue, systemWorker, systemLogger);
+	attachQueueLogging(deliverQueue, deliverWorker, deliverLogger, (job, includeTarget) => `${getJobInfo(job, includeTarget)} to=${job.data.to}`);
+	attachQueueLogging(inboxQueue, inboxWorker, inboxLogger, (job, includeTarget) => getJobInfo(job, includeTarget));
+	attachQueueLogging(dbQueue, dbWorker, dbLogger);
+	attachQueueLogging(objectStorageQueue, objectStorageWorker, objectStorageLogger);
+	attachQueueLogging(webhookDeliverQueue, webhookWorker, webhookLogger, (job, includeTarget) => `${getJobInfo(job, includeTarget)} to=${job.data.to}`);
 }
 
-export function destroy() {
-	deliverQueue.once('cleaned', (jobs, status) => {
-		deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-	});
-	deliverQueue.clean(0, 'delayed');
+export async function destroy() {
+	const deliverCleaned = await deliverQueue.clean(0, 10000, 'delayed');
+	deliverLogger.succ(`Cleaned ${deliverCleaned.length} delayed jobs`);
+	const inboxCleaned = await inboxQueue.clean(0, 10000, 'delayed');
+	inboxLogger.succ(`Cleaned ${inboxCleaned.length} delayed jobs`);
+}
 
-	inboxQueue.once('cleaned', (jobs, status) => {
-		inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-	});
-	inboxQueue.clean(0, 'delayed');
+// ref. https://github.com/misskey-dev/misskey/pull/7635#issue-971097019
+function apBackoff(attemptsMade: number, type?: string) {
+	if (type !== undefined && type !== 'apBackoff') return 0;
+	const baseDelay = 60 * 1000;
+	const maxBackoff = 8 * 60 * 60 * 1000;
+	let backoff = (Math.pow(2, attemptsMade) - 1) * baseDelay;
+	backoff = Math.min(backoff, maxBackoff);
+	backoff += Math.round(backoff * Math.random() * 0.2);
+	return backoff;
 }

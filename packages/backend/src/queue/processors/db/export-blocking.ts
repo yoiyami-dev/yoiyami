@@ -12,12 +12,11 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('export-blocking');
 
-export async function exportBlocking(job: Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportBlocking(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Exporting blocking of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -88,6 +87,4 @@ export async function exportBlocking(job: Job<DbUserJobData>, done: any): Promis
 	} finally {
 		cleanup();
 	}
-
-	done();
 }

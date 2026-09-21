@@ -6,7 +6,7 @@ import { queueLogger } from '../../logger.js';
 
 const logger = queueLogger.createSubLogger('clean');
 
-export async function clean(job: Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function clean(job: Job<Record<string, unknown>>): Promise<void> {
 	logger.info('Cleaning...');
 
 	UserIps.delete({
@@ -14,5 +14,4 @@ export async function clean(job: Job<Record<string, unknown>>, done: any): Promi
 	});
 
 	logger.succ('Cleaned.');
-	done();
 }

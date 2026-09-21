@@ -8,12 +8,11 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('delete-drive-files');
 
-export async function deleteDriveFiles(job: Job<DbUserJobData>, done: any): Promise<void> {
+export async function deleteDriveFiles(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Deleting drive files of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -52,5 +51,4 @@ export async function deleteDriveFiles(job: Job<DbUserJobData>, done: any): Prom
 	}
 
 	logger.succ(`All drive files (${deletedCount}) of ${user.id} has been deleted.`);
-	done();
 }

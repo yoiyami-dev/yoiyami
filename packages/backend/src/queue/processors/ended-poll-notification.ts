@@ -7,10 +7,9 @@ import { createNotification } from '@/services/create-notification.js';
 
 const logger = queueLogger.createSubLogger('ended-poll-notification');
 
-export async function endedPollNotification(job: Job<EndedPollNotificationJobData>, done: any): Promise<void> {
+export async function endedPollNotification(job: Job<EndedPollNotificationJobData>): Promise<void> {
 	const note = await Notes.findOneBy({ id: job.data.noteId });
 	if (note == null || !note.hasPoll) {
-		done();
 		return;
 	}
 
@@ -28,6 +27,4 @@ export async function endedPollNotification(job: Job<EndedPollNotificationJobDat
 			noteId: note.id,
 		});
 	}
-
-	done();
 }

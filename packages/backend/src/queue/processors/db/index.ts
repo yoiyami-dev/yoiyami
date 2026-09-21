@@ -1,4 +1,4 @@
-import type { Queue, Processor } from '../../initialize.js';
+import type { Job } from 'bullmq';
 import { DbJobData } from '@/queue/types.js';
 import { deleteDriveFiles } from './delete-drive-files.js';
 import { exportCustomEmojis } from './export-custom-emojis.js';
@@ -14,7 +14,7 @@ import { importMuting } from './import-muting.js';
 import { importBlocking } from './import-blocking.js';
 import { importCustomEmojis } from './import-custom-emojis.js';
 
-const jobs = {
+export const dbProcessors = {
 	deleteDriveFiles,
 	exportCustomEmojis,
 	exportNotes,
@@ -28,10 +28,4 @@ const jobs = {
 	importUserLists,
 	importCustomEmojis,
 	deleteAccount,
-} as Record<string, Processor<DbJobData>>;
-
-export default function(dbQueue: Queue<DbJobData>) {
-	for (const [k, v] of Object.entries(jobs)) {
-		dbQueue.process(k, v);
-	}
-}
+} as Record<string, (job: Job<DbJobData>) => Promise<unknown> | unknown>;

@@ -5,7 +5,7 @@ import { activeUsersChart, driveChart, federationChart, hashtagChart, instanceCh
 
 const logger = queueLogger.createSubLogger('clean-charts');
 
-export async function cleanCharts(job: Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function cleanCharts(job: Job<Record<string, unknown>>): Promise<void> {
 	logger.info(`Clean charts...`);
 
 	await Promise.all([
@@ -24,5 +24,4 @@ export async function cleanCharts(job: Job<Record<string, unknown>>, done: any):
 	]);
 
 	logger.succ(`All charts successfully cleaned.`);
-	done();
 }

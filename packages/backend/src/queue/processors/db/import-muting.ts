@@ -13,12 +13,11 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('import-muting');
 
-export async function importMuting(job: Job<DbUserImportJobData>, done: any): Promise<void> {
+export async function importMuting(job: Job<DbUserImportJobData>): Promise<void> {
 	logger.info(`Importing muting of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -26,7 +25,6 @@ export async function importMuting(job: Job<DbUserImportJobData>, done: any): Pr
 		id: job.data.fileId,
 	});
 	if (file == null) {
-		done();
 		return;
 	}
 
@@ -71,7 +69,6 @@ export async function importMuting(job: Job<DbUserImportJobData>, done: any): Pr
 	}
 
 	logger.succ('Imported');
-	done();
 }
 
 async function mute(user: User, target: User) {

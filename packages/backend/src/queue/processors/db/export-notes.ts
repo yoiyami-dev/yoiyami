@@ -13,12 +13,11 @@ import { createTemp } from '@/misc/create-temp.js';
 
 const logger = queueLogger.createSubLogger('export-notes');
 
-export async function exportNotes(job: Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportNotes(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Exporting notes of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -97,8 +96,6 @@ export async function exportNotes(job: Job<DbUserJobData>, done: any): Promise<v
 	} finally {
 		cleanup();
 	}
-
-	done();
 }
 
 function serialize(note: Note, poll: Poll | null = null): Record<string, unknown> {

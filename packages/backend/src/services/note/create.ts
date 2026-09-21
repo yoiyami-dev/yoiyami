@@ -309,7 +309,7 @@ export default async (user: { id: User['id']; username: User['username']; host: 
 
 	if (data.poll && data.poll.expiresAt) {
 		const delay = data.poll.expiresAt.getTime() - Date.now();
-		endedPollNotificationQueue.add({
+	endedPollNotificationQueue.add('endedPollNotification', {
 			noteId: note.id,
 		}, {
 			delay,
