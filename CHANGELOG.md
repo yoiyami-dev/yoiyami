@@ -10,7 +10,7 @@ The original Misskey history is preserved in [`MISSKEY_CHANGELOG.md`](./MISSKEY_
 ### Changes
 
 - Established yoiyami as the software identity advertised to ActivityPub peers.
-- Added an explicit product metadata file with the Yoiyami version and the
+- Added an explicit product metadata file with the yoiyami version and the
   Misskey base version used for compatibility tracking.
 - Removed runtime dependencies on the former 藍.moe-hosted placeholder images;
   empty and error states use the bundled Font Awesome icons instead.
@@ -19,4 +19,4 @@ The original Misskey history is preserved in [`MISSKEY_CHANGELOG.md`](./MISSKEY_
 
 - This release line is based on Misskey v12.119.2.
 - The Misskey base version is recorded as metadata for auditability; it is not
-  used as Yoiyami's public release version.
+  used as yoiyami's public release version.
