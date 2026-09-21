@@ -3,9 +3,6 @@ import chalk from 'chalk';
 import { default as convertColor } from 'color-convert';
 import { format as dateFormat } from 'date-fns';
 import { envOption } from '../env.js';
-import config from '@/config/index.js';
-
-import * as SyslogPro from 'syslog-pro';
 
 type Domain = {
 	name: string;
@@ -18,7 +15,6 @@ export default class Logger {
 	private domain: Domain;
 	private parentLogger: Logger | null = null;
 	private store: boolean;
-	private syslogClient: any | null = null;
 
 	constructor(domain: string, color?: string, store = true) {
 		this.domain = {
@@ -27,19 +23,6 @@ export default class Logger {
 		};
 		this.store = store;
 
-		if (config.syslog) {
-			this.syslogClient = new SyslogPro.RFC5424({
-				applacationName: 'Misskey',
-				timestamp: true,
-				encludeStructuredData: true,
-				color: true,
-				extendedColor: true,
-				server: {
-					target: config.syslog.host,
-					port: config.syslog.port,
-				},
-			});
-		}
 	}
 
 	public createSubLogger(domain: string, color?: string, store = true): Logger {
@@ -81,19 +64,6 @@ export default class Logger {
 
 		console.log(important ? chalk.bold(log) : log);
 
-		if (store) {
-			if (this.syslogClient) {
-				const send =
-					level === 'error' ? this.syslogClient.error :
-					level === 'warning' ? this.syslogClient.warning :
-					level === 'success' ? this.syslogClient.info :
-					level === 'debug' ? this.syslogClient.info :
-					level === 'info' ? this.syslogClient.info :
-					null as never;
-
-				send.bind(this.syslogClient)(message).catch(() => {});
-			}
-		}
 	}
 
 	public error(x: string | Error, data?: Record<string, any> | null, important = false): void { // 実行を継続できない状況で使う
