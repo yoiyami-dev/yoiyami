@@ -19,8 +19,9 @@ jobs:
         node-version: 18.x
         cache: 'yarn'
         cache-dependency-path: |
+          yarn.lock
           packages/backend/yarn.lock
-    - run: yarn install
+    - run: yarn install --frozen-lockfile
     - run: yarn --cwd ./packages/backend lint
 
   client:
@@ -34,6 +35,7 @@ jobs:
         node-version: 18.x
         cache: 'yarn'
         cache-dependency-path: |
+          yarn.lock
           packages/client/yarn.lock
-    - run: yarn install
+    - run: yarn install --frozen-lockfile
     - run: yarn --cwd ./packages/client lint
