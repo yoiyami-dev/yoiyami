@@ -11,6 +11,6 @@ export const langs = _LANGS_;
 export const locale = JSON.parse(localStorage.getItem('locale'));
 export const version = _VERSION_;
 export const buildVersion = _BUILD_VERSION_;
-export const instanceName = siteName === 'Misskey' || siteName === 'Yoiyami' ? host : siteName;
+export const instanceName = siteName === 'Misskey' || siteName === 'yoiyami' ? host : siteName;
 export const ui = localStorage.getItem('ui');
 export const debug = localStorage.getItem('debug') === 'true';

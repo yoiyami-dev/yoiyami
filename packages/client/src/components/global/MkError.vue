@@ -1,7 +1,7 @@
 <template>
 <transition :name="$store.state.animation ? 'zoom' : ''" appear>
 	<div class="mjndxjcg">
-		<img src="https://xn--931a.moe/assets/error.jpg" class="_ghost"/>
+		<i class="fas fa-exclamation-triangle _ghost" aria-hidden="true"></i>
 		<p><i class="fas fa-exclamation-triangle"></i> {{ i18n.ts.somethingHappened }}</p>
 		<MkButton class="button" @click="() => $emit('retry')">{{ i18n.ts.retry }}</MkButton>
 	</div>
@@ -26,11 +26,11 @@ import { i18n } from '@/i18n';
 		margin: 0 auto;
 	}
 
-	> img {
-		vertical-align: bottom;
-		height: 128px;
+	> ._ghost {
+		display: block;
+		font-size: 128px;
+		line-height: 1;
 		margin-bottom: 16px;
-		border-radius: 16px;
 	}
 }
 </style>

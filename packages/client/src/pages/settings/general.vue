@@ -6,7 +6,7 @@
 		<template #caption>
 			<I18n :src="i18n.ts.i18nInfo" tag="span">
 				<template #link>
-					<MkLink url="https://github.com/yoiyami-dev/yoiyami/issues">Yoiyami issue tracker</MkLink>
+					<MkLink url="https://github.com/yoiyami-dev/yoiyami/issues">yoiyami issue tracker</MkLink>
 				</template>
 			</I18n>
 		</template>

@@ -28,7 +28,7 @@
 
 <div>
 
-<a href="https://xn--931a.moe/"><img src="https://github.com/misskey-dev/misskey/blob/develop/assets/ai.png?raw=true" align="right" height="320px"/></a>
+<img src="./assets/title.png" alt="yoiyami" align="right" height="160px"/>
 
 ## ✨ Features
 - **ActivityPub support**\

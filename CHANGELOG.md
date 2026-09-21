@@ -1,6 +1,6 @@
-# Yoiyami changelog
+# yoiyami changelog
 
-Yoiyami uses its own release version independently from the Misskey codebase it
+yoiyami uses its own release version independently from the Misskey codebase it
 started from. The current codename is **Dusk** and the release line is **v1**.
 
 The original Misskey history is preserved in [`MISSKEY_CHANGELOG.md`](./MISSKEY_CHANGELOG.md).

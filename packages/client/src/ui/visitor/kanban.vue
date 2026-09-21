@@ -29,7 +29,7 @@
 				</div>
 				<div v-if="poweredBy" class="powered-by">
 					<b><MkA to="/">{{ host }}</MkA></b>
-					<small>Powered by <a href="https://github.com/yoiyami-dev/yoiyami" target="_blank">Yoiyami</a></small>
+					<small>Powered by <a href="https://github.com/yoiyami-dev/yoiyami" target="_blank">yoiyami</a></small>
 				</div>
 			</template>
 		</div>

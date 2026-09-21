@@ -26,7 +26,7 @@ const themeColor = chalk.hex('#86b300');
 
 function greet() {
 	if (!envOption.quiet) {
-		//#region Yoiyami startup banner
+		//#region yoiyami startup banner
 		const v = meta.version;
 		console.log(themeColor('  _____ _         _           '));
 		console.log(themeColor(' |     |_|___ ___| |_ ___ _ _ '));
@@ -35,14 +35,14 @@ function greet() {
 		console.log(' ' + chalk.gray(v) + themeColor('                        |___|\n'.substr(v.length)));
 		//#endregion
 
-		console.log(' Yoiyami is an open-source decentralized microblogging platform.');
+		console.log(' yoiyami is an open-source decentralized microblogging platform.');
 
 		console.log('');
 		console.log(chalkTemplate`--- ${os.hostname()} {gray (PID: ${process.pid.toString()})} ---`);
 	}
 
-	bootLogger.info('Welcome to Yoiyami!');
-	bootLogger.info(`Yoiyami ${meta.version}`, null, true);
+	bootLogger.info('Welcome to yoiyami!');
+	bootLogger.info(`yoiyami ${meta.version}`, null, true);
 }
 
 /**
@@ -63,7 +63,7 @@ export async function masterMain() {
 		process.exit(1);
 	}
 
-	bootLogger.succ('Yoiyami initialized');
+	bootLogger.succ('yoiyami initialized');
 
 	if (!envOption.disableClustering) {
 		await spawnWorkers(config.clusterLimit);
