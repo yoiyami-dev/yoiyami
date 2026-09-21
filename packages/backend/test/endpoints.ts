@@ -863,3 +863,5 @@ describe('API: Endpoints', () => {
 	});
 });
 */
+
+export {};

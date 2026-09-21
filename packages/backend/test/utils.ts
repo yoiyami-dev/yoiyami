@@ -20,15 +20,25 @@ const _dirname = dirname(_filename);
 const config = loadConfig();
 export const port = config.port;
 
-export const async = (fn: Function) => (done: Function) => {
-	fn().then(() => {
-		done();
-	}, (err: Error) => {
-		done(err);
-	});
+export type TestUser = {
+	id: string;
+	token: string;
+	username?: string;
+	host?: string | null;
 };
 
-export const api = async (endpoint: string, params: any, me?: any) => {
+type AsyncTest = () => Promise<void>;
+type Done = (err?: Error) => void;
+
+export const async = (fn: AsyncTest) => (done: Done): void => {
+	Promise.resolve()
+		.then(fn)
+		.then(() => done(), error => {
+			done(error instanceof Error ? error : new Error(String(error)));
+		});
+};
+
+export const api = async (endpoint: string, params: Record<string, unknown>, me?: Pick<TestUser, 'token'>) => {
 	endpoint = endpoint.replace(/^\//, '');
 
 	const auth = me ? {
@@ -64,7 +74,7 @@ export const api = async (endpoint: string, params: any, me?: any) => {
 	};
 };
 
-export const request = async (endpoint: string, params: any, me?: any): Promise<{ body: any, status: number }> => {
+export const request = async (endpoint: string, params: Record<string, unknown>, me?: Pick<TestUser, 'token'>): Promise<{ body: any, status: number }> => {
 	const auth = me ? {
 		i: me.token,
 	} : {};
@@ -85,7 +95,7 @@ export const request = async (endpoint: string, params: any, me?: any): Promise<
 	};
 };
 
-export const signup = async (params?: any): Promise<any> => {
+export const signup = async (params?: Record<string, unknown>): Promise<any> => {
 	const q = Object.assign({
 		username: 'test',
 		password: 'test',
@@ -96,17 +106,19 @@ export const signup = async (params?: any): Promise<any> => {
 	return res.body;
 };
 
-export const post = async (user: any, params?: misskey.Endpoints['notes/create']['req']): Promise<misskey.entities.Note> => {
+export const post = async (user: Pick<TestUser, 'token'>, params?: misskey.Endpoints['notes/create']['req']): Promise<misskey.entities.Note> => {
 	const q = Object.assign({
 		text: 'test',
 	}, params);
 
 	const res = await api('notes/create', q, user);
 
-	return res.body ? res.body.createdNote : null;
+	const note = res.body?.createdNote as misskey.entities.Note | undefined;
+	if (!note) throw new Error('notes/create did not return createdNote');
+	return note;
 };
 
-export const react = async (user: any, note: any, reaction: string): Promise<any> => {
+export const react = async (user: Pick<TestUser, 'token'>, note: Pick<misskey.entities.Note, 'id'>, reaction: string): Promise<void> => {
 	await api('notes/reactions/create', {
 		noteId: note.id,
 		reaction: reaction,
@@ -159,7 +171,7 @@ export const uploadUrl = async (user: any, url: string) => {
 	return file;
 };
 
-export function connectStream(user: any, channel: string, listener: (message: Record<string, any>) => any, params?: any): Promise<WebSocket> {
+export function connectStream(user: Pick<TestUser, 'token'>, channel: string, listener: (message: Record<string, any>) => any, params?: Record<string, unknown>): Promise<WebSocket> {
 	return new Promise((res, rej) => {
 		const ws = new WebSocket(`ws://localhost:${port}/streaming?i=${user.token}`);
 

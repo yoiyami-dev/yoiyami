@@ -56,7 +56,7 @@ describe('Note thread mute', () => {
 		assert.strictEqual(res.body.hasUnreadMentions, false);
 	}));
 
-	it('ミュートしているスレッドからメンションされても、ストリームに unreadMention イベントが流れてこない', () => new Promise(async done => {
+	it('ミュートしているスレッドからメンションされても、ストリームに unreadMention イベントが流れてこない', async () => {
 		// 状態リセット
 		await request('/i/read-all-unread-notes', {}, alice);
 
@@ -75,12 +75,12 @@ describe('Note thread mute', () => {
 
 		const carolReply = await post(carol, { replyId: bobNote.id, text: '@bob @alice child note' });
 
-		setTimeout(() => {
+		await new Promise<void>(resolve => setTimeout(() => {
 			assert.strictEqual(fired, false);
 			ws.close();
-			done();
-		}, 5000);
-	}));
+			resolve();
+		}, 5000));
+	});
 
 	it('i/notifications にミュートしているスレッドの通知が含まれない', async(async () => {
 		const bobNote = await post(bob, { text: '@alice @carol root note' });

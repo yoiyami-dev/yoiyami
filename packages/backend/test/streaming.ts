@@ -294,7 +294,7 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, false);
 			});
 
-			it('フォローしていないローカルユーザーのフォロワー宛て投稿は流れない', () => async () => {
+			it('フォローしていないローカルユーザーのフォロワー宛て投稿は流れない', async () => {
 				const fired = await waitFire(
 					ayano, 'hybridTimeline',	// ayano:Hybrid
 					() => api('notes/create', { text: 'foo', visibility: 'followers' }, chitose),
@@ -306,7 +306,7 @@ describe('Streaming', () => {
 		});
 
 		describe('Global Timeline', () => {
-			it('フォローしていないローカルユーザーの投稿が流れる', () => async () => {
+			it('フォローしていないローカルユーザーの投稿が流れる', async () => {
 				const fired = await waitFire(
 					ayano, 'globalTimeline',	// ayano:Global
 					() => api('notes/create', { text: 'foo' }, chitose),	// chitose posts
@@ -316,7 +316,7 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, true);
 			});
 
-			it('フォローしていないリモートユーザーの投稿が流れる', () => async () => {
+			it('フォローしていないリモートユーザーの投稿が流れる', async () => {
 				const fired = await waitFire(
 					ayano, 'globalTimeline',	// ayano:Global
 					() => api('notes/create', { text: 'foo' }, chinatsu),	// chinatsu posts
@@ -326,7 +326,7 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, true);
 			});
 
-			it('ホーム投稿は流れない', () => async () => {
+			it('ホーム投稿は流れない', async () => {
 				const fired = await waitFire(
 					ayano, 'globalTimeline',	// ayano:Global
 					() => api('notes/create', { text: 'foo', visibility: 'home' }, kyoko),	// kyoko posts
@@ -338,7 +338,7 @@ describe('Streaming', () => {
 		});
 
 		describe('UserList Timeline', () => {
-			it('リストに入れているユーザーの投稿が流れる', () => async () => {
+			it('リストに入れているユーザーの投稿が流れる', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
 					() => api('notes/create', { text: 'foo' }, ayano),
@@ -349,7 +349,7 @@ describe('Streaming', () => {
 				assert.strictEqual(fired, true);
 			});
 
-			it('リストに入れていないユーザーの投稿は流れない', () => async () => {
+			it('リストに入れていないユーザーの投稿は流れない', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
 					() => api('notes/create', { text: 'foo' }, chinatsu),
@@ -361,7 +361,7 @@ describe('Streaming', () => {
 			});
 
 			// #4471
-			it('リストに入れているユーザーのダイレクト投稿が流れる', () => async () => {
+			it('リストに入れているユーザーのダイレクト投稿が流れる', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
 					() => api('notes/create', { text: 'foo', visibility: 'specified', visibleUserIds: [chitose.id] }, ayano),
@@ -373,7 +373,7 @@ describe('Streaming', () => {
 			});
 
 			// #4335
-			it('リストに入れているがフォローはしてないユーザーのフォロワー宛て投稿は流れない', () => async () => {
+			it('リストに入れているがフォローはしてないユーザーのフォロワー宛て投稿は流れない', async () => {
 				const fired = await waitFire(
 					chitose, 'userList',
 					() => api('notes/create', { text: 'foo', visibility: 'followers' }, kyoko),
