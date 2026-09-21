@@ -22,6 +22,7 @@ import { ThinUser } from './types.js';
 import { queuePrefix, redisConnection } from './connection.js';
 import { scheduleSystemJobs } from './system-jobs.js';
 import { withTimeout } from './job-timeout.js';
+import { resolveProcessor } from './worker-dispatch.js';
 
 type JobHandler<T> = (job: Job<T>) => Promise<unknown> | unknown;
 
@@ -42,7 +43,7 @@ function renderError(error: unknown): { stack?: string; message: string; name: s
 
 function startWorker<T>(queue: Queue<T>, processors: Record<string, JobHandler<T>>, concurrency: number, limiter?: { max: number; duration: number }): Worker<T> {
 	const worker = new Worker<T>(queue.name, async job => {
-		const processor = processors[job.name];
+		const processor = resolveProcessor(queue.name, job.name, processors);
 		if (processor == null) throw new Error(`No processor registered for ${job.name}`);
 
 		const operation = Promise.resolve().then(() => processor(job));
