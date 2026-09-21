@@ -9,7 +9,7 @@
 		"watch": "node watch.mjs",
 		"lint": "eslint --quiet \"src/**/*.ts\"",
 		"mocha": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha",
-		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/prelude/ip.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts",
+		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/prelude/ip.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts test/queue-system-jobs.ts test/s3.ts",
 		"test": "pnpm run mocha"
 	},
 	"dependencies": {

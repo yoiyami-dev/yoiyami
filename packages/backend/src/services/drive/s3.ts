@@ -1,8 +1,9 @@
 import { URL } from 'node:url';
 import { S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { Meta } from '@/models/entities/meta.js';
+import type { Meta } from '@/models/entities/meta.js';
 import { getAgentByUrl } from '@/misc/fetch.js';
+import { getObjectStorageRegion } from './object-storage-region.js';
 
 export function getObjectStorageEndpoint(meta: Meta): URL | undefined {
 	if (meta.objectStorageEndpoint == null) return undefined;
@@ -23,7 +24,7 @@ export function getS3(meta: Meta) {
 			accessKeyId: meta.objectStorageAccessKey!,
 			secretAccessKey: meta.objectStorageSecretKey!,
 		},
-		region: meta.objectStorageRegion || undefined,
+		region: getObjectStorageRegion(meta.objectStorageRegion),
 		forcePathStyle: !meta.objectStorageEndpoint	// AWS with endpoint omitted
 			? false
 			: meta.objectStorageS3ForcePathStyle,
