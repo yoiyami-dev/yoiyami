@@ -231,14 +231,16 @@ import { getAccountFromId } from '@/scripts/get-account-from-id';
 
 	// クライアントが更新されたか？
 	const lastVersion = localStorage.getItem('lastVersion');
+	const lastBuildVersion = localStorage.getItem('lastBuildVersion');
 	if (lastVersion !== version) {
 		localStorage.setItem('lastVersion', version);
+		localStorage.setItem('lastBuildVersion', buildVersion);
 
 		// テーマリビルドするため
 		localStorage.removeItem('theme');
 
 		try { // 変なバージョン文字列来るとcompareVersionsでエラーになるため
-			if (lastVersion != null && compareVersions(buildVersion, lastVersion) === 1) {
+			if (lastBuildVersion != null && compareVersions(buildVersion, lastBuildVersion) === 1) {
 				// ログインしてる場合だけ
 				if ($i) {
 					popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');
