@@ -3,6 +3,7 @@
 	"scripts": {
 		"watch": "node build.js watch",
 		"build": "node build.js",
+		"typecheck": "../../node_modules/.bin/tsc -p tsconfig.json --noEmit",
 		"lint": "eslint --quiet src/**/*.{ts}"
 	},
 	"resolutions": {},

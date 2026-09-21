@@ -3,6 +3,7 @@
 	"scripts": {
 		"watch": "vite build --watch --mode development",
 		"build": "vite build",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"lint": "eslint --quiet \"src/**/*.{ts,vue}\""
 	},
 	"resolutions": {
