@@ -12,9 +12,6 @@ import send from 'koa-send';
 import favicon from 'koa-favicon';
 import views from 'koa-views';
 import sharp from 'sharp';
-import { createBullBoard } from '@bull-board/api';
-import { BullAdapter } from '@bull-board/api/bullAdapter.js';
-import { KoaAdapter } from '@bull-board/koa';
 
 import { In, IsNull } from 'typeorm';
 import { fetchMeta } from '@/misc/fetch-meta.js';
@@ -22,7 +19,6 @@ import config from '@/config/index.js';
 import { Users, Notes, UserProfiles, Pages, Channels, Clips, GalleryPosts } from '@/models/index.js';
 import * as Acct from '@/misc/acct.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
-import { queues } from '@/queue/queues.js';
 import { genOpenapiSpec } from '../api/openapi/gen-spec.js';
 import { urlPreviewHandler } from './url-preview.js';
 import { manifestHandler } from './manifest.js';
@@ -38,37 +34,6 @@ const swAssets = `${_dirname}/../../../../../built/_sw_dist_/`;
 
 // Init app
 const app = new Koa();
-
-//#region Bull Dashboard
-const bullBoardPath = '/queue';
-
-// Authenticate
-app.use(async (ctx, next) => {
-	if (ctx.path === bullBoardPath || ctx.path.startsWith(bullBoardPath + '/')) {
-		const token = ctx.cookies.get('token');
-		if (token == null) {
-			ctx.status = 401;
-			return;
-		}
-		const user = await Users.findOneBy({ token });
-		if (user == null || !(user.isAdmin || user.isModerator)) {
-			ctx.status = 403;
-			return;
-		}
-	}
-	await next();
-});
-
-const serverAdapter = new KoaAdapter();
-
-createBullBoard({
-	queues: queues.map(q => new BullAdapter(q)),
-	serverAdapter,
-});
-
-serverAdapter.setBasePath(bullBoardPath);
-app.use(serverAdapter.registerPlugin());
-//#endregion
 
 // Init renderer
 app.use(views(_dirname + '/views', {
