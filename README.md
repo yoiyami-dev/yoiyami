@@ -43,7 +43,7 @@ With yoiyami's built in drive, you get cloud storage right in your social media,
 
 ## Documentation
 
-The upstream documentation is available at [Misskey Hub](https://misskey-hub.net/). Yoiyami-specific changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md); the inherited upstream history is kept in [`MISSKEY_CHANGELOG.md`](./MISSKEY_CHANGELOG.md).
+The upstream documentation is available at [Misskey Hub](https://misskey-hub.net/). yoiyami-specific changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md); the inherited upstream history is kept in [`MISSKEY_CHANGELOG.md`](./MISSKEY_CHANGELOG.md).
 
 ## Version
 
