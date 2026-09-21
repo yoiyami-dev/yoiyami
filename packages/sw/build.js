@@ -1,6 +1,7 @@
 const esbuild = require('esbuild');
 const locales = require('../../locales');
-const meta = require('../../package.json');
+const packageJson = require('../../package.json');
+const productMeta = require('../meta.json');
 const watch = process.argv[2]?.includes('watch');
 
 console.log('Starting SW building...');
@@ -19,7 +20,8 @@ esbuild.build({
 	},
 	tsconfig: `${__dirname}/tsconfig.json`,
 	define: {
-		_VERSION_: JSON.stringify(meta.version),
+		_VERSION_: JSON.stringify(productMeta.version),
+		_BUILD_VERSION_: JSON.stringify(packageJson.version),
 		_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]) => [k, v._lang_])),
 		_ENV_: JSON.stringify(process.env.NODE_ENV),
 		_DEV_: process.env.NODE_ENV !== 'production',

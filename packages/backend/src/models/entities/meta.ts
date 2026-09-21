@@ -122,7 +122,6 @@ export class Meta {
 	@Column('varchar', {
 		length: 512,
 		nullable: true,
-		default: 'https://xn--931a.moe/aiart/yubitun.png',
 	})
 	public errorImageUrl: string | null;
 
@@ -281,14 +280,14 @@ export class Meta {
 
 	@Column('varchar', {
 		length: 512,
-		default: 'https://github.com/misskey-dev/misskey',
+		default: 'https://github.com/yoiyami-dev/yoiyami',
 		nullable: false,
 	})
 	public repositoryUrl: string;
 
 	@Column('varchar', {
 		length: 512,
-		default: 'https://github.com/misskey-dev/misskey/issues/new',
+		default: 'https://github.com/yoiyami-dev/yoiyami/issues/new',
 		nullable: true,
 	})
 	public feedbackUrl: string | null;

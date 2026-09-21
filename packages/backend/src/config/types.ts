@@ -67,6 +67,8 @@ export type Source = {
  */
 export type Mixin = {
 	version: string;
+	buildVersion: string;
+	softwareName: string;
 	host: string;
 	hostname: string;
 	scheme: string;

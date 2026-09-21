@@ -20,7 +20,7 @@ import JSON5 from 'json5';
 import widgets from '@/widgets';
 import directives from '@/directives';
 import components from '@/components';
-import { version, ui, lang, host } from '@/config';
+import { version, buildVersion, ui, lang } from '@/config';
 import { applyTheme } from '@/scripts/theme';
 import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
 import { i18n } from '@/i18n';
@@ -40,7 +40,7 @@ import { getUrlWithoutLoginId } from '@/scripts/login-id';
 import { getAccountFromId } from '@/scripts/get-account-from-id';
 
 (async () => {
-	console.info(`Misskey v${version}`);
+	console.info(`yoiyami ${version}`);
 
 	if (_DEV_) {
 		console.warn('Development mode!!!');
@@ -231,14 +231,16 @@ import { getAccountFromId } from '@/scripts/get-account-from-id';
 
 	// クライアントが更新されたか？
 	const lastVersion = localStorage.getItem('lastVersion');
+	const lastBuildVersion = localStorage.getItem('lastBuildVersion');
 	if (lastVersion !== version) {
 		localStorage.setItem('lastVersion', version);
+		localStorage.setItem('lastBuildVersion', buildVersion);
 
 		// テーマリビルドするため
 		localStorage.removeItem('theme');
 
 		try { // 変なバージョン文字列来るとcompareVersionsでエラーになるため
-			if (lastVersion != null && compareVersions(version, lastVersion) === 1) {
+			if (lastBuildVersion != null && compareVersions(buildVersion, lastBuildVersion) === 1) {
 				// ログインしてる場合だけ
 				if ($i) {
 					popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');

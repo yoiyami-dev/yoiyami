@@ -3,14 +3,18 @@ import pluginVue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
 import locales from '../../locales';
-import meta from '../../package.json';
+import packageJson from '../../package.json';
+import productMeta from '../meta.json';
 import pluginJson5 from './vite.json5';
 
 const extensions = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.json', '.json5', '.svg', '.sass', '.scss', '.css', '.vue'];
 
 export default defineConfig(({ command, mode }) => {
 	fs.mkdirSync(__dirname + '/../../built', { recursive: true });
-	fs.writeFileSync(__dirname + '/../../built/meta.json', JSON.stringify({ version: meta.version }), 'utf-8');
+	fs.writeFileSync(__dirname + '/../../built/meta.json', JSON.stringify({
+		...productMeta,
+		buildVersion: packageJson.version,
+	}), 'utf-8');
 
 	return {
 		base: '/assets/',
@@ -32,7 +36,8 @@ export default defineConfig(({ command, mode }) => {
 		},
 
 		define: {
-			_VERSION_: JSON.stringify(meta.version),
+			_VERSION_: JSON.stringify(productMeta.version),
+			_BUILD_VERSION_: JSON.stringify(packageJson.version),
 			_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]) => [k, v._lang_])),
 			_ENV_: JSON.stringify(process.env.NODE_ENV),
 			_DEV_: process.env.NODE_ENV !== 'production',

@@ -2,7 +2,7 @@
 <MkLoading v-if="!loaded"/>
 <transition :name="$store.state.animation ? 'zoom' : ''" appear>
 	<div v-show="loaded" class="mjndxjch">
-		<img src="https://xn--931a.moe/assets/error.jpg" class="_ghost"/>
+		<i class="fas fa-exclamation-triangle _ghost" aria-hidden="true"></i>
 		<p><b><i class="fas fa-exclamation-triangle"></i> {{ i18n.ts.pageLoadError }}</b></p>
 		<p v-if="meta && (version === meta.version)">{{ i18n.ts.pageLoadErrorDescription }}</p>
 		<p v-else-if="serverIsDead">{{ i18n.ts.serverIsDead }}</p>
@@ -75,11 +75,11 @@ definePageMetadata({
 		margin: 8px auto;
 	}
 
-	> img {
-		vertical-align: bottom;
-		height: 128px;
+	> ._ghost {
+		display: block;
+		font-size: 128px;
+		line-height: 1;
 		margin-bottom: 24px;
-		border-radius: 16px;
 	}
 
 	> .error {

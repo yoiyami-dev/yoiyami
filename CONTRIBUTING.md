@@ -1,5 +1,5 @@
 # Contribution guide
-We're glad you're interested in contributing Misskey! In this document you will find the information you need to contribute to the project.
+We're glad you're interested in contributing to yoiyami! In this document you will find the information you need to contribute to the project.
 
 > **Note**
 > This project uses Japanese as its major language, **but you do not need to translate and write the Issues/PRs in Japanese.**
@@ -77,16 +77,10 @@ An actual domain will be assigned so you can test the federation.
 
 ## Release
 ### Release Instructions
-1. Commit version changes in the `develop` branch ([package.json](https://github.com/misskey-dev/misskey/blob/develop/package.json))
-2. Create a release PR.
-	- Into `master` from `develop` branch.
-	- The title must be in the format `Release: x.y.z`.
-		- `x.y.z` is the new version you are trying to release.
+1. Update [`packages/meta.json`](./packages/meta.json) with the next `dusk-v1.x.x` release and record user-facing changes in [`CHANGELOG.md`](./CHANGELOG.md).
+2. Keep the npm-compatible build version in [`package.json`](./package.json) in sync with the release.
 3. Deploy and perform a simple QA check. Also verify that the tests passed.
-4. Merge it.
-5. Create a [release of GitHub](https://github.com/misskey-dev/misskey/releases)
-	- The target branch must be `master`
-	- The tag name must be the version
+4. Merge the release into `main` and create a GitHub release using the `dusk-v1.x.x` tag.
 
 ## Localization (l10n)
 Misskey uses [Crowdin](https://crowdin.com/project/misskey) for localization management.

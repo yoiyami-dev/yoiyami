@@ -57,12 +57,12 @@ export const meta = {
 			repositoryUrl: {
 				type: 'string',
 				optional: false, nullable: false,
-				default: 'https://github.com/misskey-dev/misskey',
+				default: 'https://github.com/yoiyami-dev/yoiyami',
 			},
 			feedbackUrl: {
 				type: 'string',
 				optional: false, nullable: false,
-				default: 'https://github.com/misskey-dev/misskey/issues/new',
+				default: 'https://github.com/yoiyami-dev/yoiyami/issues/new',
 			},
 			defaultDarkTheme: {
 				type: 'string',
@@ -131,8 +131,8 @@ export const meta = {
 			},
 			errorImageUrl: {
 				type: 'string',
-				optional: false, nullable: false,
-				default: 'https://xn--931a.moe/aiart/yubitun.png',
+				optional: false, nullable: true,
+				default: null,
 			},
 			iconUrl: {
 				type: 'string',

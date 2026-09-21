@@ -436,16 +436,15 @@ hr {
 		}
 	}
 }
-
 ._fullinfo {
 	padding: 64px 32px;
 	text-align: center;
 
-	> img {
-		vertical-align: bottom;
-		height: 128px;
+	> ._ghost {
+		display: block;
+		font-size: 128px;
+		line-height: 1;
 		margin-bottom: 16px;
-		border-radius: 16px;
 	}
 }
 

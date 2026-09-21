@@ -54,7 +54,7 @@
 				<div class="title">Enviroment</div>
 				<div class="body">
 					<div class="number _panel">
-						<div class="label">Misskey</div>
+						<div class="label">yoiyami</div>
 						<div class="value _monospace">{{ version }}</div>
 					</div>
 					<div class="number _panel">
