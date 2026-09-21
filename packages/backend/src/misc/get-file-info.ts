@@ -145,7 +145,7 @@ export async function checkSvg(path: string) {
 	try {
 		const size = await getFileSize(path);
 		if (size > 1 * 1024 * 1024) return false;
-		return isSvg(fs.readFileSync(path));
+		return isSvg(fs.readFileSync(path, 'utf8'));
 	} catch {
 		return false;
 	}

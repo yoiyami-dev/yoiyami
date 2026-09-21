@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import S3 from 'aws-sdk/clients/s3.js';
 import sharp from 'sharp';
+import type { Sharp } from 'sharp';
 import { IsNull } from 'typeorm';
 import { publishMainStream, publishDriveStream } from '@/services/stream.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
@@ -179,7 +180,7 @@ export async function generateAlts(path: string, type: string, generateWeb: bool
 		};
 	}
 
-	let img: sharp.Sharp | null = null;
+	let img: Sharp | null = null;
 	let satisfyWebpublic: boolean;
 
 	try {

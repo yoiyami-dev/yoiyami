@@ -1,5 +1,4 @@
 import Koa from 'koa';
-import summaly from 'summaly';
 import { fetchMeta } from '@/misc/fetch-meta.js';
 import Logger from '@/services/logger.js';
 import config from '@/config/index.js';
@@ -7,6 +6,13 @@ import { query } from '@/prelude/url.js';
 import { getJson } from '@/misc/fetch.js';
 
 const logger = new Logger('url-preview');
+
+type UrlPreviewSummary = {
+	title: string;
+	icon?: string | null;
+	thumbnail?: string | null;
+	[key: string]: unknown;
+};
 
 export const urlPreviewHandler = async (ctx: Koa.Context) => {
 	const url = ctx.query.url;
@@ -22,19 +28,19 @@ export const urlPreviewHandler = async (ctx: Koa.Context) => {
 	}
 
 	const meta = await fetchMeta();
+	if (!meta.summalyProxy) {
+		ctx.status = 503;
+		ctx.body = '{}';
+		return;
+	}
 
-	logger.info(meta.summalyProxy
-		? `(Proxy) Getting preview of ${url}@${lang} ...`
-		: `Getting preview of ${url}@${lang} ...`);
+	logger.info(`(Proxy) Getting preview of ${url}@${lang} ...`);
 
 	try {
-		const summary = meta.summalyProxy ? await getJson(`${meta.summalyProxy}?${query({
+		const summary = await getJson<UrlPreviewSummary>(`${meta.summalyProxy}?${query({
 			url: url,
 			lang: lang ?? 'ja-JP',
-		})}`) : await summaly.default(url, {
-			followRedirects: false,
-			lang: lang ?? 'ja-JP',
-		});
+		})}`);
 
 		logger.succ(`Got preview of ${url}: ${summary.title}`);
 
@@ -53,7 +59,7 @@ export const urlPreviewHandler = async (ctx: Koa.Context) => {
 	}
 };
 
-function wrap(url?: string): string | null {
+function wrap(url?: string | null): string | null {
 	return url != null
 		? url.match(/^https?:\/\//)
 			? `${config.url}/proxy/preview.webp?${query({

@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 
 import { ulid } from 'ulid';
 import mime from 'mime-types';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { queueLogger } from '../../logger.js';
 import { addFile } from '@/services/drive/add-file.js';
 import { format as dateFormat } from 'date-fns';
@@ -60,7 +60,7 @@ export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promi
 	});
 
 	for (const emoji of customEmojis) {
-		const ext = mime.extension(emoji.type);
+		const ext = emoji.type == null ? null : mime.extension(emoji.type);
 		const fileName = emoji.name + (ext ? '.' + ext : '');
 		const emojiPath = path + '/' + fileName;
 		fs.writeFileSync(emojiPath, '', 'binary');
@@ -94,7 +94,7 @@ export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promi
 	// Create archive
 	const [archivePath, archiveCleanup] = await createTemp();
 	const archiveStream = fs.createWriteStream(archivePath);
-	const archive = archiver('zip', {
+	const archive = new ZipArchive({
 		zlib: { level: 0 },
 	});
 	archiveStream.on('close', async () => {
