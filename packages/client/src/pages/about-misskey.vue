@@ -7,8 +7,8 @@
 				<div id="debug"></div>
 				<div ref="containerEl" v-panel class="_formBlock about" :class="{ playing: easterEggEngine != null }">
 					<img src="/client-assets/about-icon.png" alt="" class="icon" draggable="false" @load="iconLoaded" @click="gravity"/>
-					<div class="misskey">Misskey</div>
-					<div class="version">v{{ version }}</div>
+					<div class="misskey">Yoiyami</div>
+					<div class="version">{{ version }}</div>
 					<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }"><MkEmoji class="emoji" :emoji="emoji.emoji" :custom-emojis="$instance.emojis" :is-reaction="false" :normal="true" :no-style="true"/></span>
 				</div>
 				<div class="_formBlock" style="text-align: center;">
@@ -19,12 +19,12 @@
 				</div>
 				<FormSection>
 					<div class="_formLinks">
-						<FormLink to="https://github.com/misskey-dev/misskey" external>
+						<FormLink to="https://github.com/yoiyami-dev/yoiyami" external>
 							<template #icon><i class="fas fa-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
 							<template #suffix>GitHub</template>
 						</FormLink>
-						<FormLink to="https://crowdin.com/project/misskey" external>
+						<FormLink to="https://github.com/yoiyami-dev/yoiyami/issues" external>
 							<template #icon><i class="fas fa-language"></i></template>
 							{{ i18n.ts._aboutMisskey.translation }}
 							<template #suffix>Crowdin</template>
@@ -49,7 +49,7 @@
 						<FormLink to="https://github.com/u1-liquid" external>@u1-liquid</FormLink>
 						<FormLink to="https://github.com/marihachi" external>@marihachi</FormLink>
 					</div>
-					<template #caption><MkLink url="https://github.com/misskey-dev/misskey/graphs/contributors">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
+					<template #caption><MkLink url="https://github.com/yoiyami-dev/yoiyami/graphs/contributors">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
 				</FormSection>
 				<FormSection>
 					<template #label><Mfm text="$[jelly ❤]"/> {{ i18n.ts._aboutMisskey.patrons }}</template>
