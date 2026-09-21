@@ -553,9 +553,6 @@ importers:
       '@types/koa-bodyparser':
         specifier: 4.3.7
         version: 4.3.7
-      '@types/koa-cors':
-        specifier: 0.0.2
-        version: 0.0.2
       '@types/koa-favicon':
         specifier: 2.0.21
         version: 2.0.21
@@ -812,15 +809,6 @@ importers:
       '@types/escape-regexp':
         specifier: 0.0.1
         version: 0.0.1
-      '@types/glob':
-        specifier: 8.0.0
-        version: 8.0.0
-      '@types/gulp':
-        specifier: 4.0.9
-        version: 4.0.9
-      '@types/gulp-rename':
-        specifier: 2.0.1
-        version: 2.0.1
       '@types/katex':
         specifier: 0.14.0
         version: 0.14.0
@@ -1978,9 +1966,6 @@ packages:
   '@types/glob-stream@8.0.3':
     resolution: {integrity: sha512-vctgrT9AH/GK3TRaIbRUU0TZn12GBU4kzelZdPyJp1Sc8L/6Wrq21UrtN4+x4saqTg6COUIUtFV6JSYcVln/EQ==}
 
-  '@types/glob@8.0.0':
-    resolution: {integrity: sha512-l6NQsDDyQUVeoTynNpC9uRvCUint/gSUXQA2euwmTuWGvPY5LSDUu6tkCtJB2SvGQlJQzLaKqcGZP4//7EDveA==}
-
   '@types/gulp-rename@2.0.1':
     resolution: {integrity: sha512-9ZjeS2RHEnmBmTcyi2+oeye3BgCsWhvi4uv3qCnAg8i6plOuRdaeNxjOves0ELysEXYLBl7bCl5fbVs7AZtgTA==}
 
@@ -2026,9 +2011,6 @@ packages:
   '@types/koa-compose@3.2.9':
     resolution: {integrity: sha512-BroAZ9FTvPiCy0Pi8tjD1OfJ7bgU1gQf0eR6e1Vm+JJATy9eKOG3hQMFtMciMawiSOVnLMdmUOC46s7HBhSTsA==}
 
-  '@types/koa-cors@0.0.2':
-    resolution: {integrity: sha512-uNaDY26HUVO+2C6arK8ZFODs9mBjYprD8mlvkVe2bYdX9wzEeKtycVXPafXpUkePhMh4sffIMkhRDyedokG/QA==}
-
   '@types/koa-favicon@2.0.21':
     resolution: {integrity: sha512-paH1nheVhijx/VduoR/RCD/qTCiX+OI/6fHLi3mZae053Ts+gUBOrKtzl3pMTDbdEBqdLolfLje3PZbb6jW0jQ==}
 
@@ -2062,10 +2044,6 @@ packages:
 
   '@types/mime-types@2.1.4':
     resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
-
-  '@types/minimatch@6.0.0':
-    resolution: {integrity: sha512-zmPitbQ8+6zNutpwgcQuLcsEpn/Cj54Kbn7L5pX0Os5kdWplB7xPgEh/g+SWOB/qmows2gpuCaPyduq8ZZRnxA==}
-    deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
   '@types/mocha@10.0.10':
     resolution: {integrity: sha512-xPyYSz1cMPnJQhl0CLMH68j3gprKZaTjG3s5Vi+fDgx+uhG9NOXwbVt52eFS8ECyXhyKcjDLCBEqBExKuiZb7Q==}
@@ -8389,11 +8367,6 @@ snapshots:
       '@types/picomatch': 4.0.3
       '@types/streamx': 2.9.5
 
-  '@types/glob@8.0.0':
-    dependencies:
-      '@types/minimatch': 6.0.0
-      '@types/node': 22.20.4
-
   '@types/gulp-rename@2.0.1':
     dependencies:
       '@types/node': 22.20.4
@@ -8436,10 +8409,6 @@ snapshots:
       '@types/koa': 2.15.2
 
   '@types/koa-compose@3.2.9':
-    dependencies:
-      '@types/koa': 2.15.2
-
-  '@types/koa-cors@0.0.2':
     dependencies:
       '@types/koa': 2.15.2
 
@@ -8540,10 +8509,6 @@ snapshots:
   '@types/matter-js@0.18.1': {}
 
   '@types/mime-types@2.1.4': {}
-
-  '@types/minimatch@6.0.0':
-    dependencies:
-      minimatch: 10.2.6
 
   '@types/mocha@10.0.10': {}
 
