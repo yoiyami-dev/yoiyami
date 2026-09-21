@@ -16,11 +16,7 @@
 		"chokidar": "^3.3.1",
 		"lodash": "^4.17.21"
 	},
-	"optionalDependencies": {
-		"@tensorflow/tfjs-node": "3.20.0"
-	},
 	"dependencies": {
-		"@bull-board/koa": "4.2.2",
 		"@discordapp/twemoji": "14.0.2",
 		"@elastic/elasticsearch": "7.11.0",
 		"@koa/cors": "3.1.0",
@@ -80,8 +76,6 @@
 		"nested-property": "4.0.0",
 		"node-fetch": "3.2.10",
 		"nodemailer": "6.7.8",
-		"nsfwjs": "2.4.2",
-		"os-utils": "0.0.14",
 		"parse5": "7.1.1",
 		"pg": "8.8.0",
 		"private-ip": "2.3.4",
@@ -108,7 +102,6 @@
 		"stringz": "2.1.0",
 		"summaly": "2.7.0",
 		"syslog-pro": "1.0.0",
-		"systeminformation": "5.12.6",
 		"tinycolor2": "1.4.2",
 		"tmp": "0.2.1",
 		"ts-loader": "9.3.1",
