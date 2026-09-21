@@ -35,10 +35,6 @@
 		<FormSwitch v-model="alwaysMarkNsfw" class="_formBlock" @update:modelValue="saveProfile()">
 			<template #label>{{ i18n.ts.alwaysMarkSensitive }}</template>
 		</FormSwitch>
-		<FormSwitch v-model="autoSensitive" class="_formBlock" @update:modelValue="saveProfile()">
-			<template #label>{{ i18n.ts.enableAutoSensitive }}<span class="_beta">{{ i18n.ts.beta }}</span></template>
-			<template #caption>{{ i18n.ts.enableAutoSensitiveDescription }}</template>
-		</FormSwitch>
 	</FormSection>
 </div>
 </template>
@@ -64,7 +60,6 @@ const usage = ref<any>(null);
 const capacity = ref<any>(null);
 const uploadFolder = ref<any>(null);
 let alwaysMarkNsfw = $ref($i.alwaysMarkNsfw);
-let autoSensitive = $ref($i.autoSensitive);
 
 const meterStyle = computed(() => {
 	return {
@@ -110,7 +105,6 @@ function chooseUploadFolder() {
 function saveProfile() {
 	os.api('i/update', {
 		alwaysMarkNsfw: !!alwaysMarkNsfw,
-		autoSensitive: !!autoSensitive,
 	});
 }
 
