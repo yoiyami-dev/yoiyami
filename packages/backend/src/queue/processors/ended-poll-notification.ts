@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import { In } from 'typeorm';
 import { Notes, Polls, PollVotes } from '@/models/index.js';
 import { queueLogger } from '../logger.js';
@@ -7,7 +7,7 @@ import { createNotification } from '@/services/create-notification.js';
 
 const logger = queueLogger.createSubLogger('ended-poll-notification');
 
-export async function endedPollNotification(job: Bull.Job<EndedPollNotificationJobData>, done: any): Promise<void> {
+export async function endedPollNotification(job: Job<EndedPollNotificationJobData>, done: any): Promise<void> {
 	const note = await Notes.findOneBy({ id: job.data.noteId });
 	if (note == null || !note.hasPoll) {
 		done();

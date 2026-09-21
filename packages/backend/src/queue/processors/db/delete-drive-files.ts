@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import { deleteFileSync } from '@/services/drive/delete-file.js';
@@ -8,7 +8,7 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('delete-drive-files');
 
-export async function deleteDriveFiles(job: Bull.Job<DbUserJobData>, done: any): Promise<void> {
+export async function deleteDriveFiles(job: Job<DbUserJobData>, done: any): Promise<void> {
 	logger.info(`Deleting drive files of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
@@ -33,7 +33,7 @@ export async function deleteDriveFiles(job: Bull.Job<DbUserJobData>, done: any):
 		});
 
 		if (files.length === 0) {
-			job.progress(100);
+			job.updateProgress(100);
 			break;
 		}
 
@@ -48,7 +48,7 @@ export async function deleteDriveFiles(job: Bull.Job<DbUserJobData>, done: any):
 			userId: user.id,
 		});
 
-		job.progress(deletedCount / total);
+		job.updateProgress(deletedCount / total);
 	}
 
 	logger.succ(`All drive files (${deletedCount}) of ${user.id} has been deleted.`);

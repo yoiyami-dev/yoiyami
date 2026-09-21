@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import * as Acct from '@/misc/acct.js';
@@ -12,7 +12,7 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('import-blocking');
 
-export async function importBlocking(job: Bull.Job<DbUserImportJobData>, done: any): Promise<void> {
+export async function importBlocking(job: Job<DbUserImportJobData>, done: any): Promise<void> {
 	logger.info(`Importing blocking of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });

@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { ulid } from 'ulid';
@@ -16,7 +16,7 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('export-custom-emojis');
 
-export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promise<void> {
+export async function exportCustomEmojis(job: Job, done: () => void): Promise<void> {
 	logger.info(`Exporting custom emojis ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });

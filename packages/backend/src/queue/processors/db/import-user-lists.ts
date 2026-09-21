@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import * as Acct from '@/misc/acct.js';
@@ -13,7 +13,7 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('import-user-lists');
 
-export async function importUserLists(job: Bull.Job<DbUserImportJobData>, done: any): Promise<void> {
+export async function importUserLists(job: Job<DbUserImportJobData>, done: any): Promise<void> {
 	logger.info(`Importing user lists of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });

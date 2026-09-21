@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import httpSignature from '@peertube/http-signature';
 import perform from '@/remote/activitypub/perform.js';
 import Logger from '@/services/logger.js';
@@ -21,7 +21,7 @@ import { UserPublickey } from '@/models/entities/user-publickey.js';
 const logger = new Logger('inbox');
 
 // ユーザーのinboxにアクティビティが届いた時の処理
-export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
+export default async (job: Job<InboxJobData>): Promise<string> => {
 	const signature = job.data.signature;	// HTTP-signature
 	const activity = job.data.activity;
 

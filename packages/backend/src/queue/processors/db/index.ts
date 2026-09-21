@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Queue, Processor } from '../../initialize.js';
 import { DbJobData } from '@/queue/types.js';
 import { deleteDriveFiles } from './delete-drive-files.js';
 import { exportCustomEmojis } from './export-custom-emojis.js';
@@ -28,9 +28,9 @@ const jobs = {
 	importUserLists,
 	importCustomEmojis,
 	deleteAccount,
-} as Record<string, Bull.ProcessCallbackFunction<DbJobData> | Bull.ProcessPromiseFunction<DbJobData>>;
+} as Record<string, Processor<DbJobData>>;
 
-export default function(dbQueue: Bull.Queue<DbJobData>) {
+export default function(dbQueue: Queue<DbJobData>) {
 	for (const [k, v] of Object.entries(jobs)) {
 		dbQueue.process(k, v);
 	}

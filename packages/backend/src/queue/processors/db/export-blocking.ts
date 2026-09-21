@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { queueLogger } from '../../logger.js';
@@ -12,7 +12,7 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('export-blocking');
 
-export async function exportBlocking(job: Bull.Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportBlocking(job: Job<DbUserJobData>, done: any): Promise<void> {
 	logger.info(`Exporting blocking of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
@@ -45,7 +45,7 @@ export async function exportBlocking(job: Bull.Job<DbUserJobData>, done: any): P
 			});
 
 			if (blockings.length === 0) {
-				job.progress(100);
+				job.updateProgress(100);
 				break;
 			}
 
@@ -75,7 +75,7 @@ export async function exportBlocking(job: Bull.Job<DbUserJobData>, done: any): P
 				blockerId: user.id,
 			});
 
-			job.progress(exportedCount / total);
+			job.updateProgress(exportedCount / total);
 		}
 
 		stream.end();

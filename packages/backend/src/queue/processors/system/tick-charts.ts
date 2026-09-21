@@ -1,11 +1,11 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import { activeUsersChart, driveChart, federationChart, hashtagChart, instanceChart, notesChart, perUserDriveChart, perUserFollowingChart, perUserNotesChart, perUserReactionsChart, usersChart, apRequestChart } from '@/services/chart/index.js';
 
 const logger = queueLogger.createSubLogger('tick-charts');
 
-export async function tickCharts(job: Bull.Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function tickCharts(job: Job<Record<string, unknown>>, done: any): Promise<void> {
 	logger.info(`Tick charts...`);
 
 	await Promise.all([

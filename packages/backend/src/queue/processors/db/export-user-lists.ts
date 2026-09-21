@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { queueLogger } from '../../logger.js';
@@ -12,7 +12,7 @@ import { DbUserJobData } from '@/queue/types.js';
 
 const logger = queueLogger.createSubLogger('export-user-lists');
 
-export async function exportUserLists(job: Bull.Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportUserLists(job: Job<DbUserJobData>, done: any): Promise<void> {
 	logger.info(`Exporting user lists of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });

@@ -1,6 +1,6 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
-export function getJobInfo(job: Bull.Job, increment = false) {
+export function getJobInfo(job: Job, increment = false) {
 	const age = Date.now() - job.timestamp;
 
 	const formated = age > 60000 ? `${Math.floor(age / 1000 / 60)}m`
