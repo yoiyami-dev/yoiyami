@@ -9,7 +9,7 @@
 		"watch": "node watch.mjs",
 		"lint": "eslint --quiet \"src/**/*.ts\"",
 		"mocha": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha",
-		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts",
+		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/prelude/ip.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts",
 		"test": "npm run mocha"
 	},
 	"resolutions": {
@@ -54,7 +54,7 @@
 		"got": "12.3.1",
 		"hpagent": "0.1.2",
 		"ioredis": "4.28.5",
-		"ip-cidr": "3.0.10",
+		"ip-address": "10.3.1",
 		"is-svg": "4.3.2",
 		"js-yaml": "4.3.2",
 		"jsdom": "20.0.0",
@@ -82,7 +82,6 @@
 		"nodemailer": "6.10.1",
 		"parse5": "7.1.1",
 		"pg": "8.8.0",
-		"private-ip": "2.3.4",
 		"probe-image-size": "7.2.3",
 		"promise-limit": "2.7.0",
 		"pug": "3.0.3",

@@ -3945,21 +3945,10 @@ ioredis@4.28.5, ioredis@^4.28.5:
     redis-parser "^3.0.0"
     standard-as-callback "^2.1.0"
 
-ip-address@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-7.1.0.tgz#4a9c699e75b51cbeb18b38de8ed216efa1a490c5"
-  integrity sha512-V9pWC/VJf2lsXqP7IWJ+pe3P1/HCYGBMZrrnT62niLGjAfCbeiwXMUxaeHvnVlz19O27pvXP4azs+Pj/A0x+SQ==
-  dependencies:
-    jsbn "1.1.0"
-    sprintf-js "1.1.2"
-
-ip-cidr@3.0.10:
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/ip-cidr/-/ip-cidr-3.0.10.tgz#e1a039705196d84b43858f81a243fd70def9cefc"
-  integrity sha512-PXSsrRYirsuaCI1qBVyVXRLUIpNzxm76eHd3UvN5NXTMUG85GWGZpr6P+70mimc5e7Nfh/tShmjk0oSywErMWg==
-  dependencies:
-    ip-address "^7.1.0"
-    jsbn "^1.1.0"
+ip-address@10.3.1:
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/ip-address/-/ip-address-10.3.1.tgz#929f9629d1724f7e1b7485ce89752f3675336a10"
+  integrity sha512-1e9d3kb97NHJTIJDZW9rKqW2h6+dFa50Dy0fpPSMQp2ADje5gvKsXmdiK6dwY5t76TaTt5+P5N1Y/LoToIxP6g==
 
 ip-regex@^4.0.0, ip-regex@^4.3.0:
   version "4.3.0"
@@ -4319,11 +4308,6 @@ js-yaml@4.1.0, js-yaml@4.3.2, js-yaml@^4.1.0, js-yaml@^4.3.2:
   integrity sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==
   dependencies:
     argparse "^2.0.1"
-
-jsbn@1.1.0, jsbn@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-1.1.0.tgz#b01307cb29b618a1ed26ec79e911f803c4da0040"
-  integrity sha1-sBMHyym2GKHtJux56RH4A8TaAEA=
 
 jsbn@~0.1.0:
   version "0.1.1"
@@ -5914,16 +5898,6 @@ private-ip@2.3.3:
     is-ip "^3.1.0"
     netmask "^2.0.2"
 
-private-ip@2.3.4:
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/private-ip/-/private-ip-2.3.4.tgz#e2944f2a7a0142ec6640efda323af4b96307524e"
-  integrity sha512-ts/YFVwfBeLq61f9+KsOhXW6RH0wvY0gU50R6QZYzgFhggyyLK6WDFeYdjfi/HMnBm2hecLvsR3PB3JcRxDk+A==
-  dependencies:
-    ip-regex "^4.3.0"
-    ipaddr.js "^2.0.1"
-    is-ip "^3.1.0"
-    netmask "^2.0.2"
-
 probe-image-size@7.2.3:
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/probe-image-size/-/probe-image-size-7.2.3.tgz#d49c64be540ec8edea538f6f585f65a9b3ab4309"
@@ -6732,11 +6706,6 @@ split@^1.0.0:
   integrity sha512-mTyOoPbrivtXnwnIxZRFYRrPNtEFKlpB2fvjSnCQUiAA6qAZzqwna5envK4uk6OIeP17CsdF3rSBGYVBsU0Tkg==
   dependencies:
     through "2"
-
-sprintf-js@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.2.tgz#da1765262bf8c0f571749f2ad6c26300207ae673"
-  integrity sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==
 
 sql-highlight@^6.1.0:
   version "6.1.0"
