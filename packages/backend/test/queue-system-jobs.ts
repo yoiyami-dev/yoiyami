@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { scheduleSystemJobs, type SystemJobQueue } from '../src/queue/system-jobs.js';
+import { withTimeout } from '../src/queue/job-timeout.js';
 
 describe('system queue schedulers', () => {
 	it('registers every recurring system job with BullMQ', async () => {
@@ -24,5 +25,12 @@ describe('system queue schedulers', () => {
 			{ id: 'clean', pattern: '0 0 * * *', name: 'clean' },
 			{ id: 'checkExpiredMutings', pattern: '*/5 * * * *', name: 'checkExpiredMutings' },
 		]);
+	});
+
+	it('rejects a job when its processor exceeds the deadline', async () => {
+		await assert.rejects(
+			withTimeout(new Promise<void>(() => {}), 5, 'test job'),
+			/test job timed out after 5ms/,
+		);
 	});
 });

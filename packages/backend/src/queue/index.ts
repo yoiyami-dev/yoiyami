@@ -21,8 +21,15 @@ import { systemQueue, dbQueue, deliverQueue, inboxQueue, objectStorageQueue, end
 import { ThinUser } from './types.js';
 import { queuePrefix, redisConnection } from './connection.js';
 import { scheduleSystemJobs } from './system-jobs.js';
+import { withTimeout } from './job-timeout.js';
 
 type JobHandler<T> = (job: Job<T>) => Promise<unknown> | unknown;
+
+const jobTimeouts: Readonly<Record<string, number>> = {
+	deliver: 1 * 60 * 1000,
+	inbox: 5 * 60 * 1000,
+	webhookDeliver: 1 * 60 * 1000,
+};
 
 function renderError(error: unknown): { stack?: string; message: string; name: string } {
 	const normalized = error instanceof Error ? error : new Error(String(error));
@@ -37,7 +44,12 @@ function startWorker<T>(queue: Queue<T>, processors: Record<string, JobHandler<T
 	const worker = new Worker<T>(queue.name, async job => {
 		const processor = processors[job.name];
 		if (processor == null) throw new Error(`No processor registered for ${job.name}`);
-		return processor(job);
+
+		const operation = Promise.resolve().then(() => processor(job));
+		const timeout = jobTimeouts[job.name];
+		return timeout == null
+			? operation
+			: withTimeout(operation, timeout, `Job ${job.name} (${job.id})`);
 	}, {
 		connection: redisConnection(),
 		prefix: queuePrefix,
