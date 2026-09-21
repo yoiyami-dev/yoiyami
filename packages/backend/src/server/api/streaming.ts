@@ -1,33 +1,28 @@
 import * as http from 'node:http';
-import * as websocket from 'websocket';
+import { WebSocketServer } from 'ws';
 
 import MainStreamConnection from './stream/index.js';
-import { ParsedUrlQuery } from 'querystring';
 import authenticate from './authenticate.js';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { subsdcriber as redisClient } from '../../db/redis.js';
 import { Users } from '@/models/index.js';
 
 export const initializeStreamingServer = (server: http.Server) => {
-	// Init websocket server
-	const ws = new websocket.server({
-		httpServer: server,
-	});
+	const ws = new WebSocketServer({ server });
 
-	ws.on('request', async (request) => {
-		const q = request.resourceURL.query as ParsedUrlQuery;
+	ws.on('connection', async (connection, request) => {
+		const url = new URL(request.url ?? '/', 'http://localhost');
+		const token = url.searchParams.get('i');
 
 		// TODO: トークンが間違ってるなどしてauthenticateに失敗したら
 		// コネクション切断するなりエラーメッセージ返すなりする
 		// (現状はエラーがキャッチされておらずサーバーのログに流れて邪魔なので)
-		const [user, app] = await authenticate(q.i as string);
+		const [user, app] = await authenticate(token);
 
 		if (user?.isSuspended) {
-			request.reject(400);
+			connection.close(1008, 'suspended');
 			return;
 		}
-
-		const connection = request.accept();
 
 		const ev = new EventEmitter();
 
@@ -58,10 +53,8 @@ export const initializeStreamingServer = (server: http.Server) => {
 			if (intervalId) clearInterval(intervalId);
 		});
 
-		connection.on('message', async (data) => {
-			if (data.type === 'utf8' && data.utf8Data === 'ping') {
-				connection.send('pong');
-			}
+		connection.on('message', data => {
+			if (data.toString() === 'ping') connection.send('pong');
 		});
 	});
 };
