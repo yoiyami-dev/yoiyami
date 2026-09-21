@@ -14,15 +14,18 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 12.5.1
+        run_install: false
     - uses: actions/setup-node@v3
       with:
         node-version: 22.22.2
-        cache: 'yarn'
+        cache: 'pnpm'
         cache-dependency-path: |
-          yarn.lock
-          packages/backend/yarn.lock
-    - run: yarn install --frozen-lockfile
-    - run: yarn --cwd ./packages/backend lint
+          pnpm-lock.yaml
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm --dir ./packages/backend lint
 
   client:
     runs-on: ubuntu-latest
@@ -30,12 +33,15 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 12.5.1
+        run_install: false
     - uses: actions/setup-node@v3
       with:
         node-version: 22.22.2
-        cache: 'yarn'
+        cache: 'pnpm'
         cache-dependency-path: |
-          yarn.lock
-          packages/client/yarn.lock
-    - run: yarn install --frozen-lockfile
-    - run: yarn --cwd ./packages/client lint
+          pnpm-lock.yaml
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm --dir ./packages/client lint

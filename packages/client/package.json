@@ -6,10 +6,6 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"lint": "eslint --quiet \"src/**/*.{ts,vue}\""
 	},
-	"resolutions": {
-		"chokidar": "^3.3.1",
-		"lodash": "^4.18.1"
-	},
 	"dependencies": {
 		"@discordapp/twemoji": "14.0.2",
 		"@fortawesome/fontawesome-free": "6.1.2",
