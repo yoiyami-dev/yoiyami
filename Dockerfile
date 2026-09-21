@@ -1,4 +1,4 @@
-FROM node:18.20.8-bullseye AS builder
+FROM node:22.22.2-bullseye AS builder
 
 ARG NODE_ENV=production
 
@@ -13,7 +13,7 @@ RUN yarn install --frozen-lockfile
 RUN yarn build
 RUN rm -rf .git
 
-FROM node:18.20.8-bullseye-slim AS runner
+FROM node:22.22.2-bullseye-slim AS runner
 
 WORKDIR /misskey
 

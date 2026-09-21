@@ -16,7 +16,7 @@ jobs:
         submodules: true
     - uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 22.22.2
         cache: 'yarn'
         cache-dependency-path: |
           yarn.lock
@@ -32,7 +32,7 @@ jobs:
         submodules: true
     - uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 22.22.2
         cache: 'yarn'
         cache-dependency-path: |
           yarn.lock
