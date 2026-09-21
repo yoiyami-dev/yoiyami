@@ -5,6 +5,8 @@ packages:
   - 'packages/sw'
 
 overrides:
+  braces: 3.0.3
+  browserslist: 4.29.0
   chokidar: ^4.0.3
   lodash: ^4.18.1
   koa: ^3.2.1
@@ -22,6 +24,7 @@ overrides:
   tough-cookie: ^4.1.3
   '@tootallnate/once': ^2.0.1
   '@types/koa': 2.15.2
+  is-svg: 4.3.0
   ws: ^8.21.3
 
 allowBuilds:
