@@ -2,8 +2,10 @@ import * as fs from 'node:fs';
 
 import { v4 as uuid } from 'uuid';
 
-import S3 from 'aws-sdk/clients/s3.js';
+import type { PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import sharp from 'sharp';
+import type { Sharp } from 'sharp';
 import { IsNull } from 'typeorm';
 import { publishMainStream, publishDriveStream } from '@/services/stream.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
@@ -17,7 +19,7 @@ import { genId } from '@/misc/gen-id.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { FILE_TYPE_BROWSERSAFE } from '@/const.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
-import { getS3 } from './s3.js';
+import { getObjectStorageEndpoint, getS3 } from './s3.js';
 import { InternalStorage } from './internal-storage.js';
 import { IImage, convertSharpToJpeg, convertSharpToWebp, convertSharpToPng } from './image-processor.js';
 import { driveLogger } from './logger.js';
@@ -179,7 +181,7 @@ export async function generateAlts(path: string, type: string, generateWeb: bool
 		};
 	}
 
-	let img: sharp.Sharp | null = null;
+	let img: Sharp | null = null;
 	let satisfyWebpublic: boolean;
 
 	try {
@@ -263,24 +265,28 @@ async function upload(key: string, stream: fs.ReadStream | Buffer, type: string,
 
 	const meta = await fetchMeta();
 
-	const params = {
-		Bucket: meta.objectStorageBucket,
+	const params: PutObjectCommandInput = {
+		Bucket: meta.objectStorageBucket!,
 		Key: key,
 		Body: stream,
 		ContentType: type,
 		CacheControl: 'max-age=31536000, immutable',
-	} as S3.PutObjectRequest;
+	};
 
 	if (filename) params.ContentDisposition = contentDisposition('inline', filename);
 	if (meta.objectStorageSetPublicRead) params.ACL = 'public-read';
 
 	const s3 = getS3(meta);
 
-	const upload = s3.upload(params, {
-		partSize: s3.endpoint.hostname === 'storage.googleapis.com' ? 500 * 1024 * 1024 : 8 * 1024 * 1024,
+	const upload = new Upload({
+		client: s3,
+		params,
+		partSize: getObjectStorageEndpoint(meta)?.hostname === 'storage.googleapis.com'
+			? 500 * 1024 * 1024
+			: 8 * 1024 * 1024,
 	});
 
-	const result = await upload.promise();
+	const result = await upload.done();
 	if (result) logger.debug(`Uploaded: ${result.Bucket}/${result.Key} => ${result.Location}`);
 }
 
@@ -350,30 +356,8 @@ export async function addFile({
 	requestIp = null,
 	requestHeaders = null,
 }: AddFileArgs): Promise<DriveFile> {
-	let skipNsfwCheck = false;
-	const instance = await fetchMeta();
-	if (user == null) skipNsfwCheck = true;
-	if (instance.sensitiveMediaDetection === 'none') skipNsfwCheck = true;
-	if (user && instance.sensitiveMediaDetection === 'local' && Users.isRemoteUser(user)) skipNsfwCheck = true;
-	if (user && instance.sensitiveMediaDetection === 'remote' && Users.isLocalUser(user)) skipNsfwCheck = true;
-
-	const info = await getFileInfo(path, {
-		skipSensitiveDetection: skipNsfwCheck,
-		sensitiveThreshold: // 感度が高いほどしきい値は低くすることになる
-			instance.sensitiveMediaDetectionSensitivity === 'veryHigh' ? 0.1 :
-			instance.sensitiveMediaDetectionSensitivity === 'high' ? 0.3 :
-			instance.sensitiveMediaDetectionSensitivity === 'low' ? 0.7 :
-			instance.sensitiveMediaDetectionSensitivity === 'veryLow' ? 0.9 :
-			0.5,
-		sensitiveThresholdForPorn: 0.75,
-		enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
-	});
+	const info = await getFileInfo(path);
 	logger.info(`${JSON.stringify(info)}`);
-
-	// 現状 false positive が多すぎて実用に耐えない
-	//if (info.porn && instance.disallowUploadWhenPredictedAsPorn) {
-	//	throw new IdentifiableError('282f77bf-5816-4f72-9264-aa14d8261a21', 'Detected as porn.');
-	//}
 
 	// detect name
 	const detectedName = name || (info.type.ext ? `untitled.${info.type.ext}` : 'untitled');
@@ -472,9 +456,6 @@ export async function addFile({
 			? sensitive
 			: false
 		: false;
-
-	if (info.sensitive && profile!.autoSensitive) file.isSensitive = true;
-	if (info.sensitive && instance.setSensitiveFlagAutomatically) file.isSensitive = true;
 
 	if (url !== null) {
 		file.src = url;

@@ -13,7 +13,7 @@ export async function validateEmailForAccount(emailAddress: string): Promise<{
 		email: emailAddress,
 	});
 
-	const validated = meta.enableActiveEmailValidation ? await validateEmail({
+	const validated: { valid: boolean; reason?: string } = meta.enableActiveEmailValidation ? await validateEmail({
 		email: emailAddress,
 		validateRegex: true,
 		validateMx: true,

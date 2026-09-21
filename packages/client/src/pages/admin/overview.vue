@@ -57,18 +57,6 @@
 						<div class="label">Misskey</div>
 						<div class="value _monospace">{{ version }}</div>
 					</div>
-					<div v-if="serverInfo" class="number _panel">
-						<div class="label">Node.js</div>
-						<div class="value _monospace">{{ serverInfo.node }}</div>
-					</div>
-					<div v-if="serverInfo" class="number _panel">
-						<div class="label">PostgreSQL</div>
-						<div class="value _monospace">{{ serverInfo.psql }}</div>
-					</div>
-					<div v-if="serverInfo" class="number _panel">
-						<div class="label">Redis</div>
-						<div class="value _monospace">{{ serverInfo.redis }}</div>
-					</div>
 					<div class="number _panel">
 						<div class="label">Vue</div>
 						<div class="value _monospace">{{ vueVersion }}</div>
@@ -160,7 +148,6 @@ import {
 import { enUS } from 'date-fns/locale';
 import tinycolor from 'tinycolor2';
 import MagicGrid from 'magic-grid';
-import XMetrics from './metrics.vue';
 import XFederation from './overview.federation.vue';
 import XQueueChart from './overview.queue-chart.vue';
 import XUser from './overview.user.vue';
@@ -199,7 +186,6 @@ Chart.register(
 const rootEl = $ref<HTMLElement>();
 const chartEl = $ref<HTMLCanvasElement>(null);
 let stats: any = $ref(null);
-let serverInfo: any = $ref(null);
 let topSubInstancesForPie: any = $ref(null);
 let topPubInstancesForPie: any = $ref(null);
 let usersComparedToThePrevDay: any = $ref(null);
@@ -429,10 +415,6 @@ onMounted(async () => {
 				os.pageWindow(`/instance-info/${x.host}`);
 			},
 		})).concat([{ name: '(other)', color: '#80808080', value: res.otherFollowingCount }]);
-	});
-
-	os.api('admin/server-info').then(serverInfoResponse => {
-		serverInfo = serverInfoResponse;
 	});
 
 	os.api('admin/show-users', {

@@ -1,15 +1,9 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import { ObjectStorageJobData } from '@/queue/types.js';
 import deleteFile from './delete-file.js';
 import cleanRemoteFiles from './clean-remote-files.js';
 
-const jobs = {
+export const objectStorageProcessors = {
 	deleteFile,
 	cleanRemoteFiles,
-} as Record<string, Bull.ProcessCallbackFunction<ObjectStorageJobData> | Bull.ProcessPromiseFunction<ObjectStorageJobData>>;
-
-export default function(q: Bull.Queue) {
-	for (const [k, v] of Object.entries(jobs)) {
-		q.process(k, 16, v);
-	}
-}
+} as Record<string, (job: Job<ObjectStorageJobData>) => Promise<unknown> | unknown>;

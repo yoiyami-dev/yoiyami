@@ -6,8 +6,7 @@ import { httpAgent, httpsAgent, StatusError } from './fetch.js';
 import config from '@/config/index.js';
 import chalk from 'chalk';
 import Logger from '@/services/logger.js';
-import IPCIDR from 'ip-cidr';
-import PrivateIp from 'private-ip';
+import { isIpInCidr, isPrivateIp as isPrivateIpAddress } from './ip.js';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -79,11 +78,10 @@ export async function downloadUrl(url: string, path: string): Promise<void> {
 
 function isPrivateIp(ip: string): boolean {
 	for (const net of config.allowedPrivateNetworks || []) {
-		const cidr = new IPCIDR(net);
-		if (cidr.contains(ip)) {
+		if (isIpInCidr(ip, net)) {
 			return false;
 		}
 	}
 
-	return PrivateIp(ip);
+	return isPrivateIpAddress(ip);
 }

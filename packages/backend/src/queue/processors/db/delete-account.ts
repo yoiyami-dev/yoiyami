@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import { queueLogger } from '../../logger.js';
 import { DriveFiles, Notes, UserProfiles, Users } from '@/models/index.js';
 import { DbUserDeleteJobData } from '@/queue/types.js';
@@ -10,7 +10,7 @@ import { sendEmail } from '@/services/send-email.js';
 
 const logger = queueLogger.createSubLogger('delete-account');
 
-export async function deleteAccount(job: Bull.Job<DbUserDeleteJobData>): Promise<string | void> {
+export async function deleteAccount(job: Job<DbUserDeleteJobData>): Promise<string | void> {
 	logger.info(`Deleting account of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });

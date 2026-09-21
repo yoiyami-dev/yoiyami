@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import request from '@/remote/activitypub/request.js';
 import { registerOrFetchInstanceDoc } from '@/services/register-or-fetch-instance-doc.js';
 import Logger from '@/services/logger.js';
@@ -19,7 +19,7 @@ let latest: string | null = null;
 
 const suspendedHostsCache = new Cache<Instance[]>(1000 * 60 * 60);
 
-export default async (job: Bull.Job<DeliverJobData>) => {
+export default async (job: Job<DeliverJobData>) => {
 	const { host } = new URL(job.data.to);
 
 	// ブロックしてたら中断

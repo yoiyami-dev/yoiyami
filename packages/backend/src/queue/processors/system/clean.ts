@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import { LessThan } from 'typeorm';
 import { UserIps } from '@/models/index.js';
 
@@ -6,7 +6,7 @@ import { queueLogger } from '../../logger.js';
 
 const logger = queueLogger.createSubLogger('clean');
 
-export async function clean(job: Bull.Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function clean(job: Job<Record<string, unknown>>): Promise<void> {
 	logger.info('Cleaning...');
 
 	UserIps.delete({
@@ -14,5 +14,4 @@ export async function clean(job: Bull.Job<Record<string, unknown>>, done: any): 
 	});
 
 	logger.succ('Cleaned.');
-	done();
 }

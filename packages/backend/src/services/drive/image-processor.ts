@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import type { Sharp } from 'sharp';
 
 export type IImage = {
 	data: Buffer;
@@ -14,7 +15,7 @@ export async function convertToJpeg(path: string, width: number, height: number)
 	return convertSharpToJpeg(await sharp(path), width, height);
 }
 
-export async function convertSharpToJpeg(sharp: sharp.Sharp, width: number, height: number): Promise<IImage> {
+export async function convertSharpToJpeg(sharp: Sharp, width: number, height: number): Promise<IImage> {
 	const data = await sharp
 		.resize(width, height, {
 			fit: 'inside',
@@ -42,7 +43,7 @@ export async function convertToWebp(path: string, width: number, height: number,
 	return convertSharpToWebp(await sharp(path), width, height, quality);
 }
 
-export async function convertSharpToWebp(sharp: sharp.Sharp, width: number, height: number, quality: number = 85): Promise<IImage> {
+export async function convertSharpToWebp(sharp: Sharp, width: number, height: number, quality: number = 85): Promise<IImage> {
 	const data = await sharp
 		.resize(width, height, {
 			fit: 'inside',
@@ -69,7 +70,7 @@ export async function convertToPng(path: string, width: number, height: number):
 	return convertSharpToPng(await sharp(path), width, height);
 }
 
-export async function convertSharpToPng(sharp: sharp.Sharp, width: number, height: number): Promise<IImage> {
+export async function convertSharpToPng(sharp: Sharp, width: number, height: number): Promise<IImage> {
 	const data = await sharp
 		.resize(width, height, {
 			fit: 'inside',

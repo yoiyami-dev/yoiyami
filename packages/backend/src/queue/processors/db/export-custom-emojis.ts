@@ -1,9 +1,9 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { ulid } from 'ulid';
 import mime from 'mime-types';
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { queueLogger } from '../../logger.js';
 import { addFile } from '@/services/drive/add-file.js';
 import { format as dateFormat } from 'date-fns';
@@ -16,12 +16,11 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('export-custom-emojis');
 
-export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promise<void> {
+export async function exportCustomEmojis(job: Job): Promise<void> {
 	logger.info(`Exporting custom emojis ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -60,7 +59,7 @@ export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promi
 	});
 
 	for (const emoji of customEmojis) {
-		const ext = mime.extension(emoji.type);
+		const ext = emoji.type == null ? null : mime.extension(emoji.type);
 		const fileName = emoji.name + (ext ? '.' + ext : '');
 		const emojiPath = path + '/' + fileName;
 		fs.writeFileSync(emojiPath, '', 'binary');
@@ -94,21 +93,32 @@ export async function exportCustomEmojis(job: Bull.Job, done: () => void): Promi
 	// Create archive
 	const [archivePath, archiveCleanup] = await createTemp();
 	const archiveStream = fs.createWriteStream(archivePath);
-	const archive = archiver('zip', {
+	const archive = new ZipArchive({
 		zlib: { level: 0 },
 	});
-	archiveStream.on('close', async () => {
-		logger.succ(`Exported to: ${archivePath}`);
-
-		const fileName = 'custom-emojis-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.zip';
-		const driveFile = await addFile({ user, path: archivePath, name: fileName, force: true });
-
-		logger.succ(`Exported to: ${driveFile.id}`);
+	try {
+		await new Promise<void>((resolve, reject) => {
+			archiveStream.on('error', reject);
+			archive.on('error', reject);
+			archiveStream.on('close', () => {
+				void (async () => {
+					try {
+						logger.succ(`Exported to: ${archivePath}`);
+						const fileName = 'custom-emojis-' + dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.zip';
+						const driveFile = await addFile({ user, path: archivePath, name: fileName, force: true });
+						logger.succ(`Exported to: ${driveFile.id}`);
+						resolve();
+					} catch (error) {
+						reject(error);
+					}
+				})();
+			});
+			archive.pipe(archiveStream);
+			archive.directory(path, false);
+			void archive.finalize();
+		});
+	} finally {
 		cleanup();
 		archiveCleanup();
-		done();
-	});
-	archive.pipe(archiveStream);
-	archive.directory(path, false);
-	archive.finalize();
+	}
 }

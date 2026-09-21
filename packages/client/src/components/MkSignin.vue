@@ -40,11 +40,6 @@
 			</div>
 		</div>
 	</div>
-	<div class="social _section">
-		<a v-if="meta && meta.enableTwitterIntegration" class="_borderButton _gap" :href="`${apiUrl}/signin/twitter`"><i class="fab fa-twitter" style="margin-right: 4px;"></i>{{ $t('signinWith', { x: 'Twitter' }) }}</a>
-		<a v-if="meta && meta.enableGithubIntegration" class="_borderButton _gap" :href="`${apiUrl}/signin/github`"><i class="fab fa-github" style="margin-right: 4px;"></i>{{ $t('signinWith', { x: 'GitHub' }) }}</a>
-		<a v-if="meta && meta.enableDiscordIntegration" class="_borderButton _gap" :href="`${apiUrl}/signin/discord`"><i class="fab fa-discord" style="margin-right: 4px;"></i>{{ $t('signinWith', { x: 'Discord' }) }}</a>
-	</div>
 </form>
 </template>
 
@@ -54,12 +49,11 @@ import { toUnicode } from 'punycode/';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/form/input.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import { apiUrl, host as configHost } from '@/config';
+import { host as configHost } from '@/config';
 import { byteify, hexify } from '@/scripts/2fa';
 import * as os from '@/os';
 import { login } from '@/account';
 import { showSuspendedDialog } from '../scripts/show-suspended-dialog';
-import { instance } from '@/instance';
 import { i18n } from '@/i18n';
 
 let signing = $ref(false);
@@ -74,8 +68,6 @@ let challengeData = $ref(null);
 let queryingKey = $ref(false);
 let hCaptchaResponse = $ref(null);
 let reCaptchaResponse = $ref(null);
-
-const meta = $computed(() => instance);
 
 const emit = defineEmits<{
 	(ev: 'login', v: any): void;

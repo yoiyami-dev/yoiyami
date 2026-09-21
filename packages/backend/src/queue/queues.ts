@@ -1,14 +1,19 @@
-import config from '@/config/index.js';
-import { initialize as initializeQueue } from './initialize.js';
+import { Queue } from 'bullmq';
+import { queuePrefix, redisConnection } from './connection.js';
 import { DeliverJobData, InboxJobData, DbJobData, ObjectStorageJobData, EndedPollNotificationJobData, WebhookDeliverJobData } from './types.js';
 
-export const systemQueue = initializeQueue<Record<string, unknown>>('system');
-export const endedPollNotificationQueue = initializeQueue<EndedPollNotificationJobData>('endedPollNotification');
-export const deliverQueue = initializeQueue<DeliverJobData>('deliver', config.deliverJobPerSec || 128);
-export const inboxQueue = initializeQueue<InboxJobData>('inbox', config.inboxJobPerSec || 16);
-export const dbQueue = initializeQueue<DbJobData>('db');
-export const objectStorageQueue = initializeQueue<ObjectStorageJobData>('objectStorage');
-export const webhookDeliverQueue = initializeQueue<WebhookDeliverJobData>('webhookDeliver', 64);
+const queueOptions = {
+	prefix: queuePrefix,
+	connection: redisConnection(),
+};
+
+export const systemQueue = new Queue<Record<string, unknown>>('system', queueOptions);
+export const endedPollNotificationQueue = new Queue<EndedPollNotificationJobData>('endedPollNotification', queueOptions);
+export const deliverQueue = new Queue<DeliverJobData>('deliver', queueOptions);
+export const inboxQueue = new Queue<InboxJobData>('inbox', queueOptions);
+export const dbQueue = new Queue<DbJobData>('db', queueOptions);
+export const objectStorageQueue = new Queue<ObjectStorageJobData>('objectStorage', queueOptions);
+export const webhookDeliverQueue = new Queue<WebhookDeliverJobData>('webhookDeliver', queueOptions);
 
 export const queues = [
 	systemQueue,

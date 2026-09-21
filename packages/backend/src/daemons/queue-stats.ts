@@ -1,5 +1,7 @@
 import Xev from 'xev';
+import { QueueEvents } from 'bullmq';
 import { deliverQueue, inboxQueue } from '../queue/queues.js';
+import { queuePrefix, redisConnection } from '../queue/connection.js';
 
 const ev = new Xev();
 
@@ -18,11 +20,20 @@ export default function() {
 	let activeDeliverJobs = 0;
 	let activeInboxJobs = 0;
 
-	deliverQueue.on('global:active', () => {
+	const deliverEvents = new QueueEvents(deliverQueue.name, {
+		connection: redisConnection(),
+		prefix: queuePrefix,
+	});
+	const inboxEvents = new QueueEvents(inboxQueue.name, {
+		connection: redisConnection(),
+		prefix: queuePrefix,
+	});
+
+	deliverEvents.on('active', () => {
 		activeDeliverJobs++;
 	});
 
-	inboxQueue.on('global:active', () => {
+	inboxEvents.on('active', () => {
 		activeInboxJobs++;
 	});
 

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import * as websocket from 'websocket';
+import type { RawData, WebSocket } from 'ws';
 import readNote from '@/services/note/read.js';
 import { User } from '@/models/entities/user.js';
 import { Channel as ChannelModel } from '@/models/entities/channel.js';
@@ -25,14 +25,14 @@ export default class Connection {
 	public blocking: Set<User['id']> = new Set(); // "被"blocking
 	public followingChannels: Set<ChannelModel['id']> = new Set();
 	public token?: AccessToken;
-	private wsConnection: websocket.connection;
+	private wsConnection: WebSocket;
 	public subscriber: StreamEventEmitter;
 	private channels: Channel[] = [];
 	private subscribingNotes: any = {};
 	private cachedNotes: Packed<'Note'>[] = [];
 
 	constructor(
-		wsConnection: websocket.connection,
+		wsConnection: WebSocket,
 		subscriber: EventEmitter,
 		user: User | null | undefined,
 		token: AccessToken | null | undefined,
@@ -109,14 +109,14 @@ export default class Connection {
 	/**
 	 * クライアントからメッセージ受信時
 	 */
-	private async onWsConnectionMessage(data: websocket.Message) {
-		if (data.type !== 'utf8') return;
-		if (data.utf8Data == null) return;
+	private async onWsConnectionMessage(data: RawData) {
+		const text = data.toString();
+		if (text.length === 0) return;
 
 		let obj: Record<string, any>;
 
 		try {
-			obj = JSON.parse(data.utf8Data);
+			obj = JSON.parse(text);
 		} catch (e) {
 			return;
 		}

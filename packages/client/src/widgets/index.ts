@@ -16,7 +16,6 @@ export default function(app: App) {
 	app.component('MkwFederation', defineAsyncComponent(() => import('./federation.vue')));
 	app.component('MkwPostForm', defineAsyncComponent(() => import('./post-form.vue')));
 	app.component('MkwSlideshow', defineAsyncComponent(() => import('./slideshow.vue')));
-	app.component('MkwServerMetric', defineAsyncComponent(() => import('./server-metric/index.vue')));
 	app.component('MkwOnlineUsers', defineAsyncComponent(() => import('./online-users.vue')));
 	app.component('MkwJobQueue', defineAsyncComponent(() => import('./job-queue.vue')));
 	app.component('MkwInstanceCloud', defineAsyncComponent(() => import('./instance-cloud.vue')));
@@ -42,7 +41,6 @@ export const widgets = [
 	'instanceCloud',
 	'postForm',
 	'slideshow',
-	'serverMetric',
 	'onlineUsers',
 	'jobQueue',
 	'button',

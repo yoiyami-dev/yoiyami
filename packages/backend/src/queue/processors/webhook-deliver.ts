@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import Logger from '@/services/logger.js';
 import { WebhookDeliverJobData } from '../types.js';
 import { getResponse, StatusError } from '@/misc/fetch.js';
@@ -8,7 +8,7 @@ import config from '@/config/index.js';
 
 const logger = new Logger('webhook');
 
-export default async (job: Bull.Job<WebhookDeliverJobData>) => {
+export default async (job: Job<WebhookDeliverJobData>) => {
 	try {
 		logger.debug(`delivering ${job.data.webhookId}`);
 

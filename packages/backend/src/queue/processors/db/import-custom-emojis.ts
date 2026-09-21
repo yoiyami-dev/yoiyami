@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 import unzipper from 'unzipper';
 
@@ -14,14 +14,13 @@ import { db } from '@/db/postgre.js';
 const logger = queueLogger.createSubLogger('import-custom-emojis');
 
 // TODO: 名前衝突時の動作を選べるようにする
-export async function importCustomEmojis(job: Bull.Job<DbUserImportJobData>, done: any): Promise<void> {
+export async function importCustomEmojis(job: Job<DbUserImportJobData>): Promise<void> {
 	logger.info(`Importing custom emojis ...`);
 
 	const file = await DriveFiles.findOneBy({
 		id: job.data.fileId,
 	});
 	if (file == null) {
-		done();
 		return;
 	}
 
@@ -42,40 +41,49 @@ export async function importCustomEmojis(job: Bull.Job<DbUserImportJobData>, don
 	}
 
 	const outputPath = path + '/emojis';
-	const unzipStream = fs.createReadStream(destPath);
-	const extractor = unzipper.Extract({ path: outputPath });
-	extractor.on('close', async () => {
-		const metaRaw = fs.readFileSync(outputPath + '/meta.json', 'utf-8');
-		const meta = JSON.parse(metaRaw);
+	try {
+		const unzipStream = fs.createReadStream(destPath);
+		const extractor = unzipper.Extract({ path: outputPath });
+		await new Promise<void>((resolve, reject) => {
+			extractor.on('error', reject);
+			unzipStream.on('error', reject);
+			extractor.on('close', () => {
+				void (async () => {
+					try {
+						const metaRaw = fs.readFileSync(outputPath + '/meta.json', 'utf-8');
+						const meta = JSON.parse(metaRaw) as { emojis: Array<{ downloaded: boolean; emoji: { name: string; category: string | null; aliases: string[] }; fileName: string }> };
 
-		for (const record of meta.emojis) {
-			if (!record.downloaded) continue;
-			const emojiInfo = record.emoji;
-			const emojiPath = outputPath + '/' + record.fileName;
-			await Emojis.delete({
-				name: emojiInfo.name,
+						for (const record of meta.emojis) {
+							if (!record.downloaded) continue;
+							const emojiInfo = record.emoji;
+							const emojiPath = outputPath + '/' + record.fileName;
+							await Emojis.delete({ name: emojiInfo.name });
+							const driveFile = await addFile({ user: null, path: emojiPath, name: record.fileName, force: true });
+							await Emojis.insert({
+								id: genId(),
+								updatedAt: new Date(),
+								name: emojiInfo.name,
+								category: emojiInfo.category,
+								host: null,
+								aliases: emojiInfo.aliases,
+								originalUrl: driveFile.url,
+								publicUrl: driveFile.webpublicUrl ?? driveFile.url,
+								type: driveFile.webpublicType ?? driveFile.type,
+							}).then(x => Emojis.findOneByOrFail(x.identifiers[0]));
+						}
+
+						await db.queryResultCache!.remove(['meta_emojis']);
+						logger.succ('Imported');
+						resolve();
+					} catch (error) {
+						reject(error);
+					}
+				})();
 			});
-			const driveFile = await addFile({ user: null, path: emojiPath, name: record.fileName, force: true });
-			const emoji = await Emojis.insert({
-				id: genId(),
-				updatedAt: new Date(),
-				name: emojiInfo.name,
-				category: emojiInfo.category,
-				host: null,
-				aliases: emojiInfo.aliases,
-				originalUrl: driveFile.url,
-				publicUrl: driveFile.webpublicUrl ?? driveFile.url,
-				type: driveFile.webpublicType ?? driveFile.type,
-			}).then(x => Emojis.findOneByOrFail(x.identifiers[0]));
-		}
-
-		await db.queryResultCache!.remove(['meta_emojis']);
-
+			unzipStream.pipe(extractor);
+		});
+	} finally {
 		cleanup();
-	
-		logger.succ('Imported');
-		done();
-	});
-	unzipStream.pipe(extractor);
+	}
 	logger.succ(`Unzipping to ${outputPath}`);
 }

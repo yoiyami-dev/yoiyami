@@ -188,28 +188,6 @@ export class Meta {
 	})
 	public recaptchaSecretKey: string | null;
 
-	@Column('enum', {
-		enum: ['none', 'all', 'local', 'remote'],
-		default: 'none',
-	})
-	public sensitiveMediaDetection: 'none' | 'all' | 'local' | 'remote';
-
-	@Column('enum', {
-		enum: ['medium', 'low', 'high', 'veryLow', 'veryHigh'],
-		default: 'medium',
-	})
-	public sensitiveMediaDetectionSensitivity: 'medium' | 'low' | 'high' | 'veryLow' | 'veryHigh';
-
-	@Column('boolean', {
-		default: false,
-	})
-	public setSensitiveFlagAutomatically: boolean;
-
-	@Column('boolean', {
-		default: false,
-	})
-	public enableSensitiveMediaDetectionForVideos: boolean;
-
 	@Column('integer', {
 		default: 1024,
 		comment: 'Drive capacity of a local user (MB)',
@@ -283,57 +261,6 @@ export class Meta {
 		nullable: true,
 	})
 	public swPrivateKey: string | null;
-
-	@Column('boolean', {
-		default: false,
-	})
-	public enableTwitterIntegration: boolean;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public twitterConsumerKey: string | null;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public twitterConsumerSecret: string | null;
-
-	@Column('boolean', {
-		default: false,
-	})
-	public enableGithubIntegration: boolean;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public githubClientId: string | null;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public githubClientSecret: string | null;
-
-	@Column('boolean', {
-		default: false,
-	})
-	public enableDiscordIntegration: boolean;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public discordClientId: string | null;
-
-	@Column('varchar', {
-		length: 128,
-		nullable: true,
-	})
-	public discordClientSecret: string | null;
 
 	@Column('varchar', {
 		length: 128,

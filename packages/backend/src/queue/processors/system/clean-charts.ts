@@ -1,11 +1,11 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import { activeUsersChart, driveChart, federationChart, hashtagChart, instanceChart, notesChart, perUserDriveChart, perUserFollowingChart, perUserNotesChart, perUserReactionsChart, usersChart, apRequestChart } from '@/services/chart/index.js';
 
 const logger = queueLogger.createSubLogger('clean-charts');
 
-export async function cleanCharts(job: Bull.Job<Record<string, unknown>>, done: any): Promise<void> {
+export async function cleanCharts(job: Job<Record<string, unknown>>): Promise<void> {
 	logger.info(`Clean charts...`);
 
 	await Promise.all([
@@ -24,5 +24,4 @@ export async function cleanCharts(job: Bull.Job<Record<string, unknown>>, done: 
 	]);
 
 	logger.succ(`All charts successfully cleaned.`);
-	done();
 }

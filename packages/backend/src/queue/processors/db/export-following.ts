@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { queueLogger } from '../../logger.js';
@@ -13,12 +13,11 @@ import { Following } from '@/models/entities/following.js';
 
 const logger = queueLogger.createSubLogger('export-following');
 
-export async function exportFollowing(job: Bull.Job<DbUserJobData>, done: () => void): Promise<void> {
+export async function exportFollowing(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Exporting following of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -89,6 +88,4 @@ export async function exportFollowing(job: Bull.Job<DbUserJobData>, done: () => 
 	} finally {
 		cleanup();
 	}
-
-	done();
 }

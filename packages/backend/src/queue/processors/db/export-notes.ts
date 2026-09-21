@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
 
 import { queueLogger } from '../../logger.js';
@@ -13,12 +13,11 @@ import { createTemp } from '@/misc/create-temp.js';
 
 const logger = queueLogger.createSubLogger('export-notes');
 
-export async function exportNotes(job: Bull.Job<DbUserJobData>, done: any): Promise<void> {
+export async function exportNotes(job: Job<DbUserJobData>): Promise<void> {
 	logger.info(`Exporting notes of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -61,7 +60,7 @@ export async function exportNotes(job: Bull.Job<DbUserJobData>, done: any): Prom
 			}) as Note[];
 
 			if (notes.length === 0) {
-				job.progress(100);
+				job.updateProgress(100);
 				break;
 			}
 
@@ -82,7 +81,7 @@ export async function exportNotes(job: Bull.Job<DbUserJobData>, done: any): Prom
 				userId: user.id,
 			});
 
-			job.progress(exportedNotesCount / total);
+			job.updateProgress(exportedNotesCount / total);
 		}
 
 		await write(']');
@@ -97,8 +96,6 @@ export async function exportNotes(job: Bull.Job<DbUserJobData>, done: any): Prom
 	} finally {
 		cleanup();
 	}
-
-	done();
 }
 
 function serialize(note: Note, poll: Poll | null = null): Record<string, unknown> {

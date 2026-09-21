@@ -12,7 +12,6 @@ import loadConfig from '@/config/load.js';
 import { Config } from '@/config/types.js';
 import { lessThan } from '@/prelude/array.js';
 import { envOption } from '../env.js';
-import { showMachineInfo } from '@/misc/show-machine-info.js';
 import { db, initDb } from '../db/postgre.js';
 
 const _filename = fileURLToPath(import.meta.url);
@@ -57,7 +56,6 @@ export async function masterMain() {
 	try {
 		greet();
 		showEnvironment();
-		await showMachineInfo(bootLogger);
 		showNodejsVersion();
 		config = loadConfigBoot();
 		await connectDb();
@@ -75,7 +73,6 @@ export async function masterMain() {
 	bootLogger.succ(`Now listening on port ${config.port} on ${config.url}`, null, true);
 
 	if (!envOption.noDaemons) {
-		import('../daemons/server-stats.js').then(x => x.default());
 		import('../daemons/queue-stats.js').then(x => x.default());
 		import('../daemons/janitor.js').then(x => x.default());
 	}

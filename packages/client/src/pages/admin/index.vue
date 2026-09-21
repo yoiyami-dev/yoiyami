@@ -160,11 +160,6 @@ const menuDef = $computed(() => [{
 		to: '/admin/relays',
 		active: currentPage?.route.name === 'relays',
 	}, {
-		icon: 'fas fa-share-alt',
-		text: i18n.ts.integration,
-		to: '/admin/integrations',
-		active: currentPage?.route.name === 'integrations',
-	}, {
 		icon: 'fas fa-ban',
 		text: i18n.ts.instanceBlocking,
 		to: '/admin/instance-block',

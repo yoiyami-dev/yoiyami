@@ -1,4 +1,4 @@
-import Bull from 'bull';
+import type { Job } from 'bullmq';
 
 import { queueLogger } from '../../logger.js';
 import follow from '@/services/following/create.js';
@@ -12,12 +12,11 @@ import { IsNull } from 'typeorm';
 
 const logger = queueLogger.createSubLogger('import-following');
 
-export async function importFollowing(job: Bull.Job<DbUserImportJobData>, done: any): Promise<void> {
+export async function importFollowing(job: Job<DbUserImportJobData>): Promise<void> {
 	logger.info(`Importing following of ${job.data.user.id} ...`);
 
 	const user = await Users.findOneBy({ id: job.data.user.id });
 	if (user == null) {
-		done();
 		return;
 	}
 
@@ -25,7 +24,6 @@ export async function importFollowing(job: Bull.Job<DbUserImportJobData>, done: 
 		id: job.data.fileId,
 	});
 	if (file == null) {
-		done();
 		return;
 	}
 
@@ -70,5 +68,4 @@ export async function importFollowing(job: Bull.Job<DbUserImportJobData>, done: 
 	}
 
 	logger.succ('Imported');
-	done();
 }
