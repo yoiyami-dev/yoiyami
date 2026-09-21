@@ -20,6 +20,7 @@ import { getJobInfo } from './get-job-info.js';
 import { systemQueue, dbQueue, deliverQueue, inboxQueue, objectStorageQueue, endedPollNotificationQueue, webhookDeliverQueue } from './queues.js';
 import { ThinUser } from './types.js';
 import { queuePrefix, redisConnection } from './connection.js';
+import { scheduleSystemJobs } from './system-jobs.js';
 
 type JobHandler<T> = (job: Job<T>) => Promise<unknown> | unknown;
 
@@ -193,7 +194,7 @@ export function webhookDeliver(webhook: Webhook, type: typeof webhookEventTypes[
 	});
 }
 
-export default function() {
+export default async function() {
 	if (envOption.onlyServer) return;
 
 	const deliverWorker = startWorker(deliverQueue, { deliver: processDeliver }, config.deliverJobConcurrency || 128, { max: config.deliverJobPerSec || 128, duration: 1000 });
@@ -210,6 +211,8 @@ export default function() {
 	attachQueueLogging(dbQueue, dbWorker, dbLogger);
 	attachQueueLogging(objectStorageQueue, objectStorageWorker, objectStorageLogger);
 	attachQueueLogging(webhookDeliverQueue, webhookWorker, webhookLogger, (job, includeTarget) => `${getJobInfo(job, includeTarget)} to=${job.data.to}`);
+
+	await scheduleSystemJobs(systemQueue);
 }
 
 export async function destroy() {
