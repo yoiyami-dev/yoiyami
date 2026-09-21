@@ -20,8 +20,16 @@ import { getJobInfo } from './get-job-info.js';
 import { systemQueue, dbQueue, deliverQueue, inboxQueue, objectStorageQueue, endedPollNotificationQueue, webhookDeliverQueue } from './queues.js';
 import { ThinUser } from './types.js';
 import { queuePrefix, redisConnection } from './connection.js';
+import { scheduleSystemJobs } from './system-jobs.js';
+import { withTimeout } from './job-timeout.js';
 
 type JobHandler<T> = (job: Job<T>) => Promise<unknown> | unknown;
+
+const jobTimeouts: Readonly<Record<string, number>> = {
+	deliver: 1 * 60 * 1000,
+	inbox: 5 * 60 * 1000,
+	webhookDeliver: 1 * 60 * 1000,
+};
 
 function renderError(error: unknown): { stack?: string; message: string; name: string } {
 	const normalized = error instanceof Error ? error : new Error(String(error));
@@ -36,7 +44,12 @@ function startWorker<T>(queue: Queue<T>, processors: Record<string, JobHandler<T
 	const worker = new Worker<T>(queue.name, async job => {
 		const processor = processors[job.name];
 		if (processor == null) throw new Error(`No processor registered for ${job.name}`);
-		return processor(job);
+
+		const operation = Promise.resolve().then(() => processor(job));
+		const timeout = jobTimeouts[job.name];
+		return timeout == null
+			? operation
+			: withTimeout(operation, timeout, `Job ${job.name} (${job.id})`);
 	}, {
 		connection: redisConnection(),
 		prefix: queuePrefix,
@@ -193,7 +206,7 @@ export function webhookDeliver(webhook: Webhook, type: typeof webhookEventTypes[
 	});
 }
 
-export default function() {
+export default async function() {
 	if (envOption.onlyServer) return;
 
 	const deliverWorker = startWorker(deliverQueue, { deliver: processDeliver }, config.deliverJobConcurrency || 128, { max: config.deliverJobPerSec || 128, duration: 1000 });
@@ -210,6 +223,8 @@ export default function() {
 	attachQueueLogging(dbQueue, dbWorker, dbLogger);
 	attachQueueLogging(objectStorageQueue, objectStorageWorker, objectStorageLogger);
 	attachQueueLogging(webhookDeliverQueue, webhookWorker, webhookLogger, (job, includeTarget) => `${getJobInfo(job, includeTarget)} to=${job.data.to}`);
+
+	await scheduleSystemJobs(systemQueue);
 }
 
 export async function destroy() {

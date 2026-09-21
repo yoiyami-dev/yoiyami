@@ -11,7 +11,7 @@ export async function workerMain() {
 	await import('../server/index.js').then(x => x.default());
 
 	// start job queue
-	import('../queue/index.js').then(x => x.default());
+	await import('../queue/index.js').then(x => x.default());
 
 	if (cluster.isWorker) {
 		// Send a 'ready' message to parent process
