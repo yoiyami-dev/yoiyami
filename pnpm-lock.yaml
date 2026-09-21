@@ -848,9 +848,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      cypress:
-        specifier: 16.1.0
-        version: 16.1.0
       eslint:
         specifier: 8.23.0
         version: 8.23.0(supports-color@8.1.1)
