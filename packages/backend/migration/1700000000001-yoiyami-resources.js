@@ -1,6 +1,6 @@
 /**
  * Stop using resources hosted by the former 藍.moe instance and point the
- * default project links at Yoiyami.
+ * default project links at yoiyami.
  */
 export class yoiyamiResources1700000000001 {
     name = 'yoiyamiResources1700000000001'
