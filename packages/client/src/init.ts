@@ -20,7 +20,7 @@ import JSON5 from 'json5';
 import widgets from '@/widgets';
 import directives from '@/directives';
 import components from '@/components';
-import { version, ui, lang, host } from '@/config';
+import { version, buildVersion, ui, lang, host } from '@/config';
 import { applyTheme } from '@/scripts/theme';
 import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
 import { i18n } from '@/i18n';
@@ -40,7 +40,7 @@ import { getUrlWithoutLoginId } from '@/scripts/login-id';
 import { getAccountFromId } from '@/scripts/get-account-from-id';
 
 (async () => {
-	console.info(`Misskey v${version}`);
+	console.info(`Yoiyami ${version}`);
 
 	if (_DEV_) {
 		console.warn('Development mode!!!');
@@ -238,7 +238,7 @@ import { getAccountFromId } from '@/scripts/get-account-from-id';
 		localStorage.removeItem('theme');
 
 		try { // 変なバージョン文字列来るとcompareVersionsでエラーになるため
-			if (lastVersion != null && compareVersions(version, lastVersion) === 1) {
+			if (lastVersion != null && compareVersions(buildVersion, lastVersion) === 1) {
 				// ログインしてる場合だけ
 				if ($i) {
 					popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');
