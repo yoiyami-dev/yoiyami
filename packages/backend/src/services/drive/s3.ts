@@ -1,5 +1,5 @@
 import { URL } from 'node:url';
-import { S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import type { Meta } from '@/models/entities/meta.js';
 import { getAgentByUrl } from '@/misc/fetch.js';
@@ -33,4 +33,11 @@ export function getS3(meta: Meta) {
 			httpsAgent,
 		}),
 	});
+}
+
+export async function deleteS3Object(s3: S3Client, bucket: string, key: string): Promise<void> {
+	await s3.send(new DeleteObjectCommand({
+		Bucket: bucket,
+		Key: key,
+	}));
 }

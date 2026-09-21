@@ -4,7 +4,7 @@ import { DriveFiles, Instances } from '@/models/index.js';
 import { driveChart, perUserDriveChart, instanceChart } from '@/services/chart/index.js';
 import { createDeleteObjectStorageFileJob } from '@/queue/index.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
-import { getS3 } from './s3.js';
+import { deleteS3Object, getS3 } from './s3.js';
 import { v4 as uuid } from 'uuid';
 
 export async function deleteFile(file: DriveFile, isExpired = false) {
@@ -94,8 +94,5 @@ export async function deleteObjectStorageFile(key: string) {
 
 	const s3 = getS3(meta);
 
-	await s3.deleteObject({
-		Bucket: meta.objectStorageBucket!,
-		Key: key,
-	}).promise();
+	await deleteS3Object(s3, meta.objectStorageBucket!, key);
 }
