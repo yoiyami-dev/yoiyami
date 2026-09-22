@@ -106,6 +106,20 @@ corepack install --global pnpm@12.5.1
 pnpm install --frozen-lockfile
 ```
 
+### Local debug services
+The root Compose file can start only the supporting services required by the host-side development server. It does not build or start `web`:
+```
+mkdir -p .config
+cp .config/example.yml .config/default.yml
+cp .config/docker_example.env .config/docker.env
+```
+Set `url` in `.config/default.yml` to `http://localhost:3000`, then run:
+```
+pnpm dev:services:up
+pnpm dev
+```
+`pnpm dev:services:down` stops PostgreSQL and Redis without removing their data, and `pnpm dev:services:logs` follows their logs. The equivalent direct Compose command is `docker compose up -d --wait db redis`.
+
 ## Testing
 - Test codes are located in [`/test`](/test).
 
