@@ -4,27 +4,27 @@
 export type Source = {
 	repository_url?: string;
 	feedback_url?: string;
-	url: string;
-	port: number;
+	url?: string;
+	port?: number;
 	disableHsts?: boolean;
-	db: {
-		host: string;
-		port: number;
-		db: string;
-		user: string;
-		pass: string;
+	db?: {
+		host?: string;
+		port?: number;
+		db?: string;
+		user?: string;
+		pass?: string;
 		disableCache?: boolean;
 		extra?: { [x: string]: string };
 	};
-	redis: {
-		host: string;
-		port: number;
+	redis?: {
+		host?: string;
+		port?: number;
 		family?: number;
-		pass: string;
+		pass?: string;
 		db?: number;
 		prefix?: string;
 	};
-	elasticsearch: {
+	elasticsearch?: {
 		host: string;
 		port: number;
 		ssl?: boolean;
@@ -45,7 +45,7 @@ export type Source = {
 
 	clusterLimit?: number;
 
-	id: string;
+	id?: string;
 
 	outgoingAddressFamily?: 'ipv4' | 'ipv6' | 'dual';
 
@@ -81,4 +81,28 @@ export type Mixin = {
 	clientEntry: string;
 };
 
-export type Config = Source & Mixin;
+export type ResolvedSource = Omit<Source, 'url' | 'port' | 'db' | 'redis' | 'elasticsearch' | 'id'> & {
+	url: string;
+	port: number;
+	db: {
+		host: string;
+		port: number;
+		db: string;
+		user: string;
+		pass: string;
+		disableCache?: boolean;
+		extra?: { [x: string]: string };
+	};
+	redis: {
+		host: string;
+		port: number;
+		family?: number;
+		pass?: string;
+		db?: number;
+		prefix?: string;
+	};
+	elasticsearch?: NonNullable<Source['elasticsearch']>;
+	id: string;
+};
+
+export type Config = ResolvedSource & Mixin;

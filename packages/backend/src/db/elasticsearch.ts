@@ -31,22 +31,23 @@ const index = {
 };
 
 // Init ElasticSearch connection
-const client = config.elasticsearch ? new elasticsearch.Client({
-	node: `${config.elasticsearch.ssl ? 'https://' : 'http://'}${config.elasticsearch.host}:${config.elasticsearch.port}`,
-	auth: (config.elasticsearch.user && config.elasticsearch.pass) ? {
-		username: config.elasticsearch.user,
-		password: config.elasticsearch.pass,
+const elasticsearchConfig = config.elasticsearch;
+const client = elasticsearchConfig ? new elasticsearch.Client({
+	node: `${elasticsearchConfig.ssl ? 'https://' : 'http://'}${elasticsearchConfig.host}:${elasticsearchConfig.port}`,
+	auth: (elasticsearchConfig.user && elasticsearchConfig.pass) ? {
+		username: elasticsearchConfig.user,
+		password: elasticsearchConfig.pass,
 	} : undefined,
 	pingTimeout: 30000,
 }) : null;
 
-if (client) {
+if (client && elasticsearchConfig) {
 	client.indices.exists({
-		index: config.elasticsearch.index || 'misskey_note',
+		index: elasticsearchConfig.index || 'misskey_note',
 	}).then(exist => {
 		if (!exist.body) {
 			client.indices.create({
-				index: config.elasticsearch.index || 'misskey_note',
+				index: elasticsearchConfig.index || 'misskey_note',
 				body: index,
 			});
 		}
