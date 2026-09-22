@@ -1,9 +1,9 @@
-import { Not, In, IsNull } from 'typeorm';
 import { maximum } from '@/prelude/array.js';
 import { Notes, Users } from '@/models/index.js';
 import define from '../../define.js';
 import { ApiError } from '../../error.js';
 import { getUser } from '../../common/getters.js';
+import { generateVisibilityQuery } from '../../common/generate-visibility-query.js';
 
 export const meta = {
 	tags: ['users'],
@@ -59,17 +59,16 @@ export default define(meta, paramDef, async (ps, me) => {
 	});
 
 	// Fetch recent notes
-	const recentNotes = await Notes.find({
-		where: {
-			userId: user.id,
-			replyId: Not(IsNull()),
-		},
-		order: {
-			id: -1,
-		},
-		take: 1000,
-		select: ['replyId'],
-	});
+	const recentNotesQuery = Notes.createQueryBuilder('note')
+		.select(['note.id', 'note.replyId'])
+		.where('note.userId = :userId', { userId: user.id })
+		.andWhere('note.replyId IS NOT NULL')
+		.orderBy('note.id', 'DESC')
+		.take(1000);
+
+	generateVisibilityQuery(recentNotesQuery, me);
+
+	const recentNotes = await recentNotesQuery.getMany();
 
 	// 投稿が少なかったら中断
 	if (recentNotes.length === 0) {
@@ -77,12 +76,13 @@ export default define(meta, paramDef, async (ps, me) => {
 	}
 
 	// TODO ミュートを考慮
-	const replyTargetNotes = await Notes.find({
-		where: {
-			id: In(recentNotes.map(p => p.replyId)),
-		},
-		select: ['userId'],
-	});
+	const replyTargetNotesQuery = Notes.createQueryBuilder('note')
+		.select(['note.id', 'note.userId'])
+		.where('note.id IN (:...replyIds)', { replyIds: recentNotes.map(p => p.replyId) });
+
+	generateVisibilityQuery(replyTargetNotesQuery, me);
+
+	const replyTargetNotes = await replyTargetNotesQuery.getMany();
 
 	const repliedUsers: any = {};
 
