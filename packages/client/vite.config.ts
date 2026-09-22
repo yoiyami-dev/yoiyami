@@ -21,7 +21,9 @@ export default defineConfig(({ command, mode }) => {
 
 		plugins: [
 			pluginVue({
-				reactivityTransform: true,
+				script: {
+					reactivityTransform: true,
+				},
 			}),
 			pluginJson5(),
 		],
