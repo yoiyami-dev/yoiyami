@@ -448,8 +448,6 @@ export async function addFile({
 	file.isLink = isLink;
 	file.requestIp = requestIp;
 	file.requestHeaders = requestHeaders;
-	file.maybeSensitive = info.sensitive;
-	file.maybePorn = info.porn;
 	file.isSensitive = user
 		? Users.isLocalUser(user) && profile!.alwaysMarkNsfw ? true :
 		(sensitive !== null && sensitive !== undefined)
