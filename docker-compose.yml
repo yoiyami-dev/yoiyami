@@ -20,6 +20,13 @@ services:
   redis:
     restart: always
     image: redis:4.0-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     networks:
       - internal_network
     volumes:
@@ -28,10 +35,17 @@ services:
   db:
     restart: always
     image: postgres:12.2-alpine
+    ports:
+      - "127.0.0.1:5432:5432"
     networks:
       - internal_network
     env_file:
       - .config/docker.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     volumes:
       - ./db:/var/lib/postgresql/data
 
