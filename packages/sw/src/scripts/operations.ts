@@ -2,7 +2,7 @@
  * Operations
  * 各種操作
  */
-declare var self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope;
 
 import * as Misskey from 'misskey-js';
 import { SwMessage, swMessageOrderType } from '@/types';

@@ -1,4 +1,4 @@
-declare var self: ServiceWorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope;
 
 import { createEmptyNotification, createNotification } from '@/scripts/create-notification';
 import { swLang } from '@/scripts/lang';
@@ -167,16 +167,13 @@ self.addEventListener('notificationclick', <K extends keyof pushNotificationData
 				client = await swos.openChat(data.body, id);
 				break;
 		}
-	
 		if (client) {
 			client.focus();
 		}
 		if (data.type === 'notification') {
 			swNotificationRead.then(that => that.read(data));
 		}
-	
-		notification.close();
-	
+			notification.close();
 	})());
 });
 

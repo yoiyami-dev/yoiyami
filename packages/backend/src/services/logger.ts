@@ -22,7 +22,6 @@ export default class Logger {
 			color: color,
 		};
 		this.store = store;
-
 	}
 
 	public createSubLogger(domain: string, color?: string, store = true): Logger {
@@ -63,7 +62,6 @@ export default class Logger {
 		if (envOption.withLogTime) log = chalk.gray(time) + ' ' + log;
 
 		console.log(important ? chalk.bold(log) : log);
-
 	}
 
 	public error(x: string | Error, data?: Record<string, any> | null, important = false): void { // 実行を継続できない状況で使う
