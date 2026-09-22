@@ -106,6 +106,39 @@ corepack install --global pnpm@12.5.1
 pnpm install --frozen-lockfile
 ```
 
+### Docker Compose
+The Compose deployment is configured through `.config/docker.env`; it does not require `.config/default.yml`:
+```
+cp .config/docker_example.env .config/docker.env
+```
+Set `MISSKEY_URL` and replace the example PostgreSQL credentials before the first startup, then run:
+```
+docker compose up --build -d --wait
+```
+Compose waits for PostgreSQL and Redis to become healthy. The web container then validates its configuration, waits for both TCP endpoints, runs the database migrations, and finally starts yoiyami. `docker compose logs -f web` follows the startup, and `docker compose down` stops the deployment without deleting its database or uploaded files.
+
+The configuration loader applies settings in this order: environment variables, `.config/default.yml`, then built-in defaults. This means a traditional YAML installation remains compatible, while container deployments can use environment variables only. The startup-related variables are:
+
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `MISSKEY_URL` | Public URL of the instance | required |
+| `PORT` | HTTP listen port | `3000` |
+| `DATABASE_HOST` | PostgreSQL host | required |
+| `DATABASE_PORT` | PostgreSQL port | `5432` |
+| `DATABASE_DB` | PostgreSQL database | required |
+| `DATABASE_USER` | PostgreSQL user | required |
+| `DATABASE_PASSWORD` | PostgreSQL password | required |
+| `REDIS_HOST` | Redis host | required |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_PASSWORD` | Redis password | unset |
+| `REDIS_DB` | Redis database number | `0` |
+| `REDIS_FAMILY` | Address family (`0`, `4`, or `6`) | `0` |
+| `REDIS_PREFIX` | Redis key prefix | instance hostname |
+| `MISSKEY_ID_GENERATION` | ID generation method | `aid` |
+| `MISSKEY_CONFIG_YML` | Alternate YAML file, absolute or relative to `.config` | `default.yml` |
+
+`POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` are accepted as fallbacks for their `DATABASE_*` equivalents so the web and PostgreSQL containers can safely share the same Compose env file. If `MISSKEY_CONFIG_YML` is explicitly set, the referenced file must exist. An absent conventional `default.yml` is allowed only when the required environment variables are complete.
+
 ### Local debug services
 The root Compose file can start only the supporting services required by the host-side development server. It does not build or start `web`:
 ```
