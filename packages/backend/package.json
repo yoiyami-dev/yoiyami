@@ -9,7 +9,7 @@
 		"watch": "node watch.mjs",
 		"lint": "eslint --quiet \"src/**/*.ts\"",
 		"mocha": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha",
-		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/prelude/ip.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts test/queue-system-jobs.ts test/s3.ts test/web-views.ts",
+		"test:unit": "cross-env NODE_ENV=test TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha test/prelude/maybe.ts test/prelude/url.ts test/prelude/ip.ts test/extract-mentions.ts test/mfm.ts test/ap-request.ts test/queue-system-jobs.ts test/s3.ts test/web-views.t test/misc/zip.ts",
 		"test": "pnpm run mocha"
 	},
 	"dependencies": {
@@ -24,6 +24,7 @@
 		"@sinonjs/fake-timers": "9.1.2",
 		"@smithy/node-http-handler": "4.12.1",
 		"@syuilo/aiscript": "0.11.1",
+		"@zip.js/zip.js": "2.8.60",
 		"ajv": "8.20.0",
 		"archiver": "8.0.0",
 		"autobind-decorator": "2.4.0",
