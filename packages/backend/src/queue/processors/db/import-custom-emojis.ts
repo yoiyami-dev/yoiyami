@@ -1,5 +1,6 @@
 import type { Job } from 'bullmq';
 import * as fs from 'node:fs';
+import { join } from 'node:path';
 
 import { queueLogger } from '../../logger.js';
 import { createTempDir } from '@/misc/create-temp.js';
@@ -127,7 +128,7 @@ export async function importCustomEmojis(job: Job<DbUserImportJobData>): Promise
 				if (records == null) continue;
 				wanted.delete(entry.filename);
 
-				const emojiPath = outputPath + '/' + entry.filename;
+				const emojiPath = join(outputPath, records[0].fileName);
 				try {
 					await zip.extractToFile(entry, emojiPath, { maxBytes: MAX_EMOJI_FILE_SIZE });
 				} catch (error) {
