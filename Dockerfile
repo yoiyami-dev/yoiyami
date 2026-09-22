@@ -9,7 +9,9 @@ COPY . ./
 RUN apt-get update
 RUN apt-get install -y build-essential
 RUN git submodule update --init
-RUN npm install --global pnpm@12.5.1
+RUN npm install --global corepack@0.36.0
+RUN corepack enable
+RUN corepack install --global pnpm@12.5.1
 RUN pnpm install --frozen-lockfile
 RUN pnpm build
 RUN rm -rf .git
@@ -20,7 +22,9 @@ WORKDIR /misskey
 
 RUN apt-get update
 RUN apt-get install -y ffmpeg tini
-RUN npm install --global pnpm@12.5.1
+RUN npm install --global corepack@0.36.0
+RUN corepack enable
+RUN corepack install --global pnpm@12.5.1
 
 COPY --from=builder /misskey/node_modules ./node_modules
 COPY --from=builder /misskey/built ./built

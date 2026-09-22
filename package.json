@@ -7,6 +7,9 @@
 		"url": "https://github.com/yoiyami-dev/yoiyami.git"
 	},
 	"private": true,
+	"engines": {
+		"node": ">=22.22.2 <23"
+	},
 	"scripts": {
 		"build": "node ./scripts/build.js",
 		"typecheck": "pnpm run typecheck:backend && pnpm run typecheck:test && pnpm run typecheck:client && pnpm run typecheck:sw",
@@ -31,7 +34,6 @@
 		"test:prepare": "node ./scripts/test-prepare.js",
 		"test:unit": "pnpm run test:prepare && pnpm --dir packages/backend test:unit",
 		"test": "pnpm run mocha",
-		"format": "gulp format",
 		"clean": "node ./scripts/clean.js",
 		"clean-all": "node ./scripts/clean-all.js",
 		"cleanall": "pnpm run clean-all"
