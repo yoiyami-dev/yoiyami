@@ -1,7 +1,9 @@
+import { createRequire } from 'node:module';
 import Koa from 'koa';
 import config from '@/config/index.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
-import manifest from './manifest.json' assert { type: 'json' };
+
+const manifest = createRequire(import.meta.url)('./manifest.json');
 
 export const manifestHandler = async (ctx: Koa.Context) => {
 	// TODO

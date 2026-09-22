@@ -652,6 +652,9 @@ importers:
       execa:
         specifier: 6.1.0
         version: 6.1.0
+      form-data:
+        specifier: ^4.0.6
+        version: 4.0.6
       json5-loader:
         specifier: 4.0.1
         version: 4.0.1(webpack@5.111.1(cssnano@8.0.2(postcss@8.5.28))(csso@2.3.2)(esbuild@0.25.12)(postcss@8.5.28)(sharp@0.35.4(@types/node@22.20.4))(svgo@0.7.2))
