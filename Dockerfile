@@ -1,4 +1,4 @@
-FROM node:22.22.2-bullseye AS builder
+FROM node:22.22.2-bookworm AS builder
 
 ARG NODE_ENV=production
 
@@ -6,8 +6,9 @@ WORKDIR /misskey
 
 COPY . ./
 
-RUN apt-get update
-RUN apt-get install -y build-essential
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential \
+    && rm -rf /var/lib/apt/lists/*
 RUN git submodule update --init
 RUN npm install --global corepack@0.36.0
 RUN corepack enable
@@ -16,12 +17,13 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm build
 RUN rm -rf .git
 
-FROM node:22.22.2-bullseye-slim AS runner
+FROM node:22.22.2-bookworm-slim AS runner
 
 WORKDIR /misskey
 
-RUN apt-get update
-RUN apt-get install -y ffmpeg tini
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg tini \
+    && rm -rf /var/lib/apt/lists/*
 RUN npm install --global corepack@0.36.0
 RUN corepack enable
 RUN corepack install --global pnpm@12.5.1
