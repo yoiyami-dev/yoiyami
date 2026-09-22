@@ -182,7 +182,6 @@ overrides:
   tough-cookie: ^4.1.3
   '@tootallnate/once': ^2.0.1
   '@types/koa': 2.15.2
-  is-svg: 4.3.0
   ws: ^8.21.3
 
 importers:
@@ -343,8 +342,8 @@ importers:
         specifier: 10.3.1
         version: 10.3.1
       is-svg:
-        specifier: 4.3.0
-        version: 4.3.0
+        specifier: 6.1.0
+        version: 6.1.0
       js-yaml:
         specifier: ^4.3.2
         version: 4.3.2
@@ -731,8 +730,8 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       katex:
-        specifier: 0.15.6
-        version: 0.15.6
+        specifier: 0.16.21
+        version: 0.16.21
       matter-js:
         specifier: 0.18.0
         version: 0.18.0
@@ -746,8 +745,8 @@ importers:
         specifier: 5.3.2
         version: 5.3.2
       prismjs:
-        specifier: 1.29.0
-        version: 1.29.0
+        specifier: 1.30.0
+        version: 1.30.0
       punycode:
         specifier: 2.1.1
         version: 2.1.1
@@ -878,18 +877,18 @@ importers:
 
   packages/sw:
     dependencies:
-      esbuild:
-        specifier: ^0.14.13
-        version: 0.14.54
       idb-keyval:
-        specifier: ^6.0.3
+        specifier: 6.2.0
         version: 6.2.0
       misskey-js:
         specifier: 0.0.14
         version: 0.0.14
     devDependencies:
+      esbuild:
+        specifier: 0.14.54
+        version: 0.14.54
       eslint:
-        specifier: ^8.2.0
+        specifier: 8.23.0
         version: 8.23.0(supports-color@8.1.1)
 
 packages:
@@ -1225,6 +1224,9 @@ packages:
   '@eslint/eslintrc@1.4.1':
     resolution: {integrity: sha512-XXrH9Uarn0stsyldqDYq8r++mROmWRI1xKMXa640Bb//SY1+ECYX6VzT6Lcx5frD0V30XieqJ0oX9I2Xj5aoMA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@file-type/xml@0.4.4':
+    resolution: {integrity: sha512-NhCyXoHlVZ8TqM476hyzwGJ24+D5IPSaZhmrPj7qXnEVb3q6jrFzA3mM9TBpknKSI9EuQeGTKRg2DXGUwvBBoQ==}
 
   '@fortawesome/fontawesome-free@6.1.2':
     resolution: {integrity: sha512-XwWADtfdSN73/udaFm+1mnGIj/ShDZNFMe/PRoqv3FhQ4GNI2PUN70yFTPsjq65Lw2C9i4TG5/hTbxXIXVCiqQ==}
@@ -3992,10 +3994,6 @@ packages:
   fast-uri@3.1.8:
     resolution: {integrity: sha512-GZMtZUTNRpOVIECoXwLNZS5xUGE+mVNbTB8h/7Rwh2TFWcBQiPzTgyZi05BF9UMZKkLJv8XBRJTlU7zg8+ZfMg==}
 
-  fast-xml-parser@3.21.1:
-    resolution: {integrity: sha512-FTFVjYoBOZTJekiUsawGsSYV9QL0A+zDYCRj7y34IO6Jg+2IMYEtQa+bbictpdpV8dHxXywqU7C0gRDEOFtBFg==}
-    hasBin: true
-
   fastq@1.20.3:
     resolution: {integrity: sha512-XKv5nnLs6nLF71NgiKJLIZFLkPyIEuOselLG7ujZnGrRfQK8HpvY+WqKhAJUAdLomwVHErVS4LfxFlPq0/FTAw==}
 
@@ -4727,9 +4725,9 @@ packages:
     resolution: {integrity: sha512-BtEeSsoaQjlSPBemMQIrY1MY0uM6vnS1g5fmufYOtnxLGUZM2178PKbhsk7Ffv58IX+ZtcvoGwccYsh0PglkAA==}
     engines: {node: '>= 0.4'}
 
-  is-svg@4.3.0:
-    resolution: {integrity: sha512-Np3TOGLVr0J27VDaS/gVE7bT45ZcSmX4pMmMTsPjqO8JY383fuPIcWmZr3QsHVWhqhZWxSdmW+tkkl3PWOB0Nw==}
-    engines: {node: '>=6'}
+  is-svg@6.1.0:
+    resolution: {integrity: sha512-i7YPdvYuSCYcaLQrKwt8cvKTlwHcdA6Hp8N9SO3Q5jIzo8x6kH3N47W0BvPP7NdxVBmIHx7X9DK36czYYW7lHg==}
+    engines: {node: '>=20'}
 
   is-symbol@1.1.1:
     resolution: {integrity: sha512-9gGx6GTtCQM73BgmHQXfDmLtfjjTUDSyoxTCbp5WtoixAhfgsDirWIcVQ/IHpvI5Vgd5i/J5F7B9cN/WlVbC/w==}
@@ -4916,8 +4914,8 @@ packages:
   jws@4.0.1:
     resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
 
-  katex@0.15.6:
-    resolution: {integrity: sha512-UpzJy4yrnqnhXvRPhjEuLA4lcPn6eRngixW7Q3TJErjg3Aw2PuLFBzTkdUb89UtumxjhHTqL3a5GDGETMSwgJA==}
+  katex@0.16.21:
+    resolution: {integrity: sha512-XvqR7FgOHtWupfMiigNzmh+MgUVmDGU2kXZm899ZkPfcuoPuFxyHmXsgATDpFZDAXCI8tvinaVcDo8PIIJSo4A==}
     hasBin: true
 
   keygrip@1.1.0:
@@ -6018,8 +6016,8 @@ packages:
     resolution: {integrity: sha512-G9xUchgTEiNpormdYBl+Pha50gOUovT18IvAe7EYMZ1/f9W/WWMPRn+xI68yXNMUk3QXHDwo/1wV/4NejVNe1w==}
     engines: {node: '>=0.10.0'}
 
-  prismjs@1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
+  prismjs@1.30.0:
+    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
 
   probe-image-size@7.2.3:
@@ -6740,9 +6738,6 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
-
-  strnum@1.1.2:
-    resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
 
   strtok3@10.3.5:
     resolution: {integrity: sha512-ki4hZQfh5rX0QDLLkOCj+h+CVNkqmp/CMf8v8kZpkNVK6jGQooMytqzLZYUVYIZcFZ6yDB70EfD8POcFXiF5oA==}
@@ -7963,6 +7958,11 @@ snapshots:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
+
+  '@file-type/xml@0.4.4':
+    dependencies:
+      sax: 1.6.1
+      strtok3: 10.3.5
 
   '@fortawesome/fontawesome-free@6.1.2': {}
 
@@ -10773,10 +10773,6 @@ snapshots:
 
   fast-uri@3.1.8: {}
 
-  fast-xml-parser@3.21.1:
-    dependencies:
-      strnum: 1.1.2
-
   fastq@1.20.3:
     dependencies:
       reusify: 1.1.0
@@ -11603,9 +11599,9 @@ snapshots:
       call-bound: 1.0.4
       has-tostringtag: 1.0.2
 
-  is-svg@4.3.0:
+  is-svg@6.1.0:
     dependencies:
-      fast-xml-parser: 3.21.1
+      '@file-type/xml': 0.4.4
 
   is-symbol@1.1.1:
     dependencies:
@@ -11821,7 +11817,7 @@ snapshots:
       jwa: 2.0.1
       safe-buffer: 5.2.1
 
-  katex@0.15.6:
+  katex@0.16.21:
     dependencies:
       commander: 8.3.0
 
@@ -12925,7 +12921,7 @@ snapshots:
       extend-shallow: 2.0.1
       js-beautify: 1.15.4
 
-  prismjs@1.29.0: {}
+  prismjs@1.30.0: {}
 
   probe-image-size@7.2.3(supports-color@8.1.1):
     dependencies:
@@ -13785,8 +13781,6 @@ snapshots:
   strip-json-comments@3.1.1: {}
 
   strip-json-comments@5.0.3: {}
-
-  strnum@1.1.2: {}
 
   strtok3@10.3.5:
     dependencies:

@@ -97,6 +97,15 @@ During development, it is useful to use the `pnpm dev` command.
 This command monitors the server-side and client-side source files and automatically builds them if they are modified.
 In addition, it will also automatically start the Misskey server process.
 
+### Toolchain
+Use Node.js 22.22.2 or a later 22.x release. The repository pins pnpm 12.5.1 in `package.json`; activate it through Corepack:
+```
+npm install --global corepack@0.36.0
+corepack enable
+corepack install --global pnpm@12.5.1
+pnpm install --frozen-lockfile
+```
+
 ## Testing
 - Test codes are located in [`/test`](/test).
 
