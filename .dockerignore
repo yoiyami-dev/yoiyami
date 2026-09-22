@@ -1,4 +1,5 @@
 .autogen
+.git/
 .github
 .travis
 .vscode
@@ -6,10 +7,15 @@
 Dockerfile
 build/
 built/
+packages/backend/built/
+packages/client/built/
+packages/sw/built/
 db/
 docker-compose.yml
 elasticsearch/
 node_modules/
+**/node_modules/
+packages/*/node_modules/
 redis/
 files/
 misskey-assets/

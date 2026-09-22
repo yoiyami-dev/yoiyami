@@ -1,13 +1,18 @@
-version: "3"
-
 services:
   web:
-    build: .
-    restart: always
-    links:
-      - db
-      - redis
-#      - es
+    build:
+      context: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .config/docker.env
+    environment:
+      DATABASE_HOST: db
+      REDIS_HOST: redis
     ports:
       - "3000:3000"
     networks:
@@ -15,11 +20,10 @@ services:
       - external_network
     volumes:
       - ./files:/misskey/files
-      - ./.config:/misskey/.config:ro
 
   redis:
-    restart: always
-    image: redis:4.0-alpine
+    restart: unless-stopped
+    image: redis:7.4-alpine
     ports:
       - "127.0.0.1:6379:6379"
     healthcheck:
@@ -27,13 +31,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+      start_period: 5s
     networks:
       - internal_network
     volumes:
       - ./redis:/data
 
   db:
-    restart: always
+    restart: unless-stopped
     image: postgres:12.2-alpine
     ports:
       - "127.0.0.1:5432:5432"
@@ -46,19 +51,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 10s
     volumes:
       - ./db:/var/lib/postgresql/data
-
-#  es:
-#    restart: always
-#    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2
-#    environment:
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#      - "TAKE_FILE_OWNERSHIP=111"
-#    networks:
-#      - internal_network
-#    volumes:
-#      - ./elasticsearch:/usr/share/elasticsearch/data
 
 networks:
   internal_network:

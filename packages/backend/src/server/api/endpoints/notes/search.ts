@@ -102,7 +102,7 @@ export default define(meta, paramDef, async (ps, me) => {
 			: [];
 
 		const result = await es.search({
-			index: config.elasticsearch.index || 'misskey_note',
+			index: config.elasticsearch?.index || 'misskey_note',
 			body: {
 				size: ps.limit,
 				from: ps.offset,
