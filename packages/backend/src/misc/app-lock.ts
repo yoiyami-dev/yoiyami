@@ -1,5 +1,4 @@
 import { redisClient } from '../db/redis.js';
-import { promisify } from 'node:util';
 import redisLock from 'redis-lock';
 
 /**
@@ -7,9 +6,10 @@ import redisLock from 'redis-lock';
  */
 const retryDelay = 100;
 
-const lock: (key: string, timeout?: number) => Promise<() => void>
-	= redisClient
-	? promisify(redisLock(redisClient, retryDelay))
+const lock: (key: string, timeout?: number) => Promise<() => void> = redisClient
+	? (key, timeout = 30 * 1000) => new Promise(resolve => {
+		redisLock(redisClient, retryDelay)(key, timeout, resolve);
+	})
 	: async () => () => { };
 
 /**
