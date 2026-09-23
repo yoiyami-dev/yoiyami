@@ -10,8 +10,9 @@ import renderEmoji from './emoji.js';
 import renderMention from './mention.js';
 import renderHashtag from './hashtag.js';
 import renderDocument from './document.js';
+import { IPost } from '../type.js';
 
-export default async function renderNote(note: Note, dive = true, isTalk = false): Promise<Record<string, unknown>> {
+export default async function renderNote(note: Note, dive = true, isTalk = false): Promise<IPost> {
 	const getPromisedFiles = async (ids: string[]) => {
 		if (!ids || ids.length === 0) return [];
 		const items = await DriveFiles.findBy({ id: In(ids) });
@@ -111,13 +112,13 @@ export default async function renderNote(note: Note, dive = true, isTalk = false
 	];
 
 	const asPoll = poll ? {
-		type: 'Question',
+		type: 'Question' as const,
 		content: toHtml(Object.assign({}, note, {
 			text: text,
 		})),
 		[poll.expiresAt && poll.expiresAt < new Date() ? 'closed' : 'endTime']: poll.expiresAt,
 		[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
-			type: 'Note',
+			type: 'Note' as const,
 			name: text,
 			replies: {
 				type: 'Collection',
@@ -132,7 +133,7 @@ export default async function renderNote(note: Note, dive = true, isTalk = false
 
 	return {
 		id: `${config.url}/notes/${note.id}`,
-		type: 'Note',
+			type: 'Note' as const,
 		attributedTo,
 		summary,
 		content,

@@ -2,8 +2,9 @@ import config from '@/config/index.js';
 import { User } from '@/models/entities/user.js';
 import { Note } from '@/models/entities/note.js';
 import { Poll } from '@/models/entities/poll.js';
+import { IObject } from '../type.js';
 
-export default async function renderQuestion(user: { id: User['id'] }, note: Note, poll: Poll) {
+export default async function renderQuestion(user: { id: User['id'] }, note: Note, poll: Poll): Promise<IObject> {
 	const question = {
 		type: 'Question',
 		id: `${config.url}/questions/${note.id}`,

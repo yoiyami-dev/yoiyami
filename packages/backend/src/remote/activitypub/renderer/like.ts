@@ -5,7 +5,7 @@ import { Emojis } from '@/models/index.js';
 import { IsNull } from 'typeorm';
 import renderEmoji from './emoji.js';
 
-export const renderLike = async (noteReaction: NoteReaction, note: Note) => {
+export const renderLike = async (noteReaction: NoteReaction, note: Pick<Note, 'uri'>) => {
 	const reaction = noteReaction.reaction;
 
 	const object = {
