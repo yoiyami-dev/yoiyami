@@ -30,13 +30,23 @@ type Schema = Record<string, {
 
 type KeyToColumnName<T extends string> = T extends `${infer R1}.${infer R2}` ? `${R1}${typeof columnDot}${KeyToColumnName<R2>}` : T;
 
+type SchemaKey<S extends Schema> = Extract<keyof S, string>;
+
 type Columns<S extends Schema> = {
-	[K in keyof S as `${typeof columnPrefix}${KeyToColumnName<string & K>}`]: number;
+	[K in SchemaKey<S> as `${typeof columnPrefix}${KeyToColumnName<K>}`]: number;
 };
 
+type UniqueSchemaKey<S extends Schema> = {
+	[K in SchemaKey<S>]: S[K]['uniqueIncrement'] extends true ? K : never;
+}[SchemaKey<S>];
+
 type TempColumnsForUnique<S extends Schema> = {
-	[K in keyof S as `${typeof uniqueTempColumnPrefix}${KeyToColumnName<string & K>}`]: S[K]['uniqueIncrement'] extends true ? string[] : never;
+	[K in UniqueSchemaKey<S> as `${typeof uniqueTempColumnPrefix}${KeyToColumnName<K>}`]: string[];
 };
+
+type ColumnKey<S extends Schema> = Extract<keyof Columns<S>, string>;
+type UniqueColumnKey<S extends Schema> = Extract<keyof TempColumnsForUnique<S>, string>;
+type RawColumnKey<S extends Schema> = Extract<keyof RawRecord<S>, string>;
 
 type RawRecord<S extends Schema> = {
 	id: number;
@@ -52,6 +62,8 @@ type RawRecord<S extends Schema> = {
 	date: number;
 } & TempColumnsForUnique<S> & Columns<S>;
 
+const uniqueValues = <S extends Schema>(record: RawRecord<S>, key: UniqueColumnKey<S>): string[] => record[key] as string[];
+
 const camelToSnake = (str: string): string => {
 	return str.replace(/([A-Z])/g, s => '_' + s.charAt(0).toLowerCase());
 };
@@ -59,15 +71,15 @@ const camelToSnake = (str: string): string => {
 const removeDuplicates = (array: any[]) => Array.from(new Set(array));
 
 type Commit<S extends Schema> = {
-	[K in keyof S]?: S[K]['uniqueIncrement'] extends true ? string[] : number;
+	[K in SchemaKey<S>]?: S[K]['uniqueIncrement'] extends true ? string[] : number;
 };
 
 export type KVs<S extends Schema> = {
-	[K in keyof S]: number;
+	[K in SchemaKey<S>]: number;
 };
 
 type ChartResult<T extends Schema> = {
-	[P in keyof T]: number[];
+	[P in SchemaKey<T>]: number[];
 };
 
 type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
@@ -241,15 +253,16 @@ export default abstract class Chart<T extends Schema> {
 
 	private convertRawRecord(x: RawRecord<T>): KVs<T> {
 		const kvs = {} as Record<string, number>;
-		for (const k of Object.keys(x).filter((k) => k.startsWith(columnPrefix)) as (keyof Columns<T>)[]) {
-			kvs[(k as string).substr(columnPrefix.length).split(columnDot).join('.')] = x[k];
+		for (const k of Object.keys(x).filter((k) => k.startsWith(columnPrefix))) {
+			const columnKey = k as ColumnKey<T>;
+			kvs[k.slice(columnPrefix.length).split(columnDot).join('.')] = x[columnKey] as number;
 		}
 		return kvs as KVs<T>;
 	}
 
 	private getNewLog(latest: KVs<T> | null): KVs<T> {
-		const log = {} as Record<keyof T, number>;
-		for (const [k, v] of Object.entries(this.schema) as ([keyof typeof this['schema'], this['schema'][string]])[]) {
+		const log = {} as Record<SchemaKey<T>, number>;
+		for (const [k, v] of Object.entries(this.schema) as [SchemaKey<T>, T[SchemaKey<T>]][]) {
 			if (v.accumulate && latest) {
 				log[k] = latest[k];
 			} else {
@@ -387,64 +400,69 @@ export default abstract class Chart<T extends Schema> {
 
 			for (const diff of this.buffer.filter(q => q.group == null || (q.group === logHour.group)).map(q => q.diff)) {
 				for (const [k, v] of Object.entries(diff)) {
+					if (v == null) continue;
 					if (finalDiffs[k] == null) {
 						finalDiffs[k] = v;
 					} else {
 						if (typeof finalDiffs[k] === 'number') {
 							(finalDiffs[k] as number) += v as number;
-						} else {
-							(finalDiffs[k] as string[]) = (finalDiffs[k] as string[]).concat(v);
+						} else if (Array.isArray(v)) {
+							(finalDiffs[k] as string[]).push(...v);
 						}
 					}
 				}
 			}
 
-			const queryForHour: Record<keyof RawRecord<T>, number | (() => string)> = {} as any;
-			const queryForDay: Record<keyof RawRecord<T>, number | (() => string)> = {} as any;
+			const queryForHour: Partial<Record<RawColumnKey<T>, number | (() => string)>> = {};
+			const queryForDay: Partial<Record<RawColumnKey<T>, number | (() => string)>> = {};
 			for (const [k, v] of Object.entries(finalDiffs)) {
 				if (typeof v === 'number') {
-					const name = columnPrefix + k.replaceAll('.', columnDot) as keyof Columns<T>;
-					if (v > 0) queryForHour[name] = () => `"${name}" + ${v}`;
-					if (v < 0) queryForHour[name] = () => `"${name}" - ${Math.abs(v)}`;
-					if (v > 0) queryForDay[name] = () => `"${name}" + ${v}`;
-					if (v < 0) queryForDay[name] = () => `"${name}" - ${Math.abs(v)}`;
+					const columnName = columnPrefix + k.replaceAll('.', columnDot);
+					const name = columnName as ColumnKey<T>;
+					if (v > 0) queryForHour[name] = () => `"${columnName}" + ${v}`;
+					if (v < 0) queryForHour[name] = () => `"${columnName}" - ${Math.abs(v)}`;
+					if (v > 0) queryForDay[name] = () => `"${columnName}" + ${v}`;
+					if (v < 0) queryForDay[name] = () => `"${columnName}" - ${Math.abs(v)}`;
 				} else if (Array.isArray(v) && v.length > 0) { // ユニークインクリメント
-					const tempColumnName = uniqueTempColumnPrefix + k.replaceAll('.', columnDot) as keyof TempColumnsForUnique<T>;
+					const uniqueColumnName = uniqueTempColumnPrefix + k.replaceAll('.', columnDot);
+					const tempColumnName = uniqueColumnName as UniqueColumnKey<T>;
 					// TODO: item をSQLエスケープ
-					const itemsForHour = v.filter(item => !logHour[tempColumnName].includes(item)).map(item => `"${item}"`);
-					const itemsForDay = v.filter(item => !logDay[tempColumnName].includes(item)).map(item => `"${item}"`);
-					if (itemsForHour.length > 0) queryForHour[tempColumnName] = () => `array_cat("${tempColumnName}", '{${itemsForHour.join(',')}}'::varchar[])`;
-					if (itemsForDay.length > 0) queryForDay[tempColumnName] = () => `array_cat("${tempColumnName}", '{${itemsForDay.join(',')}}'::varchar[])`;
+					const itemsForHour = v.filter(item => !uniqueValues(logHour, tempColumnName).includes(item)).map(item => `"${item}"`);
+					const itemsForDay = v.filter(item => !uniqueValues(logDay, tempColumnName).includes(item)).map(item => `"${item}"`);
+					if (itemsForHour.length > 0) queryForHour[tempColumnName] = () => `array_cat("${uniqueColumnName}", '{${itemsForHour.join(',')}}'::varchar[])`;
+					if (itemsForDay.length > 0) queryForDay[tempColumnName] = () => `array_cat("${uniqueColumnName}", '{${itemsForDay.join(',')}}'::varchar[])`;
 				}
 			}
 
 			// bake unique count
 			for (const [k, v] of Object.entries(finalDiffs)) {
-				if (this.schema[k].uniqueIncrement) {
-					const name = columnPrefix + k.replaceAll('.', columnDot) as keyof Columns<T>;
-					const tempColumnName = uniqueTempColumnPrefix + k.replaceAll('.', columnDot) as keyof TempColumnsForUnique<T>;
-					queryForHour[name] = new Set([...(v as string[]), ...logHour[tempColumnName]]).size;
-					queryForDay[name] = new Set([...(v as string[]), ...logDay[tempColumnName]]).size;
+				if (this.schema[k as SchemaKey<T>].uniqueIncrement) {
+					const columnName = columnPrefix + k.replaceAll('.', columnDot);
+					const name = columnName as ColumnKey<T>;
+					const tempColumnName = uniqueTempColumnPrefix + k.replaceAll('.', columnDot) as UniqueColumnKey<T>;
+					queryForHour[name] = new Set([...(v as string[]), ...uniqueValues(logHour, tempColumnName)]).size;
+					queryForDay[name] = new Set([...(v as string[]), ...uniqueValues(logDay, tempColumnName)]).size;
 				}
 			}
 
 			// compute intersection
 			// TODO: intersectionに指定されたカラムがintersectionだった場合の対応
-			for (const [k, v] of Object.entries(this.schema)) {
+			for (const [k, v] of Object.entries(this.schema) as [SchemaKey<T>, T[SchemaKey<T>]][]) {
 				const intersection = v.intersection;
 				if (intersection) {
-					const name = columnPrefix + k.replaceAll('.', columnDot) as keyof Columns<T>;
+					const columnName = columnPrefix + k.replaceAll('.', columnDot);
+					const name = columnName as ColumnKey<T>;
 					const firstKey = intersection[0];
-					const firstTempColumnName = uniqueTempColumnPrefix + firstKey.replaceAll('.', columnDot) as keyof TempColumnsForUnique<T>;
+					const firstTempColumnName = uniqueTempColumnPrefix + firstKey.replaceAll('.', columnDot) as UniqueColumnKey<T>;
 					const firstValues = finalDiffs[firstKey] as string[] | undefined;
-					const currentValuesForHour = new Set([...(firstValues ?? []), ...logHour[firstTempColumnName]]);
-					const currentValuesForDay = new Set([...(firstValues ?? []), ...logDay[firstTempColumnName]]);
+					const currentValuesForHour = new Set([...(firstValues ?? []), ...uniqueValues(logHour, firstTempColumnName)]);
+					const currentValuesForDay = new Set([...(firstValues ?? []), ...uniqueValues(logDay, firstTempColumnName)]);
 					for (let i = 1; i < intersection.length; i++) {
 						const targetKey = intersection[i];
-						const targetTempColumnName = uniqueTempColumnPrefix + targetKey.replaceAll('.', columnDot) as keyof TempColumnsForUnique<T>;
+						const targetTempColumnName = uniqueTempColumnPrefix + targetKey.replaceAll('.', columnDot) as UniqueColumnKey<T>;
 						const targetValues = finalDiffs[targetKey] as string[] | undefined;
-						const targetValuesForHour = new Set([...(targetValues ?? []), ...logHour[targetTempColumnName]]);
-						const targetValuesForDay = new Set([...(targetValues ?? []), ...logDay[targetTempColumnName]]);
+						const targetValuesForHour = new Set([...(targetValues ?? []), ...uniqueValues(logHour, targetTempColumnName)]);
+						const targetValuesForDay = new Set([...(targetValues ?? []), ...uniqueValues(logDay, targetTempColumnName)]);
 						currentValuesForHour.forEach(v => {
 							if (!targetValuesForHour.has(v)) currentValuesForHour.delete(v);
 						});
@@ -491,9 +509,9 @@ export default abstract class Chart<T extends Schema> {
 	public async tick(major: boolean, group: string | null = null): Promise<void> {
 		const data = major ? await this.tickMajor(group) : await this.tickMinor(group);
 
-		const columns = {} as Record<keyof Columns<T>, number>;
+		const columns = {} as Record<ColumnKey<T>, number>;
 		for (const [k, v] of Object.entries(data) as ([keyof typeof data, number])[]) {
-			const name = columnPrefix + (k as string).replaceAll('.', columnDot) as keyof Columns<T>;
+			const name = columnPrefix + (k as string).replaceAll('.', columnDot) as ColumnKey<T>;
 			columns[name] = v;
 		}
 
@@ -534,10 +552,10 @@ export default abstract class Chart<T extends Schema> {
 		const gt = Chart.dateToTimestamp(current) - (60 * 60 * 24 * 3);
 		const lt = Chart.dateToTimestamp(current) - (60 * 60 * 24);
 
-		const columns = {} as Record<keyof TempColumnsForUnique<T>, []>;
+		const columns = {} as Record<UniqueColumnKey<T>, []>;
 		for (const [k, v] of Object.entries(this.schema)) {
 			if (v.uniqueIncrement) {
-				const name = uniqueTempColumnPrefix + k.replaceAll('.', columnDot) as keyof TempColumnsForUnique<T>;
+				const name = uniqueTempColumnPrefix + k.replaceAll('.', columnDot) as UniqueColumnKey<T>;
 				columns[name] = [];
 			}
 		}
