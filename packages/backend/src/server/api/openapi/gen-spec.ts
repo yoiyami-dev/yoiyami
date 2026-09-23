@@ -60,15 +60,25 @@ export function genOpenapiSpec() {
 		}
 
 		const requestType = endpoint.meta.requireFile ? 'multipart/form-data' : 'application/json';
-		const schema = endpoint.params;
+		let schema = endpoint.params;
 
 		if (endpoint.meta.requireFile) {
-			schema.properties.file = {
-				type: 'string',
-				format: 'binary',
-				description: 'The file contents.',
+			if (schema.type !== 'object' || schema.properties == null) {
+				throw new Error(`Endpoint ${endpoint.name} requires a file but does not define an object parameter schema.`);
+			}
+
+				schema = {
+					...schema,
+					properties: {
+						...schema.properties,
+						file: {
+							type: 'string',
+							format: 'binary',
+							description: 'The file contents.',
+						},
+					},
+				required: [...(schema.required ?? []), 'file'],
 			};
-			schema.required.push('file');
 		}
 
 		const info = {
