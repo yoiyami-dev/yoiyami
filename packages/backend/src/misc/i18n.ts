@@ -13,7 +13,12 @@ export class I18n<T extends Record<string, any>> {
 	// なるべくこのメソッド使うよりもlocale直接参照の方がvueのキャッシュ効いてパフォーマンスが良いかも
 	public t(key: string, args?: Record<string, any>): string {
 		try {
-			let str = key.split('.').reduce((o, i) => o[i], this.locale) as string;
+			const value = key.split('.').reduce<unknown>((o, i) => {
+				if (typeof o !== 'object' || o === null || !(i in o)) throw new Error('missing localization');
+				return (o as Record<string, unknown>)[i];
+			}, this.locale);
+			if (typeof value !== 'string') throw new Error('localization value is not a string');
+			let str = value;
 
 			if (args) {
 				for (const [k, v] of Object.entries(args)) {

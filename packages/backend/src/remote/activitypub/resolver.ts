@@ -104,12 +104,14 @@ export default class Resolver {
 		switch (parsed.type) {
 			case 'notes':
 				return Notes.findOneByOrFail({ id: parsed.id })
-				.then(note => {
+				.then(async note => {
 					if (parsed.rest === 'activity') {
 						// this refers to the create activity and not the note itself
-						return renderActivity(renderCreate(renderNote(note)));
+						const activity = renderActivity(renderCreate(await renderNote(note), note));
+						if (activity == null) throw new Error('failed to render note activity');
+						return activity;
 					} else {
-						return renderNote(note);
+						return await renderNote(note);
 					}
 				});
 			case 'users':
@@ -123,7 +125,11 @@ export default class Resolver {
 				])
 				.then(([note, poll]) => renderQuestion({ id: note.userId }, note, poll));
 			case 'likes':
-				return NoteReactions.findOneByOrFail({ id: parsed.id }).then(reaction => renderActivity(renderLike(reaction, { uri: null })));
+				return NoteReactions.findOneByOrFail({ id: parsed.id }).then(async reaction => {
+					const activity = renderActivity(await renderLike(reaction, { uri: null }));
+					if (activity == null) throw new Error('failed to render like activity');
+					return activity;
+				});
 			case 'follows':
 				// rest should be <followee id>
 				if (parsed.rest == null || !/^\w+$/.test(parsed.rest)) throw new Error('resolveLocal: invalid follow URI');
@@ -131,9 +137,13 @@ export default class Resolver {
 				return Promise.all(
 					[parsed.id, parsed.rest].map(id => Users.findOneByOrFail({ id })),
 				)
-				.then(([follower, followee]) => renderActivity(renderFollow(follower, followee, url)));
+				.then(([follower, followee]) => {
+					const activity = renderActivity(renderFollow(follower, followee, url));
+					if (activity == null) throw new Error('failed to render follow activity');
+					return activity;
+				});
 			default:
-				throw new Error(`resolveLocal: type ${type} unhandled`);
+				throw new Error(`resolveLocal: type ${parsed.type} unhandled`);
 		}
 	}
 }

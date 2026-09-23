@@ -106,7 +106,7 @@ export default async (ctx: Koa.Context) => {
 
 			ctx.body = res;
 		} catch (e) {
-			ctx.throw(400, e);
+			ctx.throw(400, e instanceof Error ? e.message : String(e));
 		}
 	}
 };

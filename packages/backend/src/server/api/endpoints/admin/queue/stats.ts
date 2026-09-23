@@ -37,12 +37,23 @@ export const paramDef = {
 	required: [],
 } as const;
 
+const getQueueCounts = async (queue: { getJobCounts: () => Promise<Record<string, number>> }) => {
+	const counts = await queue.getJobCounts();
+	return {
+		waiting: counts.waiting,
+		active: counts.active,
+		completed: counts.completed,
+		failed: counts.failed,
+		delayed: counts.delayed,
+	};
+};
+
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps) => {
-	const deliverJobCounts = await deliverQueue.getJobCounts();
-	const inboxJobCounts = await inboxQueue.getJobCounts();
-	const dbJobCounts = await dbQueue.getJobCounts();
-	const objectStorageJobCounts = await objectStorageQueue.getJobCounts();
+	const deliverJobCounts = await getQueueCounts(deliverQueue);
+	const inboxJobCounts = await getQueueCounts(inboxQueue);
+	const dbJobCounts = await getQueueCounts(dbQueue);
+	const objectStorageJobCounts = await getQueueCounts(objectStorageQueue);
 
 	return {
 		deliver: deliverJobCounts,

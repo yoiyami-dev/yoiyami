@@ -111,7 +111,7 @@ function loadConfigBoot(): Config {
 			configLogger.error(exception);
 			process.exit(1);
 		}
-		if (exception.code === 'ENOENT') {
+		if (typeof exception === 'object' && exception !== null && 'code' in exception && exception.code === 'ENOENT') {
 			configLogger.error('Configuration file not found', null, true);
 			process.exit(1);
 		}
@@ -134,7 +134,7 @@ async function connectDb(): Promise<void> {
 		dbLogger.succ(`Connected: v${v}`);
 	} catch (e) {
 		dbLogger.error('Cannot connect', null, true);
-		dbLogger.error(e);
+		dbLogger.error(e instanceof Error ? e : String(e));
 		process.exit(1);
 	}
 }

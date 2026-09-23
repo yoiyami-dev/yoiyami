@@ -104,9 +104,7 @@ export const paramDef = {
 		receiveAnnouncementEmail: { type: 'boolean' },
 		alwaysMarkNsfw: { type: 'boolean' },
 		ffVisibility: { type: 'string', enum: ['public', 'followers', 'private'] },
-		pinnedPageId: { type: 'array', items: {
-			type: 'string', format: 'misskey:id',
-		} },
+		pinnedPageId: { type: 'string', format: 'misskey:id', nullable: true },
 		mutedWords: { type: 'array' },
 		mutedInstances: { type: 'array', items: {
 			type: 'string',
@@ -239,7 +237,7 @@ export default define(meta, paramDef, async (ps, _user, token) => {
 
 	// Publish meUpdated event
 	publishMainStream(user.id, 'meUpdated', iObj);
-	publishUserEvent(user.id, 'updateUserProfile', await UserProfiles.findOneBy({ userId: user.id }));
+	publishUserEvent(user.id, 'updateUserProfile', await UserProfiles.findOneByOrFail({ userId: user.id }));
 
 	// 鍵垢を解除したとき、溜まっていたフォローリクエストがあるならすべて承認
 	if (user.isLocked && ps.isLocked === false) {

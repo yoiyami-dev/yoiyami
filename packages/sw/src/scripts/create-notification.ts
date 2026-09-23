@@ -5,7 +5,7 @@ declare const self: ServiceWorkerGlobalScope;
 
 import { swLang } from '@/scripts/lang';
 import { cli } from '@/scripts/operations';
-import { pushNotificationDataMap } from '@/types';
+import { PushNotificationData, SwNotificationOptions } from '@/types';
 import getUserName from '@/scripts/get-user-name';
 import { I18n } from '@/scripts/i18n';
 import { getAccountFromId } from '@/scripts/get-account-from-id';
@@ -14,7 +14,7 @@ import * as url from '@/scripts/url';
 
 const iconUrl = (name: string) => `/static-assets/notification-badges/${name}.png`;
 
-export async function createNotification<K extends keyof pushNotificationDataMap>(data: pushNotificationDataMap[K]) {
+export async function createNotification(data: PushNotificationData) {
 	const n = await composeNotification(data);
 
 	if (n) {
@@ -25,7 +25,7 @@ export async function createNotification<K extends keyof pushNotificationDataMap
 	}
 }
 
-async function composeNotification<K extends keyof pushNotificationDataMap>(data: pushNotificationDataMap[K]): Promise<[string, NotificationOptions] | null> {
+async function composeNotification(data: PushNotificationData): Promise<[string, SwNotificationOptions] | null> {
 	if (!swLang.i18n) swLang.fetchLocale();
 	const i18n = await swLang.i18n as I18n<any>;
 	const { t } = i18n;
@@ -229,8 +229,8 @@ async function composeNotification<K extends keyof pushNotificationDataMap>(data
 
 				case 'app':
 						return [data.body.header || data.body.body, {
-							body: data.body.header && data.body.body,
-							icon: data.body.icon,
+							body: data.body.header ? data.body.body : undefined,
+							icon: data.body.icon ?? undefined,
 							data
 						}];
 
@@ -245,8 +245,9 @@ async function composeNotification<K extends keyof pushNotificationDataMap>(data
 					tag: `messaging:user:${data.body.userId}`,
 					data,
 					renotify: true,
-				}];
+					}];
 			}
+			if (data.body.group == null) return null;
 			return [t('_notification.youGotMessagingMessageFromGroup', { name: data.body.group.name }), {
 				icon: data.body.user.avatarUrl,
 				badge: iconUrl('comments'),

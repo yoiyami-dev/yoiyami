@@ -12,7 +12,11 @@ const logger = driveLogger.createSubLogger('downloader');
 
 type Args = {
 	url: string;
-	user: { id: User['id']; host: User['host'] } | null;
+	user: {
+		id: User['id'];
+		host: User['host'];
+		driveCapacityOverrideMb: User['driveCapacityOverrideMb'];
+	} | null;
 	folderId?: DriveFolder['id'] | null;
 	uri?: string | null;
 	sensitive?: boolean;

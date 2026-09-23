@@ -77,12 +77,12 @@ export const meta = {
 				properties: {
 					width: {
 						type: 'number',
-						optional: false, nullable: false,
+						optional: true, nullable: false,
 						example: 1280,
 					},
 					height: {
 						type: 'number',
-						optional: false, nullable: false,
+						optional: true, nullable: false,
 						example: 720,
 					},
 					avgColor: {
@@ -114,15 +114,15 @@ export const meta = {
 			},
 			accessKey: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 			},
 			thumbnailAccessKey: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 			},
 			webpublicAccessKey: {
 				type: 'string',
-				optional: false, nullable: false,
+				optional: false, nullable: true,
 			},
 			uri: {
 				type: 'string',
@@ -145,6 +145,14 @@ export const meta = {
 			isLink: {
 				type: 'boolean',
 				optional: false, nullable: false,
+			},
+			requestHeaders: {
+				type: 'object',
+				optional: true, nullable: true,
+			},
+			requestIp: {
+				type: 'string',
+				optional: true, nullable: true,
 			},
 		},
 	},
@@ -184,10 +192,35 @@ export default define(meta, paramDef, async (ps, me) => {
 		throw new ApiError(meta.errors.noSuchFile);
 	}
 
-	if (!me.isAdmin) {
-		delete file.requestIp;
-		delete file.requestHeaders;
-	}
+	const response = {
+		id: file.id,
+		createdAt: file.createdAt.toISOString(),
+		userId: file.userId,
+		userHost: file.userHost,
+		md5: file.md5,
+		name: file.name,
+		type: file.type,
+		size: file.size,
+		comment: file.comment,
+		blurhash: file.blurhash,
+		properties: file.properties,
+		storedInternal: file.storedInternal,
+		url: file.url,
+		thumbnailUrl: file.thumbnailUrl,
+		webpublicUrl: file.webpublicUrl,
+		accessKey: file.accessKey,
+		thumbnailAccessKey: file.thumbnailAccessKey,
+		webpublicAccessKey: file.webpublicAccessKey,
+		uri: file.uri,
+		src: file.src,
+		folderId: file.folderId,
+		isSensitive: file.isSensitive,
+		isLink: file.isLink,
+	};
 
-	return file;
+	return me.isAdmin ? {
+		...response,
+		requestHeaders: file.requestHeaders,
+		requestIp: file.requestIp,
+	} : response;
 });

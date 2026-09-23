@@ -90,6 +90,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 	logger.info(`Creating the Note: ${note.id}`);
 
 	// 投稿者をフェッチ
+	if (note.attributedTo == null) throw new Error('missing note author');
 	const actor = await resolvePerson(getOneApId(note.attributedTo), resolver) as CacheableRemoteUser;
 
 	// 投稿者が凍結されていたらスキップ

@@ -6,6 +6,7 @@ import config from '@/config/index.js';
 import { Users, Signins, UserProfiles, UserSecurityKeys, AttestationChallenges } from '@/models/index.js';
 import { ILocalUser } from '@/models/entities/user.js';
 import { genId } from '@/misc/gen-id.js';
+import { normalizeHttpHeaders } from '@/misc/normalize-http-headers.js';
 import { verifyLogin, hash } from '../2fa.js';
 import { randomBytes } from 'node:crypto';
 import { IsNull } from 'typeorm';
@@ -88,7 +89,7 @@ export default async (ctx: Koa.Context) => {
 			createdAt: new Date(),
 			userId: user.id,
 			ip: ctx.ip,
-			headers: ctx.headers,
+			headers: normalizeHttpHeaders(ctx.headers),
 			success: false,
 		});
 

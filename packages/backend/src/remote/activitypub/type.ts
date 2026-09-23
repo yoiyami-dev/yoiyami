@@ -2,14 +2,14 @@ export type obj = { [x: string]: any };
 export type ApObject = IObject | string | (IObject | string)[];
 
 export interface IObject {
-	'@context': string | string[] | obj | obj[];
+	'@context'?: string | string[] | obj | obj[];
 	type: string | string[];
 	id?: string;
-	summary?: string;
+	summary?: string | null;
 	published?: string;
 	cc?: ApObject;
 	to?: ApObject;
-	attributedTo: ApObject;
+	attributedTo?: ApObject;
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
@@ -20,7 +20,7 @@ export interface IObject {
 	icon?: any;
 	image?: any;
 	url?: ApObject;
-	href?: string;
+	href?: string | null;
 	tag?: IObject | IObject[];
 	sensitive?: boolean;
 }
@@ -110,9 +110,10 @@ export interface IPost extends IObject {
 		content: string;
 		mediaType: string;
 	};
+	_misskey_content?: string | null;
 	_misskey_quote?: string;
 	quoteUrl?: string;
-	_misskey_talk: boolean;
+	_misskey_talk?: boolean;
 }
 
 export interface IQuestion extends IObject {

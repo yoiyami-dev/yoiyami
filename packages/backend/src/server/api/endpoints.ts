@@ -628,7 +628,7 @@ const eps = [
 	['users/stats', ep___users_stats],
 	['admin/drive-capacity-override', ep___admin_driveCapOverride],
 	['fetch-rss', ep___fetchRss],
-];
+] as const;
 
 export interface IEndpointMeta {
 	readonly stability?: 'deprecated' | 'experimental' | 'stable';

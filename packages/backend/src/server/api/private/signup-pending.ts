@@ -30,6 +30,6 @@ export default async (ctx: Koa.Context) => {
 
 		signin(ctx, account);
 	} catch (e) {
-		ctx.throw(400, e);
+		ctx.throw(400, e instanceof Error ? e.message : String(e));
 	}
 };

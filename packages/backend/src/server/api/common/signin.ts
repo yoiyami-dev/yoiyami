@@ -1,12 +1,13 @@
 import Koa from 'koa';
 
 import config from '@/config/index.js';
-import { ILocalUser } from '@/models/entities/user.js';
+import { User } from '@/models/entities/user.js';
 import { Signins } from '@/models/index.js';
 import { genId } from '@/misc/gen-id.js';
+import { normalizeHttpHeaders } from '@/misc/normalize-http-headers.js';
 import { publishMainStream } from '@/services/stream.js';
 
-export default function(ctx: Koa.Context, user: ILocalUser, redirect = false) {
+export default function(ctx: Koa.Context, user: User, redirect = false) {
 	if (redirect) {
 		//#region Cookie
 		ctx.cookies.set('igi', user.token!, {
@@ -34,7 +35,7 @@ export default function(ctx: Koa.Context, user: ILocalUser, redirect = false) {
 			createdAt: new Date(),
 			userId: user.id,
 			ip: ctx.ip,
-			headers: ctx.headers,
+			headers: normalizeHttpHeaders(ctx.headers),
 			success: true,
 		}).then(x => Signins.findOneByOrFail(x.identifiers[0]));
 

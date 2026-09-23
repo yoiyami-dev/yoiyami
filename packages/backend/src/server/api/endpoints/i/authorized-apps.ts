@@ -31,7 +31,11 @@ export default define(meta, paramDef, async (ps, user) => {
 		},
 	});
 
-	return await Promise.all(tokens.map(token => Apps.pack(token.appId, user, {
-		detail: true,
-	})));
+	return (await Promise.all(tokens.map(async token => {
+		if (token.appId == null) return null;
+
+		return Apps.pack(token.appId, user, {
+			detail: true,
+		});
+	}))).filter((app): app is NonNullable<typeof app> => app != null);
 });

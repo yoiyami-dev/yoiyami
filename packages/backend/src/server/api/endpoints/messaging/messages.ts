@@ -138,4 +138,6 @@ export default define(meta, paramDef, async (ps, user) => {
 			populateGroup: false,
 		})));
 	}
+
+	throw new Error('Either userId or groupId is required');
 });

@@ -1,14 +1,13 @@
 import { refs, Schema } from '@/misc/schema.js';
 
 export function convertSchemaToOpenApiSchema(schema: Schema) {
-	const res: any = schema;
+	const res: Record<string, any> = { ...schema };
 
 	if (schema.type === 'object' && schema.properties) {
 		res.required = Object.entries(schema.properties).filter(([k, v]) => !v.optional).map(([k]) => k);
-
-		for (const k of Object.keys(schema.properties)) {
-			res.properties[k] = convertSchemaToOpenApiSchema(schema.properties[k]);
-		}
+		res.properties = Object.fromEntries(
+			Object.entries(schema.properties).map(([k, property]) => [k, convertSchemaToOpenApiSchema(property)]),
+		);
 	}
 
 	if (schema.type === 'array' && schema.items) {
