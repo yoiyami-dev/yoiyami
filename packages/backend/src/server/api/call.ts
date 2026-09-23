@@ -42,14 +42,13 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 			limitActor = getIpHash(ctx!.ip);
 		}
 
-		const limit = Object.assign({}, ep.meta.limit);
-
-		if (!limit.key) {
-			limit.key = ep.name;
-		}
+		const limit = {
+			...ep.meta.limit,
+			key: ep.meta.limit.key ?? ep.name,
+		};
 
 		// Rate limit
-		await limiter(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor).catch(e => {
+		await limiter(limit, limitActor).catch(e => {
 			throw new ApiError({
 				message: 'Rate limit exceeded. Please try again later.',
 				code: 'RATE_LIMIT_EXCEEDED',

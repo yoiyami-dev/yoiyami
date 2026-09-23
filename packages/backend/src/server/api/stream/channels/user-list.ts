@@ -10,7 +10,7 @@ export default class extends Channel {
 	public static requireCredential = false;
 	private listId: string;
 	public listUsers: User['id'][] = [];
-	private listUsersClock: NodeJS.Timer;
+	private listUsersClock: ReturnType<typeof setInterval>;
 
 	constructor(id: string, connection: Channel['connection']) {
 		super(id, connection);

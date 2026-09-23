@@ -80,6 +80,7 @@ type NodeInfo = {
 		nodeName?: any;
 		nodeDescription?: any;
 		description?: any;
+		themeColor?: string;
 		maintainer?: {
 			name?: any;
 			email?: any;

@@ -92,9 +92,9 @@ router.get(nodeinfo2_1path, async ctx => {
 router.get(nodeinfo2_0path, async ctx => {
 	const base = await cache.fetch(null, () => nodeinfo2());
 
-	delete base.software.repository;
+	const { repository: _repository, ...software } = base.software;
 
-	ctx.body = { version: '2.0', ...base };
+	ctx.body = { version: '2.0', ...base, software };
 	ctx.set('Cache-Control', 'public, max-age=600');
 });
 
