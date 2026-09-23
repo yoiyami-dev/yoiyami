@@ -10,6 +10,15 @@ export type SwMessage = {
 	[x: string]: any;
 };
 
+export type SwNotificationOptions = NotificationOptions & {
+	actions?: Array<{
+		action: string;
+		title: string;
+		icon?: string;
+	}>;
+	renotify?: boolean;
+};
+
 // Defined also @/services/push-notification.ts#L7-L14
 type pushNotificationDataSourceMap = {
 	notification: Misskey.entities.Notification;
