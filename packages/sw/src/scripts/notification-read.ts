@@ -1,7 +1,7 @@
 declare const self: ServiceWorkerGlobalScope;
 
 import { get } from 'idb-keyval';
-import { pushNotificationDataMap } from '@/types';
+import { PushNotificationData } from '@/types';
 import { api } from '@/scripts/operations';
 
 type Accounts = {
@@ -30,7 +30,7 @@ class SwNotificationReadManager {
 	}
 
 	// プッシュ通知の既読をサーバーに送信
-	public async read<K extends keyof pushNotificationDataMap>(data: pushNotificationDataMap[K]) {
+	public async read(data: PushNotificationData) {
 		if (data.type !== 'notification' || !(data.userId in this.accounts)) return;
 
 		const account = this.accounts[data.userId];

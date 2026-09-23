@@ -30,3 +30,5 @@ export type pushNotificationData<K extends keyof pushNotificationDataSourceMap> 
 export type pushNotificationDataMap = {
 	[K in keyof pushNotificationDataSourceMap]: pushNotificationData<K>;
 };
+
+export type PushNotificationData = pushNotificationDataMap[keyof pushNotificationDataMap];

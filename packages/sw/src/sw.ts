@@ -3,7 +3,7 @@ declare const self: ServiceWorkerGlobalScope;
 import { createEmptyNotification, createNotification } from '@/scripts/create-notification';
 import { swLang } from '@/scripts/lang';
 import { swNotificationRead } from '@/scripts/notification-read';
-import { pushNotificationDataMap } from '@/types';
+import { PushNotificationData } from '@/types';
 import * as swos from '@/scripts/operations';
 import { acct as getAcct } from '@/filters/user';
 
@@ -45,8 +45,8 @@ self.addEventListener('push', ev => {
 	ev.waitUntil(self.clients.matchAll({
 		includeUncontrolled: true,
 		type: 'window'
-	}).then(async <K extends keyof pushNotificationDataMap>(clients: readonly WindowClient[]) => {
-		const data: pushNotificationDataMap[K] = ev.data?.json();
+	}).then(async (clients: readonly WindowClient[]) => {
+		const data: PushNotificationData = ev.data?.json();
 
 		switch (data.type) {
 			// case 'driveFileCreated':
@@ -93,14 +93,14 @@ self.addEventListener('push', ev => {
 	}));
 });
 
-self.addEventListener('notificationclick', <K extends keyof pushNotificationDataMap>(ev: ServiceWorkerGlobalScopeEventMap['notificationclick']) => {
+self.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEventMap['notificationclick']) => {
 	ev.waitUntil((async () => {
 		if (_DEV_) {
 			console.log('notificationclick', ev.action, ev.notification.data);
 		}
 	
 		const { action, notification } = ev;
-		const data: pushNotificationDataMap[K] = notification.data;
+		const data: PushNotificationData = notification.data;
 		const { userId: id } = data;
 		let client: WindowClient | null = null;
 	
@@ -177,8 +177,8 @@ self.addEventListener('notificationclick', <K extends keyof pushNotificationData
 	})());
 });
 
-self.addEventListener('notificationclose', <K extends keyof pushNotificationDataMap>(ev: ServiceWorkerGlobalScopeEventMap['notificationclose']) => {
-	const data: pushNotificationDataMap[K] = ev.notification.data;
+self.addEventListener('notificationclose', (ev: ServiceWorkerGlobalScopeEventMap['notificationclose']) => {
+	const data: PushNotificationData = ev.notification.data;
 
 	if (data.type === 'notification') {
 		swNotificationRead.then(that => that.read(data));

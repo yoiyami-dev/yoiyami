@@ -5,7 +5,7 @@ declare const self: ServiceWorkerGlobalScope;
 
 import { swLang } from '@/scripts/lang';
 import { cli } from '@/scripts/operations';
-import { pushNotificationDataMap } from '@/types';
+import { PushNotificationData } from '@/types';
 import getUserName from '@/scripts/get-user-name';
 import { I18n } from '@/scripts/i18n';
 import { getAccountFromId } from '@/scripts/get-account-from-id';
@@ -14,7 +14,7 @@ import * as url from '@/scripts/url';
 
 const iconUrl = (name: string) => `/static-assets/notification-badges/${name}.png`;
 
-export async function createNotification<K extends keyof pushNotificationDataMap>(data: pushNotificationDataMap[K]) {
+export async function createNotification(data: PushNotificationData) {
 	const n = await composeNotification(data);
 
 	if (n) {
@@ -25,7 +25,7 @@ export async function createNotification<K extends keyof pushNotificationDataMap
 	}
 }
 
-async function composeNotification<K extends keyof pushNotificationDataMap>(data: pushNotificationDataMap[K]): Promise<[string, NotificationOptions] | null> {
+async function composeNotification(data: PushNotificationData): Promise<[string, NotificationOptions] | null> {
 	if (!swLang.i18n) swLang.fetchLocale();
 	const i18n = await swLang.i18n as I18n<any>;
 	const { t } = i18n;
