@@ -186,8 +186,9 @@ export default define(meta, paramDef, async (ps, me) => {
 		driveUsage: DriveFiles.calcDriveUsageOf(user),
 	});
 
-	result.followingCount = result.localFollowingCount + result.remoteFollowingCount;
-	result.followersCount = result.localFollowersCount + result.remoteFollowersCount;
-
-	return result;
+	return {
+		...result,
+		followingCount: result.localFollowingCount + result.remoteFollowingCount,
+		followersCount: result.localFollowersCount + result.remoteFollowersCount,
+	};
 });

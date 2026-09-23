@@ -88,8 +88,8 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps, user) => {
-	let recipientUser: User | null;
-	let recipientGroup: UserGroup | null;
+	let recipientUser: User | undefined;
+	let recipientGroup: UserGroup | undefined;
 
 	if (ps.userId != null) {
 		// Myself
@@ -113,11 +113,13 @@ export default define(meta, paramDef, async (ps, user) => {
 		}
 	} else if (ps.groupId != null) {
 		// Fetch recipient (group)
-		recipientGroup = await UserGroups.findOneBy({ id: ps.groupId! });
+		const group = await UserGroups.findOneBy({ id: ps.groupId });
 
-		if (recipientGroup == null) {
+		if (group == null) {
 			throw new ApiError(meta.errors.noSuchGroup);
 		}
+
+		recipientGroup = group;
 
 		// check joined
 		const joining = await UserGroupJoinings.findOneBy({

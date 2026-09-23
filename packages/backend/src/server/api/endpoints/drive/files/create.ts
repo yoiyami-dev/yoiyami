@@ -80,7 +80,7 @@ export default define(meta, paramDef, async (ps, user, _, file, cleanup, ip, hea
 		name = null;
 	}
 
-	const meta = await fetchMeta();
+	const instanceMeta = await fetchMeta();
 
 	try {
 		// Create file
@@ -92,8 +92,8 @@ export default define(meta, paramDef, async (ps, user, _, file, cleanup, ip, hea
 			folderId: ps.folderId,
 			force: ps.force,
 			sensitive: ps.isSensitive,
-			requestIp: meta.enableIpLogging ? ip : null,
-			requestHeaders: meta.enableIpLogging ? headers : null,
+			requestIp: instanceMeta.enableIpLogging ? ip : null,
+			requestHeaders: instanceMeta.enableIpLogging ? headers : null,
 		});
 		return await DriveFiles.pack(driveFile, { self: true });
 	} catch (e) {
