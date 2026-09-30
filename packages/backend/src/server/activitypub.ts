@@ -1,5 +1,4 @@
 import Router from '@koa/router';
-import json from 'koa-json-body';
 import httpSignature from '@peertube/http-signature';
 
 import { renderActivity } from '@/remote/activitypub/renderer/index.js';
@@ -19,6 +18,7 @@ import { In, IsNull, Not } from 'typeorm';
 import { renderLike } from '@/remote/activitypub/renderer/like.js';
 import { getUserKeypair } from '@/misc/keypair-store.js';
 import renderFollow from '@/remote/activitypub/renderer/follow.js';
+import { parseInboxBody } from './activitypub/inbox-body.js';
 
 // Init router
 const router = new Router();
@@ -59,8 +59,8 @@ export function setResponseType(ctx: Router.RouterContext) {
 }
 
 // inbox
-router.post('/inbox', json(), inbox);
-router.post('/users/:user/inbox', json(), inbox);
+router.post('/inbox', parseInboxBody, inbox);
+router.post('/users/:user/inbox', parseInboxBody, inbox);
 
 // note
 router.get('/notes/:note', async (ctx, next) => {
