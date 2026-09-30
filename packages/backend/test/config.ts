@@ -107,4 +107,11 @@ describe('configuration loader', () => {
 			/DATABASE_PORT must be an integer/,
 		);
 	});
+
+	it('rejects invalid allowed private networks at startup', () => {
+		assert.deepStrictEqual(resolveSource({ allowedPrivateNetworks: ['10.0.0.0/8', 'fd00::/8'] }, environmentOnly).allowedPrivateNetworks, ['10.0.0.0/8', 'fd00::/8']);
+		for (const value of ['10.0.0.0/33', 'fd00::/129', '127.1/8']) {
+			assert.throws(() => resolveSource({ allowedPrivateNetworks: [value] }, environmentOnly), /Invalid allowedPrivateNetworks CIDR/);
+		}
+	});
 });

@@ -48,7 +48,7 @@
 		"got": "12.6.1",
 		"hpagent": "0.1.2",
 		"ioredis": "5.11.1",
-		"ip-address": "10.3.1",
+		"ipaddr.js": "2.2.0",
 		"is-svg": "6.1.0",
 		"js-yaml": "4.3.2",
 		"jsdom": "20.0.0",
