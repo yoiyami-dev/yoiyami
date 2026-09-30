@@ -2,7 +2,7 @@ import * as crypto from 'node:crypto';
 import jsonld from 'jsonld';
 import { CONTEXTS } from './contexts.js';
 import fetch from 'node-fetch';
-import { httpAgent, httpsAgent } from '@/misc/fetch.js';
+import { getAgentByUrl } from '@/misc/fetch.js';
 
 // RsaSignature2017 based from https://github.com/transmute-industries/RsaSignature2017
 
@@ -115,7 +115,7 @@ export class LdSignature {
 			},
 			// TODO
 			//timeout: this.loderTimeout,
-			agent: u => u.protocol === 'http:' ? httpAgent : httpsAgent,
+			agent: getAgentByUrl,
 		}).then(res => {
 			if (!res.ok) {
 				throw `${res.status} ${res.statusText}`;

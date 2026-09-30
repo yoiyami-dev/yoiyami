@@ -1,9 +1,11 @@
 import push from 'web-push';
+import * as https from 'node:https';
 import config from '@/config/index.js';
 import { SwSubscriptions } from '@/models/index.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
 import { Packed } from '@/misc/schema.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
+import { getAgentByUrl } from '@/misc/fetch.js';
 
 // Defined also packages/sw/types.ts#L14-L21
 type pushNotificationsTypes = {
@@ -52,6 +54,15 @@ export async function pushNotification<T extends keyof pushNotificationsTypes>(u
 	});
 
 	for (const subscription of subscriptions) {
+		let agent: https.Agent;
+		try {
+			const endpoint = new URL(subscription.endpoint);
+			if (endpoint.protocol !== 'https:') continue;
+			agent = getAgentByUrl(endpoint) as https.Agent;
+		} catch {
+			// A previously stored unsafe endpoint must not block other subscriptions.
+			continue;
+		}
 		const pushSubscription = {
 			endpoint: subscription.endpoint,
 			keys: {
@@ -66,7 +77,7 @@ export async function pushNotification<T extends keyof pushNotificationsTypes>(u
 			userId,
 			dateTime: (new Date()).getTime(),
 		}), {
-			proxy: config.proxy,
+			agent,
 		}).catch((err: any) => {
 			//swLogger.info(err.statusCode);
 			//swLogger.info(err.headers);

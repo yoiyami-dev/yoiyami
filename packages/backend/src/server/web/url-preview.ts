@@ -37,10 +37,12 @@ export const urlPreviewHandler = async (ctx: Koa.Context) => {
 	logger.info(`(Proxy) Getting preview of ${url}@${lang} ...`);
 
 	try {
+		// This policy governs Yoiyami -> Summaly Proxy only. The proxy must
+		// independently reject private/special IPs, pin DNS results, and check redirects.
 		const summary = await getJson<UrlPreviewSummary>(`${meta.summalyProxy}?${query({
 			url: url,
 			lang: lang ?? 'ja-JP',
-		})}`);
+		})}`, 'application/json, */*', 10000, undefined, 'allow-configured-private');
 
 		logger.succ(`Got preview of ${url}: ${summary.title}`);
 

@@ -290,9 +290,6 @@ importers:
       bullmq:
         specifier: 6.3.8
         version: 6.3.8(ioredis@5.11.1(supports-color@8.1.1))(pg@8.8.0)
-      cacheable-lookup:
-        specifier: 6.1.0
-        version: 6.1.0
       cbor:
         specifier: 8.1.0
         version: 8.1.0
@@ -2804,10 +2801,6 @@ packages:
   cache-base@1.0.1:
     resolution: {integrity: sha512-AKcdTnFSWATd5/GCPRxr2ChwIJ85CeyrEyjRHlKxQ56d4XJMGym0uAiKn0xbLOGOl3+yRpOTi484dVCEc5AUzQ==}
     engines: {node: '>=0.10.0'}
-
-  cacheable-lookup@6.1.0:
-    resolution: {integrity: sha512-KJ/Dmo1lDDhmW2XDPMo+9oiy/CeqosPguPCrgcVzKyZrL6pM1gU2GmPY/xo6OQPTUaA/c0kwHuywB4E6nmT9ww==}
-    engines: {node: '>=10.6.0'}
 
   cacheable-lookup@7.0.0:
     resolution: {integrity: sha512-+qJyx4xiKra8mZrcwhjMRMUhD5NR1R8esPkzIYxX96JiecFoxAXFuz/GpR3+ev4PE1WamHip78wV0vcmPQtp8w==}
@@ -9376,8 +9369,6 @@ snapshots:
       to-object-path: 0.3.0
       union-value: 1.0.1
       unset-value: 1.0.0
-
-  cacheable-lookup@6.1.0: {}
 
   cacheable-lookup@7.0.0: {}
 

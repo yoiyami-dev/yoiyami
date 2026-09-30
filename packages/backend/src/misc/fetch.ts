@@ -1,12 +1,9 @@
-import * as http from 'node:http';
-import * as https from 'node:https';
 import { URL } from 'node:url';
-import CacheableLookup from 'cacheable-lookup';
 import fetch from 'node-fetch';
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import config from '@/config/index.js';
+import { assertOutboundUrl, createOutboundAgents, parseAllowedPrivateNetworks, policyForOutboundHop, type OutboundPolicy } from './outbound-http.js';
 
-export async function getJson<T = unknown>(url: string, accept = 'application/json, */*', timeout = 10000, headers?: Record<string, string>): Promise<T> {
+export async function getJson<T = unknown>(url: string, accept = 'application/json, */*', timeout = 10000, headers?: Record<string, string>, policy: OutboundPolicy = 'public-only'): Promise<T> {
 	const res = await getResponse({
 		url,
 		method: 'GET',
@@ -15,6 +12,7 @@ export async function getJson<T = unknown>(url: string, accept = 'application/js
 			Accept: accept,
 		}, headers || {}),
 		timeout,
+		policy,
 	});
 
 	return await res.json() as T;
@@ -34,8 +32,11 @@ export async function getHtml(url: string, accept = 'text/html, */*', timeout = 
 	return await res.text();
 }
 
-export async function getResponse(args: { url: string, method: string, body?: string, headers: Record<string, string>, timeout?: number, size?: number }) {
+export async function getResponse(args: { url: string, method: string, body?: string, headers: Record<string, string>, timeout?: number, size?: number, policy?: OutboundPolicy }) {
 	const timeout = args.timeout || 10 * 1000;
+	const policy = args.policy ?? 'public-only';
+	const original = new URL(args.url);
+	assertOutboundUrl(original, policy, allowedNetworks);
 
 	const controller = new AbortController();
 	setTimeout(() => {
@@ -47,7 +48,7 @@ export async function getResponse(args: { url: string, method: string, body?: st
 		headers: args.headers,
 		body: args.body,
 		size: args.size || 10 * 1024 * 1024,
-		agent: getAgentByUrl,
+		agent: url => getAgentByUrl(url, false, policyForOutboundHop(original, url, policy)),
 		signal: controller.signal,
 	});
 
@@ -58,71 +59,39 @@ export async function getResponse(args: { url: string, method: string, body?: st
 	return res;
 }
 
-const cache = new CacheableLookup({
-	maxTtl: 3600,	// 1hours
-	errorTtl: 30,	// 30secs
-	lookup: false,	// nativeのdns.lookupにfallbackしない
-});
-
-/**
- * Get http non-proxy agent
- */
-const _http = new http.Agent({
-	keepAlive: true,
-	keepAliveMsecs: 30 * 1000,
-	lookup: cache.lookup,
-} as http.AgentOptions);
-
-/**
- * Get https non-proxy agent
- */
-const _https = new https.Agent({
-	keepAlive: true,
-	keepAliveMsecs: 30 * 1000,
-	lookup: cache.lookup,
-} as https.AgentOptions);
-
+const allowedNetworks = parseAllowedPrivateNetworks(config.allowedPrivateNetworks);
 const maxSockets = Math.max(256, config.deliverJobConcurrency || 128);
-
-/**
- * Get http proxy or non-proxy agent
- */
-export const httpAgent = config.proxy
-	? new HttpProxyAgent({
-		keepAlive: true,
-		keepAliveMsecs: 30 * 1000,
-		maxSockets,
-		maxFreeSockets: 256,
-		scheduling: 'lifo',
-		proxy: config.proxy,
-	})
-	: _http;
-
-/**
- * Get https proxy or non-proxy agent
- */
-export const httpsAgent = config.proxy
-	? new HttpsProxyAgent({
-		keepAlive: true,
-		keepAliveMsecs: 30 * 1000,
-		maxSockets,
-		maxFreeSockets: 256,
-		scheduling: 'lifo',
-		proxy: config.proxy,
-	})
-	: _https;
+const publicDirect = createOutboundAgents({ policy: 'public-only', maxSockets });
+const publicProxied = config.proxy ? createOutboundAgents({ policy: 'public-only', proxy: config.proxy, maxSockets }) : publicDirect;
+const configuredAgents = new Map<string, ReturnType<typeof createOutboundAgents>>();
 
 /**
  * Get agent by URL
  * @param url URL
  * @param bypassProxy Allways bypass proxy
  */
-export function getAgentByUrl(url: URL, bypassProxy = false) {
-	if (bypassProxy || (config.proxyBypassHosts || []).includes(url.hostname)) {
-		return url.protocol === 'http:' ? _http : _https;
+export function getAgentByUrl(url: URL, bypassProxy = false, policy: OutboundPolicy = 'public-only', allowPrivateSubdomains = false) {
+	assertOutboundUrl(url, policy, allowedNetworks);
+	const direct = bypassProxy || (config.proxyBypassHosts || []).includes(url.hostname);
+	let agents;
+	if (policy === 'public-only') {
+		agents = direct ? publicDirect : publicProxied;
 	} else {
-		return url.protocol === 'http:' ? httpAgent : httpsAgent;
+		const key = `${direct ? 'direct' : 'proxy'}:${url.hostname}:${allowPrivateSubdomains}`;
+		agents = configuredAgents.get(key);
+		if (!agents) {
+			agents = createOutboundAgents({
+				policy,
+				allowedPrivateNetworks: config.allowedPrivateNetworks,
+				privateHostnames: [url.hostname.replace(/^\[/, '').replace(/\]$/, '')],
+				allowPrivateSubdomains,
+				proxy: direct ? undefined : config.proxy,
+				maxSockets,
+			});
+			configuredAgents.set(key, agents);
+		}
 	}
+	return url.protocol === 'http:' ? agents.http : agents.https;
 }
 
 export class StatusError extends Error {

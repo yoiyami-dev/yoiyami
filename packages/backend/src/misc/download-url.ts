@@ -1,16 +1,28 @@
 import * as fs from 'node:fs';
+import * as http from 'node:http';
+import * as https from 'node:https';
 import * as stream from 'node:stream';
 import * as util from 'node:util';
 import got, * as Got from 'got';
-import { httpAgent, httpsAgent, StatusError } from './fetch.js';
+import { getAgentByUrl, StatusError } from './fetch.js';
 import config from '@/config/index.js';
 import chalk from 'chalk';
 import Logger from '@/services/logger.js';
-import { isIpInCidr, isPrivateIp as isPrivateIpAddress } from './ip.js';
+import { assertOutboundUrl } from './outbound-http.js';
 
 const pipeline = util.promisify(stream.pipeline);
 
+function agentsForUrl(url: URL) {
+	const httpUrl = new URL(url);
+	httpUrl.protocol = 'http:';
+	const httpsUrl = new URL(url);
+	httpsUrl.protocol = 'https:';
+	return { http: getAgentByUrl(httpUrl) as http.Agent, https: getAgentByUrl(httpsUrl) as https.Agent };
+}
+
 export async function downloadUrl(url: string, path: string): Promise<void> {
+	const target = new URL(url);
+	assertOutboundUrl(target, 'public-only', []);
 	const logger = new Logger('download');
 
 	logger.info(`Downloading ${chalk.cyan(url)} ...`);
@@ -32,22 +44,20 @@ export async function downloadUrl(url: string, path: string): Promise<void> {
 			send: timeout,
 			request: operationTimeout,	// whole operation timeout
 		},
-		agent: {
-			http: httpAgent,
-			https: httpsAgent,
-		},
+		agent: agentsForUrl(target),
 		http2: false,	// default
 		retry: {
 			limit: 0,
 		},
+		hooks: {
+			beforeRedirect: [options => {
+				if (!options.url) throw new Error('Redirect URL is missing');
+				const redirect = new URL(String(options.url));
+				assertOutboundUrl(redirect, 'public-only', []);
+				options.agent = agentsForUrl(redirect);
+			}],
+		},
 	}).on('response', (res: Got.Response) => {
-		if ((process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') && !config.proxy && res.ip) {
-			if (isPrivateIp(res.ip)) {
-				logger.warn(`Blocked address: ${res.ip}`);
-				req.destroy();
-			}
-		}
-
 		const contentLength = res.headers['content-length'];
 		if (contentLength != null) {
 			const size = Number(contentLength);
@@ -74,14 +84,4 @@ export async function downloadUrl(url: string, path: string): Promise<void> {
 	}
 
 	logger.succ(`Download finished: ${chalk.cyan(url)}`);
-}
-
-function isPrivateIp(ip: string): boolean {
-	for (const net of config.allowedPrivateNetworks || []) {
-		if (isIpInCidr(ip, net)) {
-			return false;
-		}
-	}
-
-	return isPrivateIpAddress(ip);
 }
