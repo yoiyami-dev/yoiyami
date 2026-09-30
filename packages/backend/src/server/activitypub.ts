@@ -1,5 +1,4 @@
 import Router from '@koa/router';
-import httpSignature from '@peertube/http-signature';
 
 import { renderActivity } from '@/remote/activitypub/renderer/index.js';
 import renderNote from '@/remote/activitypub/renderer/note.js';
@@ -19,26 +18,15 @@ import { renderLike } from '@/remote/activitypub/renderer/like.js';
 import { getUserKeypair } from '@/misc/keypair-store.js';
 import renderFollow from '@/remote/activitypub/renderer/follow.js';
 import { parseInboxBody } from './activitypub/inbox-body.js';
+import { createInboxHandler } from './activitypub/inbox.js';
+import config from '@/config/index.js';
 
 // Init router
 const router = new Router();
 
 //#region Routing
 
-function inbox(ctx: Router.RouterContext) {
-	let signature;
-
-	try {
-		signature = httpSignature.parseRequest(ctx.req, { 'headers': [] });
-	} catch (e) {
-		ctx.status = 401;
-		return;
-	}
-
-	processInbox(ctx.request.body, signature);
-
-	ctx.status = 202;
-}
+const inbox = createInboxHandler(config.host, processInbox);
 
 const ACTIVITY_JSON = 'application/activity+json; charset=utf-8';
 const LD_JSON = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"; charset=utf-8';
