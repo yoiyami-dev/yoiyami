@@ -53,6 +53,8 @@ jobs:
       run: pnpm build
     - name: Test
       run: pnpm mocha
+    - name: ActivityPub inbox ingress
+      run: pnpm --dir packages/backend test:inbox
 
   e2e:
     runs-on: ubuntu-latest
