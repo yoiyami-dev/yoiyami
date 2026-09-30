@@ -141,6 +141,9 @@ id: 'aid'
 # Sign to ActivityPub GET request (default: false)
 #signToActivityPubGet: true
 
+# Only administrator-configured destinations (for example Summaly Proxy and
+# object storage) may use these exceptions. User supplied URLs stay public-only.
+# Invalid CIDRs fail configuration loading.
 #allowedPrivateNetworks: [
 #  '127.0.0.1/32'
 #]

@@ -15,8 +15,8 @@ export function getS3(meta: Meta) {
 	const endpoint = getObjectStorageEndpoint(meta);
 	const agentUrl = endpoint ?? new URL(`${meta.objectStorageUseSSL ? 'https' : 'http'}://example.net`);
 
-	const httpAgent = getAgentByUrl(new URL(`http://${agentUrl.host}`), !meta.objectStorageUseProxy);
-	const httpsAgent = getAgentByUrl(new URL(`https://${agentUrl.host}`), !meta.objectStorageUseProxy);
+	const httpAgent = getAgentByUrl(new URL(`http://${agentUrl.host}`), !meta.objectStorageUseProxy, 'allow-configured-private', true);
+	const httpsAgent = getAgentByUrl(new URL(`https://${agentUrl.host}`), !meta.objectStorageUseProxy, 'allow-configured-private', true);
 
 	return new S3Client({
 		endpoint: endpoint?.toString(),

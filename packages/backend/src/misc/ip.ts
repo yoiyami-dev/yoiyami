@@ -1,79 +1,60 @@
-import { Address4, Address6 } from 'ip-address';
+import ipaddr from 'ipaddr.js';
 
-// Addresses that must never be fetched by the server unless explicitly
-// allowed by config.allowedPrivateNetworks. This covers private, loopback,
-// link-local, documentation, special-use, and multicast ranges.
-const privateIpv4Ranges = [
-	'0.0.0.0/8',
-	'10.0.0.0/8',
-	'100.64.0.0/10',
-	'127.0.0.0/8',
-	'169.254.0.0/16',
-	'172.16.0.0/12',
-	'192.0.0.0/24',
-	'192.0.2.0/24',
-	'192.31.196.0/24',
-	'192.52.193.0/24',
-	'192.88.99.0/24',
-	'192.168.0.0/16',
-	'192.175.48.0/24',
-	'198.18.0.0/15',
-	'198.51.100.0/24',
-	'203.0.113.0/24',
-	'240.0.0.0/4',
-	'255.255.255.255/32',
-];
+export type ParsedAddress = ipaddr.IPv4 | ipaddr.IPv6;
+export type ParsedCidr = [ParsedAddress, number];
 
-const privateIpv6Ranges = [
-	'::/128',
-	'::1/128',
-	'::ffff:0.0.0.0/96',
-	'64:ff9b::/96',
-	'100::/64',
-	'2001::/32',
-	'2001:20::/28',
-	'2001:db8::/32',
-	'2002::/16',
-	'fc00::/7',
-	'fe80::/10',
-	'ff00::/8',
-];
-
-export function isPrivateIp(ip: string): boolean {
-	if (Address4.isValid(ip)) {
-		return privateIpv4Ranges.some(range => new Address4(ip).isInSubnet(new Address4(range)));
-	}
-
-	if (Address6.isValid(ip)) {
-		return privateIpv6Ranges.some(range => new Address6(ip).isInSubnet(new Address6(range)));
-	}
-
-	// Fail closed for malformed resolver output.
-	return true;
+/** Strictly parse an IP address and collapse IPv4-mapped IPv6 to IPv4. */
+export function parseIp(value: string): ParsedAddress {
+	if (ipaddr.IPv4.isValidFourPartDecimal(value)) return ipaddr.IPv4.parse(value);
+	if (!ipaddr.IPv6.isValid(value) || value.includes('%')) throw new Error(`Invalid IP address: ${value}`);
+	const address = ipaddr.IPv6.parse(value);
+	return address.isIPv4MappedAddress() ? address.toIPv4Address() : address;
 }
 
-export function isIpInCidr(ip: string, cidr: string): boolean {
+export function parseCidr(value: string): ParsedCidr {
+	const parts = value.split('/');
+	if (parts.length !== 2 || !/^\d+$/.test(parts[1])) throw new Error(`Invalid CIDR: ${value}`);
+	const address = parseIp(parts[0]);
+	let prefix = Number(parts[1]);
+	if (address.kind() === 'ipv4' && parts[0].includes(':')) {
+		// A mapped /96 prefix represents IPv4 /0; narrower mapped CIDRs
+		// can be compared using the embedded IPv4 prefix.
+		if (prefix < 96 || prefix > 128) throw new Error(`Invalid CIDR: ${value}`);
+		prefix -= 96;
+	}
+	const max = address.kind() === 'ipv4' ? 32 : 128;
+	if (!Number.isInteger(prefix) || prefix < 0 || prefix > max) throw new Error(`Invalid CIDR: ${value}`);
+	return [address, prefix];
+}
+
+export function isIpInCidr(ip: string, cidr: string | ParsedCidr): boolean {
+	const address = parseIp(ip);
+	const [network, prefix] = typeof cidr === 'string' ? parseCidr(cidr) : cidr;
+	return address.kind() === network.kind() && address.match(network, prefix);
+}
+
+const documentationV6 = parseCidr('3fff::/20');
+const globalV6 = parseCidr('2000::/3');
+
+export function isBlockedOutboundAddress(ip: string): boolean {
+	let address: ParsedAddress;
 	try {
-		if (Address4.isValid(ip) && Address4.isValid(cidr)) {
-			return new Address4(ip).isInSubnet(new Address4(cidr));
-		}
-		if (Address6.isValid(ip) && Address6.isValid(cidr)) {
-			return new Address6(ip).isInSubnet(new Address6(cidr));
-		}
+		address = parseIp(ip);
 	} catch {
-		// Invalid configured networks are ignored by this check.
+		return true;
+	}
+	if (address.range() !== 'unicast') return true;
+	if (address.kind() === 'ipv6') {
+		// ipaddr.js labels some non-global IPv6 and the newer documentation
+		// prefix as unicast; only global unicast is suitable for public fetches.
+		return !address.match(globalV6[0], globalV6[1]) || address.match(documentationV6[0], documentationV6[1]);
 	}
 	return false;
 }
 
 export function getIpHash(ip: string): string {
-	if (Address4.isValid(ip)) {
-		return `ip-${new Address4(ip).bigInt().toString(36)}`;
-	}
-
-	if (Address6.isValid(ip)) {
-		return `ip-${BigInt(`0b${new Address6(ip).mask(64)}`).toString(36)}`;
-	}
-
-	throw new Error('Invalid IP address');
+	const address = parseIp(ip);
+	const bytes = address.toByteArray().slice(0, address.kind() === 'ipv4' ? 4 : 8);
+	const value = bytes.reduce((result, byte) => (result << 8n) | BigInt(byte), 0n);
+	return `ip-${value.toString(36)}`;
 }

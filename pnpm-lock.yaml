@@ -290,9 +290,6 @@ importers:
       bullmq:
         specifier: 6.3.8
         version: 6.3.8(ioredis@5.11.1(supports-color@8.1.1))(pg@8.8.0)
-      cacheable-lookup:
-        specifier: 6.1.0
-        version: 6.1.0
       cbor:
         specifier: 8.1.0
         version: 8.1.0
@@ -341,9 +338,9 @@ importers:
       ioredis:
         specifier: 5.11.1
         version: 5.11.1(supports-color@8.1.1)
-      ip-address:
-        specifier: 10.3.1
-        version: 10.3.1
+      ipaddr.js:
+        specifier: 2.2.0
+        version: 2.2.0
       is-svg:
         specifier: 6.1.0
         version: 6.1.0
@@ -2805,10 +2802,6 @@ packages:
     resolution: {integrity: sha512-AKcdTnFSWATd5/GCPRxr2ChwIJ85CeyrEyjRHlKxQ56d4XJMGym0uAiKn0xbLOGOl3+yRpOTi484dVCEc5AUzQ==}
     engines: {node: '>=0.10.0'}
 
-  cacheable-lookup@6.1.0:
-    resolution: {integrity: sha512-KJ/Dmo1lDDhmW2XDPMo+9oiy/CeqosPguPCrgcVzKyZrL6pM1gU2GmPY/xo6OQPTUaA/c0kwHuywB4E6nmT9ww==}
-    engines: {node: '>=10.6.0'}
-
   cacheable-lookup@7.0.0:
     resolution: {integrity: sha512-+qJyx4xiKra8mZrcwhjMRMUhD5NR1R8esPkzIYxX96JiecFoxAXFuz/GpR3+ev4PE1WamHip78wV0vcmPQtp8w==}
     engines: {node: '>=14.16'}
@@ -4505,9 +4498,9 @@ packages:
     resolution: {integrity: sha512-ehuGcf94bQXhfagULNXrJdfnWO38v070jxSx/qE87Kjzmu2fU7ro5EFAb+OPituLqgfyuQaym5DlrNydW2sJ9A==}
     engines: {node: '>=12.22.0'}
 
-  ip-address@10.3.1:
-    resolution: {integrity: sha512-1e9d3kb97NHJTIJDZW9rKqW2h6+dFa50Dy0fpPSMQp2ADje5gvKsXmdiK6dwY5t76TaTt5+P5N1Y/LoToIxP6g==}
-    engines: {node: '>= 12'}
+  ipaddr.js@2.2.0:
+    resolution: {integrity: sha512-Ag3wB2o37wslZS19hZqorUnrnzSkpOVy+IiiDEiTqNubEYpYuHWIf6K4psgN2ZWKExS4xhVCrRVfb/wfW8fWJA==}
+    engines: {node: '>= 10'}
 
   is-absolute@1.0.0:
     resolution: {integrity: sha512-dOWoqflvcydARa360Gvv18DZ/gRuHKi2NU/wU5X1ZFzdYfH29nkiNZsF3mp4OJ3H4yo9Mx8A/uAGNzpzPN3yBA==}
@@ -9377,8 +9370,6 @@ snapshots:
       union-value: 1.0.1
       unset-value: 1.0.0
 
-  cacheable-lookup@6.1.0: {}
-
   cacheable-lookup@7.0.0: {}
 
   cacheable-request@10.2.14:
@@ -11352,7 +11343,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ip-address@10.3.1: {}
+  ipaddr.js@2.2.0: {}
 
   is-absolute@1.0.0:
     dependencies:

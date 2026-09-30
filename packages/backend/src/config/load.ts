@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import * as yaml from 'js-yaml';
 import { Config, Source, ResolvedSource, Mixin } from './types.js';
+import { parseCidr } from '../misc/ip.js';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -86,6 +87,13 @@ export function loadSource(env: Environment): Source {
 
 /** Resolve environment overrides and validate the settings needed at startup. */
 export function resolveSource(source: Source, env: Environment): ResolvedSource {
+	if (source.allowedPrivateNetworks !== undefined) {
+		if (!Array.isArray(source.allowedPrivateNetworks)) throw new Error('allowedPrivateNetworks must be an array of CIDRs');
+		for (const network of source.allowedPrivateNetworks) {
+			if (typeof network !== 'string') throw new Error('allowedPrivateNetworks must contain only CIDRs');
+			try { parseCidr(network); } catch { throw new Error(`Invalid allowedPrivateNetworks CIDR: ${network}`); }
+		}
+	}
 	const db = source.db ?? {};
 	const redis = source.redis ?? {};
 
