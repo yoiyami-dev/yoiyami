@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import http from 'node:http';
 import { PassThrough } from 'node:stream';
 import { test } from 'node:test';
+import Koa from 'koa';
+import Router from '@koa/router';
 import httpSignature from '@peertube/http-signature';
 import { parseInboxBody } from '../src/server/activitypub/inbox-body.ts';
 import { createInboxHandler } from '../src/server/activitypub/inbox.ts';
@@ -125,4 +128,49 @@ test('inbox body size limit stops parsing before queueing', async () => {
 	assert.equal(ctx.status, 413);
 	assert.equal(continued, false);
 	assert.equal(queued.length, 0);
+});
+
+test('content-encoded bodies are rejected before queueing', async () => {
+	const options = requestOptions();
+	options.headers['content-encoding'] = 'gzip';
+	const { ctx, queued, continued } = await deliver(options);
+	assert.equal(ctx.status, 415);
+	assert.equal(continued, false);
+	assert.equal(queued.length, 0);
+});
+
+test('Koa routes stop invalid requests before the queue', async () => {
+	const app = new Koa();
+	const router = new Router();
+	const queued = [];
+	const handler = createInboxHandler('local.test', body => queued.push(body));
+	router.post('/inbox', parseInboxBody, handler);
+	router.post('/users/:user/inbox', parseInboxBody, handler);
+	app.use(router.routes());
+	const server = http.createServer(app.callback());
+	await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+	try {
+		async function post(options) {
+			return await new Promise((resolve, reject) => {
+				const req = http.request({
+					host: '127.0.0.1',
+					port: server.address().port,
+					method: 'POST',
+					path: options.path,
+					headers: { ...options.headers, 'content-type': 'application/activity+json', 'content-length': Buffer.byteLength(options.body) },
+				}, res => {
+					res.resume();
+					res.on('end', () => resolve(res.statusCode));
+				});
+				req.on('error', reject);
+				req.end(options.body);
+			});
+		}
+		assert.equal(await post(requestOptions({ path: '/users/a/inbox' })), 202);
+		assert.equal(queued.length, 1);
+		assert.equal(await post(requestOptions({ digest: null })), 401);
+		assert.equal(queued.length, 1);
+	} finally {
+		await new Promise(resolve => server.close(resolve));
+	}
 });
