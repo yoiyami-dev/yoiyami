@@ -65,7 +65,14 @@ export default async (ctx: Koa.Context) => {
 			return;
 		}
 
-		RegistrationTickets.delete(ticket.id);
+		// Claim the ticket atomically: only one concurrent request can delete
+		// the row, so losers are rejected instead of registering in parallel.
+		const { affected } = await RegistrationTickets.delete({ id: ticket.id });
+
+		if (affected === 0) {
+			ctx.status = 400;
+			return;
+		}
 	}
 
 	if (instance.emailRequiredForSignup) {
