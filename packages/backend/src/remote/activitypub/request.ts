@@ -3,6 +3,8 @@ import { getUserKeypair } from '@/misc/keypair-store.js';
 import { User } from '@/models/entities/user.js';
 import { getResponse } from '../../misc/fetch.js';
 import { createSignedPost, createSignedGet } from './ap-request.js';
+import { parseActivityResponse } from './fetch.js';
+import { FetchAllowSoftFailMask } from './misc/check-against-url.js';
 
 export default async (user: { id: User['id'] }, url: string, object: any) => {
 	const body = JSON.stringify(object);
@@ -34,7 +36,7 @@ export default async (user: { id: User['id'] }, url: string, object: any) => {
  * @param user http-signature user
  * @param url URL to fetch
  */
-export async function signedGet(url: string, user: { id: User['id'] }) {
+export async function signedGet(url: string, user: { id: User['id'] }, allowSoftfail: FetchAllowSoftFailMask = FetchAllowSoftFailMask.Strict) {
 	const keypair = await getUserKeypair(user.id);
 
 	const req = createSignedGet({
@@ -54,5 +56,5 @@ export async function signedGet(url: string, user: { id: User['id'] }) {
 		headers: req.request.headers,
 	});
 
-	return await res.json();
+	return await parseActivityResponse(url, res, allowSoftfail);
 }

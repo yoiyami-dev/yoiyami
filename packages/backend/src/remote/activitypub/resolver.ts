@@ -1,5 +1,4 @@
 import config from '@/config/index.js';
-import { getJson } from '@/misc/fetch.js';
 import { ILocalUser } from '@/models/entities/user.js';
 import { getInstanceActor } from '@/services/instance-actor.js';
 import { fetchMeta } from '@/misc/fetch-meta.js';
@@ -15,6 +14,8 @@ import renderFollow from '@/remote/activitypub/renderer/follow.js';
 import { parseUri } from './db-resolver.js';
 import { IObject, isCollectionOrOrderedCollection, ICollection, IOrderedCollection } from './type.js';
 import { signedGet } from './request.js';
+import { getActivityJson } from './fetch.js';
+import { FetchAllowSoftFailMask } from './misc/check-against-url.js';
 
 export default class Resolver {
 	private history: Set<string>;
@@ -42,7 +43,7 @@ export default class Resolver {
 		}
 	}
 
-	public async resolve(value: string | IObject): Promise<IObject> {
+	public async resolve(value: string | IObject, allowSoftfail: FetchAllowSoftFailMask = FetchAllowSoftFailMask.Strict): Promise<IObject> {
 		if (value == null) {
 			throw new Error('resolvee is null (or undefined)');
 		}
@@ -83,8 +84,8 @@ export default class Resolver {
 		}
 
 		const object = (this.user
-			? await signedGet(value, this.user)
-			: await getJson(value, 'application/activity+json, application/ld+json')) as IObject;
+			? await signedGet(value, this.user, allowSoftfail)
+			: await getActivityJson(value, allowSoftfail)) as IObject;
 
 		if (object == null || (
 			Array.isArray(object['@context']) ?

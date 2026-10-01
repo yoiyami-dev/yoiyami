@@ -46,6 +46,7 @@ describe('ap-request', () => {
 		};
 
 		const req = createSignedGet({ key, url, additionalHeaders: headers });
+		assert.strictEqual(req.request.headers.accept, 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"');
 
 		const parsed = buildParsedSignature(req.signingString, req.signature, 'rsa-sha256');
 
