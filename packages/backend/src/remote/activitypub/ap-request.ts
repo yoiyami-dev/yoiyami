@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 import { URL } from 'node:url';
+import { activityPubAccept } from './accept.js';
 
 type Request = {
 	url: string;
@@ -44,7 +45,7 @@ export function createSignedGet(args: { key: PrivateKey, url: string, additional
 		url: u.href,
 		method: 'GET',
 		headers: objectAssignWithLcKey({
-			'Accept': 'application/activity+json, application/ld+json',
+			'Accept': activityPubAccept,
 			'Date': new Date().toUTCString(),
 			'Host': new URL(args.url).hostname,
 		}, args.additionalHeaders),

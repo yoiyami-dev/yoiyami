@@ -4,6 +4,7 @@ import { createPerson } from '@/remote/activitypub/models/person.js';
 import { createNote } from '@/remote/activitypub/models/note.js';
 import DbResolver from '@/remote/activitypub/db-resolver.js';
 import Resolver from '@/remote/activitypub/resolver.js';
+import { FetchAllowSoftFailMask } from '@/remote/activitypub/misc/check-against-url.js';
 import { ApiError } from '../../error.js';
 import { extractDbHost } from '@/misc/convert-host.js';
 import { Users, Notes } from '@/models/index.js';
@@ -105,7 +106,7 @@ async function fetchAny(uri: string, me: CacheableLocalUser | null | undefined):
 
 	// リモートから一旦オブジェクトフェッチ
 	const resolver = new Resolver();
-	const object = await resolver.resolve(uri) as any;
+	const object = await resolver.resolve(uri, FetchAllowSoftFailMask.CrossOrigin | FetchAllowSoftFailMask.NonCanonicalId) as any;
 
 	// /@user のような正規id以外で取得できるURIが指定されていた場合、ここで初めて正規URIが確定する
 	// これはDBに存在する可能性があるため再度DB検索
