@@ -5,7 +5,7 @@ import { deliver } from '@/queue/index.js';
 import { renderActivity } from '@/remote/activitypub/renderer/index.js';
 import renderVote from '@/remote/activitypub/renderer/vote.js';
 import { deliverQuestionUpdate } from '@/services/note/polls/update.js';
-import { PollVotes, NoteWatchings, Users, Polls, Blockings } from '@/models/index.js';
+import { PollVotes, NoteWatchings, Users, Polls, Blockings, Notes } from '@/models/index.js';
 import { IRemoteUser } from '@/models/entities/user.js';
 import { genId } from '@/misc/gen-id.js';
 import { getNote } from '../../../common/getters.js';
@@ -80,6 +80,11 @@ export default define(meta, paramDef, async (ps, user) => {
 
 	if (!note.hasPoll) {
 		throw new ApiError(meta.errors.noPoll);
+	}
+
+	// 閲覧できないノート（指定可见性等）の投票を拒否する (GHSA-m42q-6f25-pqv5)
+	if (note.userId !== user.id && !(await Notes.isVisibleForMe(note, user.id))) {
+		throw new ApiError(meta.errors.noSuchNote);
 	}
 
 	// Check blocking
