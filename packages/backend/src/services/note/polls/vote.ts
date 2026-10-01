@@ -5,6 +5,7 @@ import { PollVotes, NoteWatchings, Polls, Blockings } from '@/models/index.js';
 import { Not } from 'typeorm';
 import { genId } from '@/misc/gen-id.js';
 import { createNotification } from '../../create-notification.js';
+import { db } from '@/db/postgre.js';
 
 export default async function(user: CacheableUser, note: Note, choice: number) {
 	const poll = await Polls.findOneBy({ noteId: note.id });
@@ -25,32 +26,39 @@ export default async function(user: CacheableUser, note: Note, choice: number) {
 		}
 	}
 
-	// if already voted
-	const exist = await PollVotes.findBy({
-		noteId: note.id,
-		userId: user.id,
-	});
+	// Check for an existing vote and insert atomically: hold the poll row
+	// with FOR UPDATE inside the transaction so concurrent votes for the
+	// same note serialize here and cannot interleave check and insert.
+	const index = choice + 1; // In SQL, array index is 1 based
+	await db.transaction(async (manager) => {
+		await manager.query(`SELECT 1 FROM poll WHERE "noteId" = $1 FOR UPDATE`, [poll.noteId]);
 
-	if (poll.multiple) {
-		if (exist.some(x => x.choice === choice)) {
+		// if already voted
+		const exist = await manager.findBy(PollVotes, {
+			noteId: note.id,
+			userId: user.id,
+		});
+
+		if (poll.multiple) {
+			if (exist.some(x => x.choice === choice)) {
+				throw new Error('already voted');
+			}
+		} else if (exist.length !== 0) {
 			throw new Error('already voted');
 		}
-	} else if (exist.length !== 0) {
-		throw new Error('already voted');
-	}
 
-	// Create vote
-	await PollVotes.insert({
-		id: genId(),
-		createdAt: new Date(),
-		noteId: note.id,
-		userId: user.id,
-		choice: choice,
+		// Create vote
+		await manager.insert(PollVotes, {
+			id: genId(),
+			createdAt: new Date(),
+			noteId: note.id,
+			userId: user.id,
+			choice: choice,
+		});
+
+		// Increment votes count
+		await manager.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = $1`, [poll.noteId]);
 	});
-
-	// Increment votes count
-	const index = choice + 1; // In SQL, array index is 1 based
-	await Polls.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = '${poll.noteId}'`);
 
 	publishNoteStream(note.id, 'pollVoted', {
 		choice: choice,
