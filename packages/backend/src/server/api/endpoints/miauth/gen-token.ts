@@ -44,7 +44,7 @@ export default define(meta, paramDef, async (ps, user) => {
 		let u: URL;
 		try {
 			u = new URL(ps.iconUrl);
-		} catch (e) {
+		} catch (err) {
 			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: 'b1e0e3ad-64d2-4f8e-b8c0-3f6e2a2c9e51' });
 		}
 		if (!['http:', 'https:'].includes(u.protocol)) {

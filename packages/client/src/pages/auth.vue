@@ -89,7 +89,7 @@ export default defineComponent({
 			try {
 				const u = new URL(url);
 				return !['javascript:', 'file:', 'data:', 'mailto:', 'tel:', 'vbscript:'].includes(u.protocol);
-			} catch (e) {
+			} catch (err) {
 				return false;
 			}
 		}, onLogin(res) {

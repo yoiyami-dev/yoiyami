@@ -37,7 +37,7 @@ export default define(meta, paramDef, async (ps, user) => {
 		let u: URL;
 		try {
 			u = new URL(ps.callbackUrl);
-		} catch (e) {
+		} catch (err) {
 			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '9223e18d-a717-45c7-b354-172c1412f201' });
 		}
 		if (!['http:', 'https:'].includes(u.protocol)) {
