@@ -1,7 +1,7 @@
 import { CacheableRemoteUser } from '@/models/entities/user.js';
-import { getApType, IUpdate, isActor } from '../../type.js';
+import { getApId, getApType, IUpdate, isActor } from '../../type.js';
 import { apLogger } from '../../logger.js';
-import { updateQuestion } from '../../models/question.js';
+import { InvalidPollUpdateError, updateQuestion } from '../../models/question.js';
 import Resolver from '../../resolver.js';
 import { updatePerson } from '../../models/person.js';
 
@@ -9,7 +9,13 @@ import { updatePerson } from '../../models/person.js';
  * Updateアクティビティを捌きます
  */
 export default async (actor: CacheableRemoteUser, activity: IUpdate): Promise<string> => {
-	if ('actor' in activity && actor.uri !== activity.actor) {
+	let activityActor: string;
+	try {
+		activityActor = getApId(activity.actor);
+	} catch {
+		return 'skip: invalid actor';
+	}
+	if (actor.uri !== activityActor) {
 		return 'skip: invalid actor';
 	}
 
@@ -26,8 +32,14 @@ export default async (actor: CacheableRemoteUser, activity: IUpdate): Promise<st
 		await updatePerson(actor.uri!, resolver, object);
 		return 'ok: Person updated';
 	} else if (getApType(object) === 'Question') {
-		await updateQuestion(object, resolver).catch(e => console.log(e));
-		return 'ok: Question updated';
+		try {
+			const changed = await updateQuestion(object, actor, resolver);
+			return changed ? 'ok: Question updated' : 'ok: Question unchanged';
+		} catch (e) {
+			if (!(e instanceof InvalidPollUpdateError)) throw e;
+			apLogger.warn(`Question update rejected: ${e.message}`);
+			return 'skip: Question update rejected';
+		}
 	} else {
 		return `skip: Unknown type: ${getApType(object)}`;
 	}
