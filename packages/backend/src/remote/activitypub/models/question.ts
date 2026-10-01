@@ -1,8 +1,9 @@
 import config from '@/config/index.js';
-import { Notes, Polls } from '@/models/index.js';
+import { Notes, Polls, Users } from '@/models/index.js';
 import { IPoll } from '@/models/entities/poll.js';
+import { CacheableRemoteUser } from '@/models/entities/user.js';
 import Resolver from '../resolver.js';
-import { IObject, IQuestion, isQuestion } from '../type.js';
+import { IObject, IQuestion, getOneApId, isQuestion } from '../type.js';
 import { apLogger } from '../logger.js';
 
 export async function extractPollFromQuestion(source: string | IObject, resolver?: Resolver): Promise<IPoll> {
@@ -37,21 +38,27 @@ export async function extractPollFromQuestion(source: string | IObject, resolver
 
 /**
  * Update votes of Question
- * @param uri URI of AP Question object
+ * @param value AP Question object or its URI
+ * @param actor Authenticated remote actor requesting the update
  * @returns true if updated
  */
-export async function updateQuestion(value: any, resolver?: Resolver) {
-	const uri = typeof value === 'string' ? value : value.id;
+export async function updateQuestion(value: string | IObject, actor: CacheableRemoteUser, resolver?: Resolver): Promise<boolean> {
+	const uri = typeof value === 'string' ? value : value?.id;
+	if (typeof uri !== 'string') throw new InvalidPollUpdateError('Question has no valid id');
 
 	// URIがこのサーバーを指しているならスキップ
-	if (uri.startsWith(config.url + '/')) throw new Error('uri points local');
+	if (uri.startsWith(config.url + '/')) throw new InvalidPollUpdateError('uri points local');
 
 	//#region このサーバーに既に登録されているか
 	const note = await Notes.findOneBy({ uri });
-	if (note == null) throw new Error('Question is not registed');
+	if (note == null) throw new InvalidPollUpdateError('Question is not registered');
 
 	const poll = await Polls.findOneBy({ noteId: note.id });
-	if (poll == null) throw new Error('Question is not registed');
+	if (poll == null) throw new InvalidPollUpdateError('Question is not registered');
+	if (poll.userId !== note.userId) throw new InvalidPollUpdateError('Poll owner mismatch');
+
+	const owner = await Users.findOneBy({ id: poll.userId });
+	if (owner?.uri == null) throw new InvalidPollUpdateError('Poll owner has no remote URI');
 	//#endregion
 
 	// resolve new Question object
@@ -59,25 +66,43 @@ export async function updateQuestion(value: any, resolver?: Resolver) {
 	const question = await resolver.resolve(value) as IQuestion;
 	apLogger.debug(`fetched question: ${JSON.stringify(question, null, 2)}`);
 
-	if (question.type !== 'Question') throw new Error('object is not a Question');
+	if (question.type !== 'Question') throw new InvalidPollUpdateError('object is not a Question');
+	if (question.id !== uri) throw new InvalidPollUpdateError('Question id mismatch');
 
-	const apChoices = question.oneOf || question.anyOf;
-
-	let changed = false;
-
-	for (const choice of poll.choices) {
-		const oldCount = poll.votes[poll.choices.indexOf(choice)];
-		const newCount = apChoices!.filter(ap => ap.name === choice)[0].replies!.totalItems;
-
-		if (oldCount !== newCount) {
-			changed = true;
-			poll.votes[poll.choices.indexOf(choice)] = newCount;
+	let attribution = owner.uri;
+	if (question.attributedTo != null) {
+		try {
+			attribution = getOneApId(question.attributedTo);
+		} catch {
+			throw new InvalidPollUpdateError('Question has invalid attributedTo');
 		}
 	}
+	if (attribution !== owner.uri || actor.uri !== owner.uri) {
+		throw new InvalidPollUpdateError('Refusing to ingest update for poll by different user');
+	}
+
+	const apChoices = question.oneOf || question.anyOf;
+	if (!Array.isArray(apChoices)) throw new InvalidPollUpdateError('Question has no choices');
+
+	const newVotes = poll.choices.map((choice, index) => {
+		const matches = apChoices.filter(ap => ap?.name === choice);
+		const occurrences = poll.choices.filter(name => name === choice).length;
+		if (matches.length !== occurrences) throw new InvalidPollUpdateError(`invalid choice: ${choice}`);
+		const occurrence = poll.choices.slice(0, index).filter(name => name === choice).length;
+		const count = matches[occurrence].replies?.totalItems;
+		if (!Number.isInteger(count) || count == null || count < 0) {
+			throw new InvalidPollUpdateError(`invalid vote count: ${count}`);
+		}
+		return count;
+	});
+	const changed = newVotes.some((count, index) => count !== poll.votes[index]);
+	if (!changed) return false;
 
 	await Polls.update({ noteId: note.id }, {
-		votes: poll.votes,
+		votes: newVotes,
 	});
 
 	return changed;
 }
+
+export class InvalidPollUpdateError extends Error {}
