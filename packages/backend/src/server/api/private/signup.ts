@@ -9,11 +9,21 @@ import config from '@/config/index.js';
 import { sendEmail } from '@/services/send-email.js';
 import { genId } from '@/misc/gen-id.js';
 import { validateEmailForAccount } from '@/services/validate-email-for-account.js';
+import { limiter } from '../limiter.js';
+import { getIpHash } from '@/misc/get-ip-hash.js';
 
 export default async (ctx: Koa.Context) => {
 	const body = ctx.request.body;
 
 	const instance = await fetchMeta(true);
+
+	// Bound anonymous account-creation load (and its bcrypt cost)
+	try {
+		await limiter({ key: 'signup', duration: 60 * 60 * 1000, max: 10, minInterval: 1000 }, getIpHash(ctx.ip));
+	} catch (err) {
+		ctx.status = 429;
+		return;
+	}
 
 	// Verify *Captcha
 	// ただしテスト時はこの機構は障害となるため無効にする
