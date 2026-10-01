@@ -1,8 +1,8 @@
 import * as crypto from 'node:crypto';
 import jsonld from 'jsonld';
 import { CONTEXTS } from './contexts.js';
-import fetch from 'node-fetch';
-import { getAgentByUrl } from '@/misc/fetch.js';
+import { getResponse } from '@/misc/fetch.js';
+import { validateContentTypeSetAsJsonLD } from './validator.js';
 
 // RsaSignature2017 based from https://github.com/transmute-industries/RsaSignature2017
 
@@ -109,22 +109,16 @@ export class LdSignature {
 	}
 
 	private async fetchDocument(url: string) {
-		const json = await fetch(url, {
+		const response = await getResponse({
+			url,
+			method: 'GET',
 			headers: {
 				Accept: 'application/ld+json, application/json',
 			},
-			// TODO
-			//timeout: this.loderTimeout,
-			agent: getAgentByUrl,
-		}).then(res => {
-			if (!res.ok) {
-				throw `${res.status} ${res.statusText}`;
-			} else {
-				return res.json();
-			}
+			timeout: this.loderTimeout,
 		});
-
-		return json;
+		validateContentTypeSetAsJsonLD(response);
+		return await response.json();
 	}
 
 	public sha256(data: string): string {
