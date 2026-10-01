@@ -25,6 +25,17 @@ export async function createImage(actor: CacheableRemoteUser, value: any): Promi
 		throw new Error('invalid image: url not privided');
 	}
 
+	// 危険なスキームの画像URLを拒否する (GHSA-pfp5-r48x-fg25)
+	let imageUrl: URL;
+	try {
+		imageUrl = new URL(image.url);
+	} catch {
+		throw new Error('invalid image: unrecognized url type');
+	}
+	if (!['http:', 'https:'].includes(imageUrl.protocol)) {
+		throw new Error('invalid image: unrecognized url type');
+	}
+
 	logger.info(`Creating the Image: ${image.url}`);
 
 	const instance = await fetchMeta();
