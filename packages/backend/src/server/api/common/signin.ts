@@ -16,6 +16,7 @@ export default function(ctx: Koa.Context, user: User, redirect = false) {
 			// When using a SSL proxy it should be configured to add the "X-Forwarded-Proto: https" header
 			secure: config.url.startsWith('https'),
 			httpOnly: false,
+			sameSite: 'lax',
 		});
 		//#endregion
 
