@@ -101,6 +101,11 @@ export class UserProfile {
 	})
 	public twoFactorEnabled: boolean;
 
+	@Column('varchar', {
+		length: 32, nullable: true,
+	})
+	public twoFactorLastToken: string | null;
+
 	@Column('boolean', {
 		default: false,
 	})

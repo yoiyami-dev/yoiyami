@@ -116,6 +116,14 @@ export default async (ctx: Koa.Context) => {
 			return;
 		}
 
+		// 同じトークンの再利用を拒否する (GHSA-2m5x-5mp6-6vpq)
+		if (profile.twoFactorLastToken === token) {
+			await fail(403, {
+				id: 'cdf1235b-ac71-46d4-a3a6-84ccce48df6f',
+			});
+			return;
+		}
+
 		const verified = (speakeasy as any).totp.verify({
 			secret: profile.twoFactorSecret,
 			encoding: 'base32',
@@ -124,6 +132,9 @@ export default async (ctx: Koa.Context) => {
 		});
 
 		if (verified) {
+			await UserProfiles.update({ userId: user.id }, {
+				twoFactorLastToken: token,
+			});
 			signin(ctx, user);
 			return;
 		} else {
@@ -169,6 +180,8 @@ export default async (ctx: Koa.Context) => {
 		}
 
 		const securityKey = await UserSecurityKeys.findOneBy({
+			// クレデンシャルを本人スコープで引く (GHSA-g3ph-65m3-x625)
+			userId: user.id,
 			id: Buffer.from(
 				body.credentialId
 					.replace(/-/g, '+')
