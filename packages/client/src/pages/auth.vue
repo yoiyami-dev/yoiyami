@@ -77,7 +77,20 @@ export default defineComponent({
 		accepted() {
 			this.state = 'accepted';
 			if (this.session.app.callbackUrl) {
-				location.href = `${this.session.app.callbackUrl}?token=${this.session.token}`;
+				if (this.isValidCallbackUrl(this.session.app.callbackUrl)) {
+					location.href = `${this.session.app.callbackUrl}?token=${this.session.token}`;
+				} else {
+					console.error('invalid callback url');
+				}
+			}
+		},
+		// javascript:等の危険なスキームによるXSSを防止する (GHSA-cc6r-chgr-8r5m)
+		isValidCallbackUrl(url) {
+			try {
+				const u = new URL(url);
+				return !['javascript:', 'file:', 'data:', 'mailto:', 'tel:', 'vbscript:'].includes(u.protocol);
+			} catch (e) {
+				return false;
 			}
 		}, onLogin(res) {
 			login(res.i);

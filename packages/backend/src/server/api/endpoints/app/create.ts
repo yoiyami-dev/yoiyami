@@ -1,4 +1,5 @@
 import define from '../../define.js';
+import { ApiError } from '../../error.js';
 import { Apps } from '@/models/index.js';
 import { genId } from '@/misc/gen-id.js';
 import { unique } from '@/prelude/array.js';
@@ -31,6 +32,19 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps, user) => {
+	// callbackUrl のスキームを検証し、javascript:等によるXSSを防止する (GHSA-cc6r-chgr-8r5m)
+	if (ps.callbackUrl != null) {
+		let u: URL;
+		try {
+			u = new URL(ps.callbackUrl);
+		} catch (e) {
+			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '9223e18d-a717-45c7-b354-172c1412f201' });
+		}
+		if (!['http:', 'https:'].includes(u.protocol)) {
+			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '9223e18d-a717-45c7-b354-172c1412f201' });
+		}
+	}
+
 	// Generate secret
 	const secret = secureRndstr(32, true);
 

@@ -70,9 +70,23 @@ async function accept(): Promise<void> {
 
 	state = 'accepted';
 	if (props.callback) {
-		location.href = appendQuery(props.callback, query({
-			session: props.session,
-		}));
+		if (isValidCallbackUrl(props.callback)) {
+			location.href = appendQuery(props.callback, query({
+				session: props.session,
+			}));
+		} else {
+			console.error('invalid callback url');
+		}
+	}
+}
+
+// javascript:等の危険なスキームによるXSSを防止する (GHSA-cc6r-chgr-8r5m)
+function isValidCallbackUrl(url: string): boolean {
+	try {
+		const u = new URL(url);
+		return !['javascript:', 'file:', 'data:', 'mailto:', 'tel:', 'vbscript:'].includes(u.protocol);
+	} catch {
+		return false;
 	}
 }
 
