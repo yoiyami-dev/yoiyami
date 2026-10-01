@@ -39,7 +39,7 @@ services:
 
   db:
     restart: unless-stopped
-    image: postgres:12.2-alpine
+    image: postgres:18-alpine
     ports:
       - "127.0.0.1:5432:5432"
     networks:
@@ -53,7 +53,7 @@ services:
       retries: 20
       start_period: 10s
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - ./db:/var/lib/postgresql
 
 networks:
   internal_network:

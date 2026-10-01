@@ -98,13 +98,7 @@ This command monitors the server-side and client-side source files and automatic
 In addition, it will also automatically start the Misskey server process.
 
 ### Toolchain
-Use Node.js 22.22.2 or a later 22.x release. The repository pins pnpm 12.5.1 in `package.json`; activate it through Corepack:
-```
-npm install --global corepack@0.36.0
-corepack enable
-corepack install --global pnpm@12.5.1
-pnpm install --frozen-lockfile
-```
+The project requires Node.js 22.22.2 or a later 22.x release and pnpm 12.5.1. The local tool versions are recorded in `.tool-versions`; use any version manager that suits your setup.
 
 ### Docker Compose
 The Compose deployment is configured through `.config/docker.env`; it does not require `.config/default.yml`:
