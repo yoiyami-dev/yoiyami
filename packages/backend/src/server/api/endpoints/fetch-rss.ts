@@ -11,6 +11,11 @@ export const meta = {
 	requireCredential: false,
 	allowGet: true,
 	cacheSec: 60 * 3,
+
+	limit: {
+		duration: 60000,
+		min: 10,
+	},
 } as const;
 
 export const paramDef = {
