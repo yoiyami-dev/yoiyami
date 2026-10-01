@@ -13,7 +13,7 @@ import { fetchInstanceMetadata } from '@/services/fetch-instance-metadata.js';
 import { InboxJobData } from '../types.js';
 import DbResolver from '@/remote/activitypub/db-resolver.js';
 import { resolvePerson } from '@/remote/activitypub/models/person.js';
-import { LdSignature } from '@/remote/activitypub/misc/ld-signature.js';
+import { verifyAndCompactLdSignedActivity } from '@/remote/activitypub/misc/verified-activity.js';
 import { StatusError } from '@/misc/fetch.js';
 import { CacheableRemoteUser } from '@/models/entities/user.js';
 import { UserPublickey } from '@/models/entities/user-publickey.js';
@@ -23,7 +23,7 @@ const logger = new Logger('inbox');
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Job<InboxJobData>): Promise<string> => {
 	const signature = job.data.signature;	// HTTP-signature
-	const activity = job.data.activity;
+	let activity = job.data.activity;
 
 	//#region Log
 	const info = Object.assign({}, activity) as any;
@@ -84,19 +84,20 @@ export default async (job: Job<InboxJobData>): Promise<string> => {
 	if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {
 		// 一致しなくても、でもLD-Signatureがありそうならそっちも見る
 		if (activity.signature) {
-			if (activity.signature.type !== 'RsaSignature2017') {
-				return `skip: unsupported LD-signature type ${activity.signature.type}`;
+			const signatureData = activity.signature;
+			if (signatureData.type !== 'RsaSignature2017') {
+				return `skip: unsupported LD-signature type ${signatureData.type}`;
 			}
 
 			// activity.signature.creator: https://example.oom/users/user#main-key
 			// みたいになっててUserを引っ張れば公開キーも入ることを期待する
-			if (activity.signature.creator) {
-				const candicate = activity.signature.creator.replace(/#.*/, '');
+			if (signatureData.creator) {
+				const candicate = signatureData.creator.replace(/#.*/, '');
 				await resolvePerson(candicate).catch(() => null);
 			}
 
 			// keyIdからLD-Signatureのユーザーを取得
-			authUser = await dbResolver.getAuthUserFromKeyId(activity.signature.creator);
+			authUser = await dbResolver.getAuthUserFromKeyId(signatureData.creator);
 			if (authUser == null) {
 				return `skip: LD-Signatureのユーザーが取得できませんでした`;
 			}
@@ -105,20 +106,15 @@ export default async (job: Job<InboxJobData>): Promise<string> => {
 				return `skip: LD-SignatureのユーザーはpublicKeyを持っていませんでした`;
 			}
 
-			// LD-Signature検証
-			const ldSignature = new LdSignature();
-			const verified = await ldSignature.verifyRsaSignature2017(activity, authUser.key.keyPem).catch(() => false);
-			if (!verified) {
-				return `skip: LD-Signatureの検証に失敗しました`;
-			}
-
-			// もう一度actorチェック
-			if (authUser.user.uri !== activity.actor) {
-				return `skip: LD-Signature user(${authUser.user.uri}) !== activity.actor(${activity.actor})`;
+			// All later checks and perform() use the verified, compacted object.
+			try {
+				activity = await verifyAndCompactLdSignedActivity(activity, authUser.key.keyPem, authUser.user.uri!);
+			} catch (e) {
+				return `skip: invalid LD-signed activity: ${e}`;
 			}
 
 			// ブロックしてたら中断
-			const ldHost = extractDbHost(authUser.user.uri);
+			const ldHost = extractDbHost(authUser.user.uri!);
 			if (meta.blockedHosts.includes(ldHost)) {
 				return `Blocked request: ${ldHost}`;
 			}

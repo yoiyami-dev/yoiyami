@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 import jsonld from 'jsonld';
-import { CONTEXTS } from './contexts.js';
+import { CONTEXT, CONTEXTS } from './contexts.js';
 import { getResponse } from '@/misc/fetch.js';
 import { validateContentTypeSetAsJsonLD } from './validator.js';
 
@@ -10,6 +10,7 @@ export class LdSignature {
 	public debug = false;
 	public preLoad = true;
 	public loderTimeout = 10 * 1000;
+	private readonly remoteDocuments = new Map<string, Promise<any>>();
 
 	constructor() {
 	}
@@ -83,6 +84,13 @@ export class LdSignature {
 		});
 	}
 
+	public async compact(data: any, context: any = CONTEXT) {
+		const customLoader = this.getLoader();
+		return await jsonld.compact(data, context, {
+			documentLoader: customLoader,
+		});
+	}
+
 	private getLoader() {
 		return async (url: string): Promise<any> => {
 			if (!url.match('^https?\:\/\/')) throw `Invalid URL ${url}`;
@@ -99,7 +107,12 @@ export class LdSignature {
 			}
 
 			if (this.debug) console.debug(`MISS: ${url}`);
-			const document = await this.fetchDocument(url);
+			let remoteDocument = this.remoteDocuments.get(url);
+			if (remoteDocument == null) {
+				remoteDocument = this.fetchDocument(url);
+				this.remoteDocuments.set(url, remoteDocument);
+			}
+			const document = structuredClone(await remoteDocument);
 			return {
 				contextUrl: null,
 				document: document,
