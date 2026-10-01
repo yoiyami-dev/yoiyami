@@ -68,6 +68,11 @@ let tweetHeight = $ref(150);
 
 const requestUrl = new URL(props.url);
 
+// javascript:等の危険なスキームのURLはプレビューしない (GHSA-vc39-c453-67g3)
+if (!['http:', 'https:'].includes(requestUrl.protocol)) {
+	throw 'unrecognized url type';
+}
+
 if (requestUrl.hostname === 'twitter.com' || requestUrl.hostname === 'mobile.twitter.com') {
 	const m = requestUrl.pathname.match(/^\/.+\/status(?:es)?\/(\d+)/);
 	if (m) tweetId = m[1];

@@ -33,6 +33,11 @@ const props = defineProps<{
 
 const self = props.url.startsWith(local);
 const url = new URL(props.url);
+
+// javascript:等の危険なスキームのURLを href にバインドしない (GHSA-vc39-c453-67g3)
+if (!['http:', 'https:'].includes(url.protocol)) {
+	throw 'unrecognized url type';
+}
 const el = ref();
 
 useTooltip(el, (showing) => {
