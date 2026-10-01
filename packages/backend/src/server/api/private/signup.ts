@@ -43,7 +43,7 @@ export default async (ctx: Koa.Context) => {
 			return;
 		}
 
-		const available = await validateEmailForAccount(emailAddress);
+		const { available } = await validateEmailForAccount(emailAddress);
 		if (!available) {
 			ctx.status = 400;
 			return;

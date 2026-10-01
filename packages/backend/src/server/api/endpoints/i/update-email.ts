@@ -55,7 +55,7 @@ export default define(meta, paramDef, async (ps, user) => {
 	}
 
 	if (ps.email != null) {
-		const available = await validateEmailForAccount(ps.email);
+		const { available } = await validateEmailForAccount(ps.email);
 		if (!available) {
 			throw new ApiError(meta.errors.unavailable);
 		}
