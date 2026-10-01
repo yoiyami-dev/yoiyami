@@ -19,6 +19,7 @@ import { GetFormResultType } from '@/scripts/form';
 import * as os from '@/os';
 import MkContainer from '@/components/MkContainer.vue';
 import { useInterval } from '@/scripts/use-interval';
+import { validateUrl } from '@/scripts/url';
 
 const name = 'rss';
 
@@ -53,7 +54,11 @@ const fetching = ref(true);
 const tick = () => {
 	fetch(`/api/fetch-rss?url=${widgetProps.url}`, {}).then(res => {
 		res.json().then(feed => {
-			items.value = feed.items;
+			items.value = (feed.items ?? []).map((item: any) => ({
+				...item,
+				// javascript:等の危険なスキームのリンクを描画しない (GHSA-p73x-6qrq-34jc)
+				link: validateUrl(item.link)?.href ?? null,
+			})).filter((item: any) => item.link != null);
 			fetching.value = false;
 		});
 	});
