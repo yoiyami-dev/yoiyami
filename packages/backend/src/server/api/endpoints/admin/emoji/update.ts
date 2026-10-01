@@ -22,7 +22,7 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		id: { type: 'string', format: 'misskey:id' },
-		name: { type: 'string' },
+		name: { type: 'string', pattern: '^[a-zA-Z0-9_]+$' },
 		category: {
 			type: 'string',
 			nullable: true,
@@ -30,6 +30,7 @@ export const paramDef = {
 		},
 		aliases: { type: 'array', items: {
 			type: 'string',
+			pattern: '^[a-zA-Z0-9_]+$',
 		} },
 	},
 	required: ['id', 'name', 'aliases'],

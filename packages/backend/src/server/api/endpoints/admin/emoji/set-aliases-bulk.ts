@@ -19,6 +19,7 @@ export const paramDef = {
 		} },
 		aliases: { type: 'array', items: {
 			type: 'string',
+			pattern: '^[a-zA-Z0-9_]+$',
 		} },
 	},
 	required: ['ids', 'aliases'],
