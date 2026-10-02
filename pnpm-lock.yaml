@@ -253,7 +253,7 @@ importers:
         version: 5.0.0
       '@koa/multer':
         specifier: 4.0.0
-        version: 4.0.0(koa@3.2.1)(multer@2.3.0)
+        version: 4.0.0(koa@3.2.1)(multer@2.4.0)
       '@koa/router':
         specifier: 9.0.1
         version: 9.0.1(supports-color@8.1.1)
@@ -399,8 +399,8 @@ importers:
         specifier: 3.0.0-canary.1
         version: 3.0.0-canary.1
       multer:
-        specifier: 2.3.0
-        version: 2.3.0
+        specifier: 2.4.0
+        version: 2.4.0
       nested-property:
         specifier: 4.0.0
         version: 4.0.0
@@ -3089,10 +3089,6 @@ packages:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
     engines: {'0': node >= 0.8}
 
-  concat-stream@2.0.0:
-    resolution: {integrity: sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==}
-    engines: {'0': node >= 6.0}
-
   condense-newlines@0.2.1:
     resolution: {integrity: sha512-P7X+QL9Hb9B/c8HI5BFFKmjgBu2XpQuF98WZ9XkO+dBGgk5XgwiQz7o1SmpglNWId3581UcS0SFAWfoIhMHPfg==}
     engines: {node: '>=0.10.0'}
@@ -5279,8 +5275,8 @@ packages:
   msgpackr@2.1.0:
     resolution: {integrity: sha512-p/pBCVO63CsvvpkomUnNNag6+n38rULuDA6HHe70o2gtC8ODI52foF/4ko2qQcp6OiErJXTmrZeXmsGGHsIQNQ==}
 
-  multer@2.3.0:
-    resolution: {integrity: sha512-cjNbm3sttszgZeGfJR124D+jFEfkXCVAsoPBmFn9X7UxmDSFHWqE2CoEj0vrmSpuAFnqWR1Szcm9QTsiHr60Xw==}
+  multer@2.4.0:
+    resolution: {integrity: sha512-7dqa0ZcFfzbefdTuIkzOSMvZWC0J7FLqBOjJUZvDCXShIURWKxAyTT1wHhnE5q19c7jOJf43IYYKjBmZVZmvhg==}
     engines: {node: '>= 10.16.0'}
 
   mute-stdout@1.0.1:
@@ -8101,10 +8097,10 @@ snapshots:
     dependencies:
       vary: 1.1.2
 
-  '@koa/multer@4.0.0(koa@3.2.1)(multer@2.3.0)':
+  '@koa/multer@4.0.0(koa@3.2.1)(multer@2.4.0)':
     dependencies:
       koa: 3.2.1
-      multer: 2.3.0
+      multer: 2.4.0
 
   '@koa/router@9.0.1(supports-color@8.1.1)':
     dependencies:
@@ -9664,13 +9660,6 @@ snapshots:
       buffer-from: 1.1.2
       inherits: 2.0.4
       readable-stream: 2.3.8
-      typedarray: 0.0.6
-
-  concat-stream@2.0.0:
-    dependencies:
-      buffer-from: 1.1.2
-      inherits: 2.0.4
-      readable-stream: 3.6.2
       typedarray: 0.0.6
 
   condense-newlines@0.2.1:
@@ -12201,11 +12190,10 @@ snapshots:
     optionalDependencies:
       msgpackr-extract: 3.0.4
 
-  multer@2.3.0:
+  multer@2.4.0:
     dependencies:
       append-field: 1.0.0
       busboy: 1.6.0
-      concat-stream: 2.0.0
       type-is: 1.6.18
 
   mute-stdout@1.0.1: {}
