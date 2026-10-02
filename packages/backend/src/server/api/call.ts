@@ -128,13 +128,11 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 					stack: e.stack,
 				},
 			});
-			throw new ApiError(null, {
-				e: {
-					message: e.message,
-					code: e.name,
-					stack: e.stack,
-				},
-			});
+			// The full error is logged server-side above. Never forward internal
+			// exception details (message, driver code, stack trace with absolute
+			// file paths) to the client: any endpoint can be probed unauthenticated,
+			// and the response body is delivered verbatim to any caller.
+			throw new ApiError(null);
 		}
 	}).finally(() => {
 		const after = performance.now();
