@@ -28,6 +28,11 @@ export default async (token: string | null): Promise<[CacheableLocalUser | null 
 			throw new AuthenticationError('user not found');
 		}
 
+		// 削除済みアカウントのトークンを無効化する (strix vuln-0008)
+		if (user.isDeleted) {
+			throw new AuthenticationError('user deleted');
+		}
+
 		return [user, null];
 	} else {
 		const accessToken = await AccessTokens.findOne({
@@ -50,6 +55,11 @@ export default async (token: string | null): Promise<[CacheableLocalUser | null 
 			() => Users.findOneBy({
 				id: accessToken.userId,
 			}) as Promise<ILocalUser>);
+
+		// 削除済みアカウントのアプリアクセストークンを無効化する (strix vuln-0008)
+		if (user.isDeleted) {
+			throw new AuthenticationError('user deleted');
+		}
 
 		if (accessToken.appId) {
 			const app = await appCache.fetch(accessToken.appId,

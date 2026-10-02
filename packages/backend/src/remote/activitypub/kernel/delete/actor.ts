@@ -15,6 +15,8 @@ export async function deleteActor(actor: CacheableRemoteUser, uri: string): Prom
 	const user = await Users.findOneByOrFail({ id: actor.id });
 	if (user.isDeleted) {
 		logger.info(`skip: already deleted`);
+		// 再プレイされた Delete で purge ジョブを重複投入しない (strix vuln-0008)
+		return `skip: already deleted`;
 	}
 
 	const job = await createDeleteAccountJob(actor);

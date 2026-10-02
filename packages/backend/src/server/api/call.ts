@@ -76,6 +76,16 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 		});
 	}
 
+	// 削除済みアカウント（purge待ちの間を含む）にAPIアクセスを与えない (strix vuln-0008)
+	if (ep.meta.requireCredential && user!.isDeleted) {
+		throw new ApiError({
+			message: 'Your account has been deleted.',
+			code: 'YOUR_ACCOUNT_DELETED',
+			id: '0d98ec23-9f4e-4c68-b0e6-11a07e456f11',
+			httpStatusCode: 403,
+		});
+	}
+
 	if (ep.meta.requireAdmin && !user!.isAdmin) {
 		throw new ApiError(accessDenied, { reason: 'You are not the admin.' });
 	}
