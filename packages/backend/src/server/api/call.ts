@@ -84,6 +84,13 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 		throw new ApiError(accessDenied, { reason: 'You are not a moderator.' });
 	}
 
+	// アプリトークンは instance-admin 権限を持たせない。
+	// admin/* は permission kind を宣言しないため、kind チェックだけでは
+	// write:notes 程度のアプリトークンでも全 admin API に到達できてしまう (strix vuln-0003)。
+	if (token && (ep.meta.requireAdmin || ep.meta.requireModerator)) {
+		throw new ApiError(accessDenied, { reason: 'App tokens cannot access admin endpoints.' });
+	}
+
 	if (token && ep.meta.kind && !token.permission.some(p => p === ep.meta.kind)) {
 		throw new ApiError({
 			message: 'Your app does not have the necessary permissions to use this endpoint.',
