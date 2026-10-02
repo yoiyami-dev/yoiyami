@@ -1,4 +1,4 @@
-import rndstr from 'rndstr';
+import { secureRndstr } from '@/misc/secure-rndstr.js';
 import ms from 'ms';
 import { IsNull } from 'typeorm';
 import { publishMainStream } from '@/services/stream.js';
@@ -59,7 +59,7 @@ export default define(meta, paramDef, async (ps) => {
 		return;
 	}
 
-	const token = rndstr('a-z0-9', 64);
+	const token = secureRndstr(64);
 
 	await PasswordResetRequests.insert({
 		id: genId(),

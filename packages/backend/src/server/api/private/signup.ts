@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import rndstr from 'rndstr';
+import { secureRndstr } from '@/misc/secure-rndstr.js';
 import bcrypt from 'bcryptjs';
 import { fetchMeta } from '@/misc/fetch-meta.js';
 import { verifyHcaptcha, verifyRecaptcha } from '@/misc/captcha.js';
@@ -86,7 +86,7 @@ export default async (ctx: Koa.Context) => {
 	}
 
 	if (instance.emailRequiredForSignup) {
-		const code = rndstr('a-z0-9', 16);
+		const code = secureRndstr(32);
 
 		// Generate hash of password
 		const salt = await bcrypt.genSalt(8);
