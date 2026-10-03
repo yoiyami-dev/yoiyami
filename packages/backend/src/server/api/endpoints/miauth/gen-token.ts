@@ -48,7 +48,7 @@ export default define(meta, paramDef, async (ps, user) => {
 			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: 'b1e0e3ad-64d2-4f8e-b8c0-3f6e2a2c9e51' });
 		}
 		if (!['http:', 'https:'].includes(u.protocol)) {
-			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: 'b1e0e3ad-64d2-4f8e-b8c0-3f6e2a2c9e51' });
+			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: '19f01c42-c824-4959-8e0e-750f256009de' });
 		}
 	}
 
