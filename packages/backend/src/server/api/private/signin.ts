@@ -77,7 +77,7 @@ export default async (ctx: Koa.Context) => {
 		return;
 	}
 
-	// 削除済みアカウントの再サインインを拒否する (strix vuln-0008)
+	// 削除済みアカウントの再サインインを拒否する
 	if (user.isDeleted) {
 		error(403, {
 			id: '9e1b98b1-2e33-4c65-b186-f3b4c9016444',
