@@ -13,7 +13,7 @@ import { IdentifiableError } from '@/misc/identifiable-error.js';
 
 export default async function(followee: { id: User['id']; host: User['host']; uri: User['host']; inbox: User['inbox']; sharedInbox: User['sharedInbox']; }, follower: CacheableUser) {
 	// Hold the request row with FOR UPDATE inside the transaction so concurrent
-	// accept/cancel/block cannot interleave the check and the act (strix vuln-0007).
+	// accept/cancel/block cannot interleave the check and the act
 	const request = await db.transaction(async (manager) => {
 		const request = await manager.getRepository(FollowRequest).findOne({
 			where: {
@@ -27,7 +27,7 @@ export default async function(followee: { id: User['id']; host: User['host']; ur
 			throw new IdentifiableError('8884c2dd-5795-4ac9-b27e-6a01d38190f9', 'No follow request.');
 		}
 
-		// キー取得後にブロック関係が成立していた場合は承認しない (strix vuln-0007)
+		// キー取得後にブロック関係が成立していた場合は承認しない
 		const blocked = await manager.getRepository(Blocking).findOne({
 			where: [
 				{ blockerId: follower.id, blockeeId: followee.id },
