@@ -82,7 +82,7 @@ export default define(meta, paramDef, async (ps, user) => {
 		throw new ApiError(meta.errors.noPoll);
 	}
 
-	// 閲覧できないノート（指定可见性等）の投票を拒否する (GHSA-m42q-6f25-pqv5)
+	// 閲覧できないノートへの投票を拒否する (GHSA-m42q-6f25-pqv5)
 	if (note.userId !== user.id && !(await Notes.isVisibleForMe(note, user.id))) {
 		throw new ApiError(meta.errors.noSuchNote);
 	}
