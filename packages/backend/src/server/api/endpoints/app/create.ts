@@ -41,7 +41,7 @@ export default define(meta, paramDef, async (ps, user) => {
 			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '9223e18d-a717-45c7-b354-172c1412f201' });
 		}
 		if (!['http:', 'https:'].includes(u.protocol)) {
-			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '9223e18d-a717-45c7-b354-172c1412f201' });
+			throw new ApiError({ message: 'invalid callbackUrl', code: 'INVALID_CALLBACK_URL', id: '00ff952e-570c-43ce-88c3-65672a0440e0' });
 		}
 	}
 
