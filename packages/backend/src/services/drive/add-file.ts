@@ -498,13 +498,7 @@ export async function addFile({
 	} else {
 		file = await (save(file, path, detectedName, info.type.mime, info.md5, info.size));
 	}
-
-	//#region Post-insert quota validation (strix vuln-0009)
-	// The pre-upload check above is inherently racy: concurrent uploads can
-	// all pass on stale usage. Re-validate after insertion while holding a
-	// per-user transaction advisory lock, and compensate (delete the row and
-	// stored file) if the quota was exceeded. The lock makes the SUM inside
-	// the transaction authoritative for the last-completing upload.
+	
 	if (user && !isLink && Users.isLocalUser(user)) {
 		const overQuota = await db.transaction(async (manager) => {
 			await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [user.id]);
@@ -531,7 +525,6 @@ export async function addFile({
 			throw new IdentifiableError('c6244ed2-a39a-4e1c-bf93-f0fbd7764fa6', 'No free space.');
 		}
 	}
-	//#endregion
 
 	logger.succ(`drive file has been created ${file.id}`);
 
