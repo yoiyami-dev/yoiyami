@@ -76,7 +76,7 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 		});
 	}
 
-	// 削除済みアカウント（purge待ちの間を含む）にAPIアクセスを与えない (strix vuln-0008)
+	// 削除済みアカウント（purge待ちの間を含む）にAPIアクセスを与えない
 	if (ep.meta.requireCredential && user!.isDeleted) {
 		throw new ApiError({
 			message: 'Your account has been deleted.',
@@ -96,7 +96,7 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 
 	// アプリトークンは instance-admin 権限を持たせない。
 	// admin/* は permission kind を宣言しないため、kind チェックだけでは
-	// write:notes 程度のアプリトークンでも全 admin API に到達できてしまう (strix vuln-0003)。
+	// write:notes 程度のアプリトークンでも全 admin API に到達できてしまう
 	if (token && (ep.meta.requireAdmin || ep.meta.requireModerator)) {
 		throw new ApiError(accessDenied, { reason: 'App tokens cannot access admin endpoints.' });
 	}
