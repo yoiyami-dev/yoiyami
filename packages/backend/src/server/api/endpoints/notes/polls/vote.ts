@@ -5,10 +5,11 @@ import { deliver } from '@/queue/index.js';
 import { renderActivity } from '@/remote/activitypub/renderer/index.js';
 import renderVote from '@/remote/activitypub/renderer/vote.js';
 import { deliverQuestionUpdate } from '@/services/note/polls/update.js';
-import { PollVotes, NoteWatchings, Users, Polls, Blockings } from '@/models/index.js';
+import { PollVotes, NoteWatchings, Users, Polls, Blockings, Notes } from '@/models/index.js';
 import { IRemoteUser } from '@/models/entities/user.js';
 import { genId } from '@/misc/gen-id.js';
 import { getNote } from '../../../common/getters.js';
+import { db } from '@/db/postgre.js';
 import { ApiError } from '../../../error.js';
 import define from '../../../define.js';
 
@@ -81,6 +82,11 @@ export default define(meta, paramDef, async (ps, user) => {
 		throw new ApiError(meta.errors.noPoll);
 	}
 
+	// 閲覧できないノートへの投票を拒否する (GHSA-m42q-6f25-pqv5)
+	if (note.userId !== user.id && !(await Notes.isVisibleForMe(note, user.id))) {
+		throw new ApiError(meta.errors.noSuchNote);
+	}
+
 	// Check blocking
 	if (note.userId !== user.id) {
 		const block = await Blockings.findOneBy({
@@ -102,34 +108,43 @@ export default define(meta, paramDef, async (ps, user) => {
 		throw new ApiError(meta.errors.invalidChoice);
 	}
 
-	// if already voted
-	const exist = await PollVotes.findBy({
-		noteId: note.id,
-		userId: user.id,
-	});
+	// Check for an existing vote and insert atomically: hold the poll row
+	// with FOR UPDATE inside the transaction so concurrent votes for the
+	// same note serialize here and cannot interleave check and insert.
+	const index = ps.choice + 1; // In SQL, array index is 1 based
+	const vote = await db.transaction(async (manager) => {
+		await manager.query(`SELECT 1 FROM poll WHERE "noteId" = $1 FOR UPDATE`, [poll.noteId]);
 
-	if (exist.length) {
-		if (poll.multiple) {
-			if (exist.some(x => x.choice === ps.choice)) {
+		// if already voted
+		const exist = await manager.findBy(PollVotes, {
+			noteId: note.id,
+			userId: user.id,
+		});
+
+		if (exist.length) {
+			if (poll.multiple) {
+				if (exist.some(x => x.choice === ps.choice)) {
+					throw new ApiError(meta.errors.alreadyVoted);
+				}
+			} else {
 				throw new ApiError(meta.errors.alreadyVoted);
 			}
-		} else {
-			throw new ApiError(meta.errors.alreadyVoted);
 		}
-	}
 
-	// Create vote
-	const vote = await PollVotes.insert({
-		id: genId(),
-		createdAt,
-		noteId: note.id,
-		userId: user.id,
-		choice: ps.choice,
-	}).then(x => PollVotes.findOneByOrFail(x.identifiers[0]));
+		// Create vote
+		const created = await manager.insert(PollVotes, {
+			id: genId(),
+			createdAt,
+			noteId: note.id,
+			userId: user.id,
+			choice: ps.choice,
+		}).then(x => manager.findOneByOrFail(PollVotes, x.identifiers[0]));
 
-	// Increment votes count
-	const index = ps.choice + 1; // In SQL, array index is 1 based
-	await Polls.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = '${poll.noteId}'`);
+		// Increment votes count
+		await manager.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = $1`, [poll.noteId]);
+
+		return created;
+	});
 
 	publishNoteStream(note.id, 'pollVoted', {
 		choice: ps.choice,

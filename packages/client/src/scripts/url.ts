@@ -11,3 +11,13 @@ export function query(obj: Record<string, any>): string {
 export function appendQuery(url: string, query: string): string {
 	return `${url}${/\?/.test(url) ? url.endsWith('?') ? '' : '&' : '?'}${query}`;
 }
+
+export function validateUrl(url: string): URL | null {
+	try {
+		const u = new URL(url);
+		if (u.protocol === 'http:' || u.protocol === 'https:') return u;
+	} catch {
+		// fallthrough
+	}
+	return null;
+}

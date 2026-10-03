@@ -122,6 +122,14 @@ id: 'aid'
 # Proxy for HTTP/HTTPS
 #proxy: http://127.0.0.1:3128
 
+# Set to true if your reverse proxy *overwrites* (never appends) the
+# X-Forwarded-For header with the true client address, e.g.:
+#   proxy_set_header X-Forwarded-For $remote_addr;
+# While false (the default), the client IP is read from the socket and
+# X-Forwarded-For is ignored, preventing spoofed headers from evading
+# IP-keyed rate limits.
+#trustProxy: true
+
 #proxyBypassHosts: [
 #  'example.com',
 #  '192.0.2.8'

@@ -107,11 +107,6 @@ export default define(meta, paramDef, async (ps, user) => {
 		throw new Error('non-existent challenge');
 	}
 
-	await AttestationChallenges.delete({
-		userId: user.id,
-		id: ps.challengeId,
-	});
-
 	// Expired challenge (> 5min old)
 	if (
 		new Date().getTime() - attestationChallenge.createdAt.getTime() >=
@@ -119,6 +114,12 @@ export default define(meta, paramDef, async (ps, user) => {
 	) {
 		throw new Error('expired challenge');
 	}
+
+	// 有効なチャレンジのみ消費して削除する (GHSA-g3ph-65m3-x625)
+	await AttestationChallenges.delete({
+		userId: user.id,
+		id: ps.challengeId,
+	});
 
 	const credentialIdString = credentialId.toString('hex');
 

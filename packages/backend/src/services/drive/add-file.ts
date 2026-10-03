@@ -25,6 +25,7 @@ import { IImage, convertSharpToJpeg, convertSharpToWebp, convertSharpToPng } fro
 import { driveLogger } from './logger.js';
 import { GenerateVideoThumbnail } from './generate-video-thumbnail.js';
 import { deleteFile } from './delete-file.js';
+import { db } from '@/db/postgre.js';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -496,6 +497,33 @@ export async function addFile({
 		}
 	} else {
 		file = await (save(file, path, detectedName, info.type.mime, info.md5, info.size));
+	}
+	
+	if (user && !isLink && Users.isLocalUser(user)) {
+		const overQuota = await db.transaction(async (manager) => {
+			await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [user.id]);
+
+			const u = await Users.findOneBy({ id: user.id });
+			const meta = await fetchMeta();
+			let driveCapacity = 1024 * 1024 * meta.localDriveCapacityMb;
+			if (u?.driveCapacityOverrideMb != null) {
+				driveCapacity = 1024 * 1024 * u.driveCapacityOverrideMb;
+			}
+
+			const { sum } = await manager
+				.createQueryBuilder(DriveFile, 'file')
+				.where('file.userId = :id', { id: user.id })
+				.andWhere('file.isLink = FALSE')
+				.select('SUM(file.size)', 'sum')
+				.getRawOne();
+
+			return (parseInt(sum, 10) || 0) > driveCapacity;
+		});
+
+		if (overQuota) {
+			await deleteFile(file, true);
+			throw new IdentifiableError('c6244ed2-a39a-4e1c-bf93-f0fbd7764fa6', 'No free space.');
+		}
 	}
 
 	logger.succ(`drive file has been created ${file.id}`);

@@ -37,6 +37,11 @@ export type Source = {
 	proxySmtp?: string;
 	proxyBypassHosts?: string[];
 
+	// Set to true only if your reverse proxy overwrites (not appends) the
+	// X-Forwarded-For header with the true client address. When false,
+	// client IP is taken from the socket, and X-Forwarded-For is ignored.
+	trustProxy?: boolean;
+
 	allowedPrivateNetworks?: string[];
 
 	maxFileSize?: number;

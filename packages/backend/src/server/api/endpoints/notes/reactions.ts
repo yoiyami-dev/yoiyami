@@ -1,5 +1,5 @@
 import { DeepPartial, FindOptionsWhere } from 'typeorm';
-import { NoteReactions } from '@/models/index.js';
+import { NoteReactions, Notes } from '@/models/index.js';
 import { NoteReaction } from '@/models/entities/note-reaction.js';
 import define from '../../define.js';
 import { ApiError } from '../../error.js';
@@ -46,6 +46,13 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps, user) => {
+	// 閲覧できないノートのリアクション一覧を返さない (GHSA-5c3q-jmv3-r6fx)
+	const note = await Notes.findOneBy({ id: ps.noteId });
+	if (note == null) throw new ApiError(meta.errors.noSuchNote);
+	if (!(await Notes.isVisibleForMe(note, user ? user.id : null))) {
+		throw new ApiError(meta.errors.noSuchNote);
+	}
+
 	const query = {
 		noteId: ps.noteId,
 	} as FindOptionsWhere<NoteReaction>;

@@ -33,7 +33,10 @@ export const serverLogger = new Logger('server', 'gray', false);
 
 // Init app
 const app = new Koa();
-app.proxy = true;
+// Trust X-Forwarded-For (and friends) for client-IP resolution only when the
+// operator's reverse proxy overwrites the header; disabled by default so
+// spoofed headers cannot influence IP-keyed rate limiting.
+app.proxy = !!config.trustProxy;
 
 if (!['production', 'test'].includes(process.env.NODE_ENV || '')) {
 	// Logger

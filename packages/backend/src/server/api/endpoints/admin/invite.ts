@@ -1,4 +1,4 @@
-import rndstr from 'rndstr';
+import { secureRndstr } from '@/misc/secure-rndstr.js';
 import define from '../../define.js';
 import { RegistrationTickets } from '@/models/index.js';
 import { genId } from '@/misc/gen-id.js';
@@ -32,10 +32,18 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async () => {
-	const code = rndstr({
-		length: 8,
-		chars: '2-9A-HJ-NP-Z', // [0-9A-Z] w/o [01IO] (32 patterns)
-	});
+	// Rejection-sample over the unambiguous alphabet [2-9A-HJ-NP-Z] (32 chars).
+	// `secureRndstr` draws uniformly from 36 lowercase chars; map base-36
+	// digits 0-31 to the alphabet so each code remains 40-bit and uniform.
+	const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+	let code = '';
+	for (let i = 0; i < 8; i++) {
+		let r: number;
+		do {
+			r = parseInt(secureRndstr(1, false), 36);
+		} while (r >= 32);
+		code += ALPHABET[r];
+	}
 
 	await RegistrationTickets.insert({
 		id: genId(),

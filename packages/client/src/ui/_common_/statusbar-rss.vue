@@ -21,6 +21,7 @@ import MarqueeText from '@/components/MkMarquee.vue';
 import * as os from '@/os';
 import { useInterval } from '@/scripts/use-interval';
 import { shuffle } from '@/scripts/shuffle';
+import { validateUrl } from '@/scripts/url';
 
 const props = defineProps<{
 	url?: string;
@@ -42,7 +43,11 @@ const tick = () => {
 			if (props.shuffle) {
 				shuffle(feed.items);
 			}
-			items.value = feed.items;
+			items.value = (feed.items ?? []).map((item: any) => ({
+				...item,
+				// javascript:等の危険なスキームのリンクを描画しない (GHSA-p73x-6qrq-34jc)
+				link: validateUrl(item.link)?.href ?? null,
+			})).filter((item: any) => item.link != null);
 			fetching.value = false;
 			key++;
 		});

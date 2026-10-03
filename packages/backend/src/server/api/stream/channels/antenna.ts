@@ -1,12 +1,12 @@
 import Channel from '../channel.js';
-import { Notes } from '@/models/index.js';
+import { Antennas, Notes } from '@/models/index.js';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import { StreamMessages } from '../types.js';
 
 export default class extends Channel {
 	public readonly chName = 'antenna';
 	public static shouldShare = false;
-	public static requireCredential = false;
+	public static requireCredential = true;
 	private antennaId: string;
 
 	constructor(id: string, connection: Channel['connection']) {
@@ -16,6 +16,13 @@ export default class extends Channel {
 
 	public async init(params: any) {
 		this.antennaId = params.antennaId as string;
+
+		// Check existence and owner
+		const antenna = await Antennas.findOneBy({
+			id: this.antennaId,
+			userId: this.user!.id,
+		});
+		if (!antenna) return;
 
 		// Subscribe stream
 		this.subscriber.on(`antennaStream:${this.antennaId}`, this.onEvent);

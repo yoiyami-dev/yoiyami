@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import rndstr from 'rndstr';
+import { secureRndstr } from '@/misc/secure-rndstr.js';
 import bcrypt from 'bcryptjs';
 import { fetchMeta } from '@/misc/fetch-meta.js';
 import { verifyHcaptcha, verifyRecaptcha } from '@/misc/captcha.js';
@@ -9,11 +9,21 @@ import config from '@/config/index.js';
 import { sendEmail } from '@/services/send-email.js';
 import { genId } from '@/misc/gen-id.js';
 import { validateEmailForAccount } from '@/services/validate-email-for-account.js';
+import { limiter } from '../limiter.js';
+import { getIpHash } from '@/misc/get-ip-hash.js';
 
 export default async (ctx: Koa.Context) => {
 	const body = ctx.request.body;
 
 	const instance = await fetchMeta(true);
+
+	// Bound anonymous account-creation load (and its bcrypt cost)
+	try {
+		await limiter({ key: 'signup', duration: 60 * 60 * 1000, max: 10, minInterval: 1000 }, getIpHash(ctx.ip));
+	} catch (err) {
+		ctx.status = 429;
+		return;
+	}
 
 	// Verify *Captcha
 	// ただしテスト時はこの機構は障害となるため無効にする
@@ -43,7 +53,7 @@ export default async (ctx: Koa.Context) => {
 			return;
 		}
 
-		const available = await validateEmailForAccount(emailAddress);
+		const { available } = await validateEmailForAccount(emailAddress);
 		if (!available) {
 			ctx.status = 400;
 			return;
@@ -65,11 +75,18 @@ export default async (ctx: Koa.Context) => {
 			return;
 		}
 
-		RegistrationTickets.delete(ticket.id);
+		// Claim the ticket atomically: only one concurrent request can delete
+		// the row, so losers are rejected instead of registering in parallel.
+		const { affected } = await RegistrationTickets.delete({ id: ticket.id });
+
+		if (affected === 0) {
+			ctx.status = 400;
+			return;
+		}
 	}
 
 	if (instance.emailRequiredForSignup) {
-		const code = rndstr('a-z0-9', 16);
+		const code = secureRndstr(32);
 
 		// Generate hash of password
 		const salt = await bcrypt.genSalt(8);

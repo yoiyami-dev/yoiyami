@@ -20,8 +20,7 @@
 			<span v-if="emoji.isCustomEmoji" class="emoji"><img :src="defaultStore.state.disableShowingAnimatedImages ? getStaticImageUrl(emoji.url) : emoji.url" :alt="emoji.emoji"/></span>
 			<span v-else-if="!defaultStore.state.useOsNativeEmojis" class="emoji"><img :src="emoji.url" :alt="emoji.emoji"/></span>
 			<span v-else class="emoji">{{ emoji.emoji }}</span>
-			<!-- eslint-disable-next-line vue/no-v-html -->
-			<span class="name" v-html="emoji.name.replace(q, `<b>${q}</b>`)"></span>
+			<span class="name">{{ hlBefore(emoji.name) }}<b>{{ hlMatch(emoji.name) }}</b>{{ hlAfter(emoji.name) }}</span>
 			<span v-if="emoji.aliasOf" class="alias">({{ emoji.aliasOf }})</span>
 		</li>
 	</ol>
@@ -151,6 +150,25 @@ function complete(type: string, value: any) {
 		recents.unshift(value);
 		defaultStore.set('recentlyUsedEmojis', recents.splice(0, 32));
 	}
+}
+
+function matchIndex(name: string): number {
+	return props.q ? name.indexOf(props.q) : -1;
+}
+
+function hlBefore(name: string): string {
+	const i = matchIndex(name);
+	return i === -1 ? name : name.slice(0, i);
+}
+
+function hlMatch(name: string): string {
+	const i = matchIndex(name);
+	return i === -1 ? '' : name.slice(i, i + (props.q ?? '').length);
+}
+
+function hlAfter(name: string): string {
+	const i = matchIndex(name);
+	return i === -1 ? '' : name.slice(i + (props.q ?? '').length);
 }
 
 function setPosition() {

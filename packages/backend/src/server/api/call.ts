@@ -76,12 +76,29 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 		});
 	}
 
+	// 削除済みアカウント（purge待ちの間を含む）にAPIアクセスを与えない
+	if (ep.meta.requireCredential && user!.isDeleted) {
+		throw new ApiError({
+			message: 'Your account has been deleted.',
+			code: 'YOUR_ACCOUNT_DELETED',
+			id: '0d98ec23-9f4e-4c68-b0e6-11a07e456f11',
+			httpStatusCode: 403,
+		});
+	}
+
 	if (ep.meta.requireAdmin && !user!.isAdmin) {
 		throw new ApiError(accessDenied, { reason: 'You are not the admin.' });
 	}
 
 	if (ep.meta.requireModerator && !isModerator) {
 		throw new ApiError(accessDenied, { reason: 'You are not a moderator.' });
+	}
+
+	// アプリトークンは instance-admin 権限を持たせない。
+	// admin/* は permission kind を宣言しないため、kind チェックだけでは
+	// write:notes 程度のアプリトークンでも全 admin API に到達できてしまう
+	if (token && (ep.meta.requireAdmin || ep.meta.requireModerator)) {
+		throw new ApiError(accessDenied, { reason: 'App tokens cannot access admin endpoints.' });
 	}
 
 	if (token && ep.meta.kind && !token.permission.some(p => p === ep.meta.kind)) {
@@ -128,13 +145,11 @@ export default async (endpoint: string, user: CacheableLocalUser | null | undefi
 					stack: e.stack,
 				},
 			});
-			throw new ApiError(null, {
-				e: {
-					message: e.message,
-					code: e.name,
-					stack: e.stack,
-				},
-			});
+			// The full error is logged server-side above. Never forward internal
+			// exception details (message, driver code, stack trace with absolute
+			// file paths) to the client: any endpoint can be probed unauthenticated,
+			// and the response body is delivered verbatim to any caller.
+			throw new ApiError(null);
 		}
 	}).finally(() => {
 		const after = performance.now();

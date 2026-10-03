@@ -1,4 +1,5 @@
 import define from '../../define.js';
+import { ApiError } from '../../error.js';
 import { AccessTokens } from '@/models/index.js';
 import { genId } from '@/misc/gen-id.js';
 import { secureRndstr } from '@/misc/secure-rndstr.js';
@@ -38,6 +39,19 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps, user) => {
+	// iconUrl のスキームを検証し、javascript:等によるXSSを防止する (GHSA-cc6r-chgr-8r5m)
+	if (ps.iconUrl != null) {
+		let u: URL;
+		try {
+			u = new URL(ps.iconUrl);
+		} catch (err) {
+			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: 'b1e0e3ad-64d2-4f8e-b8c0-3f6e2a2c9e51' });
+		}
+		if (!['http:', 'https:'].includes(u.protocol)) {
+			throw new ApiError({ message: 'invalid iconUrl', code: 'INVALID_ICON_URL', id: '19f01c42-c824-4959-8e0e-750f256009de' });
+		}
+	}
+
 	// Generate access token
 	const accessToken = secureRndstr(32, true);
 

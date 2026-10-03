@@ -9,7 +9,7 @@
 <div v-else v-size="{ max: [400, 350] }" class="mk-url-preview">
 	<transition :name="$store.state.animation ? 'zoom' : ''" mode="out-in">
 		<component :is="self ? 'MkA' : 'a'" v-if="!fetching" class="link" :class="{ compact }" :[attr]="self ? url.substr(local.length) : url" rel="nofollow noopener" :target="target" :title="url">
-			<div v-if="thumbnail" class="thumbnail" :style="`background-image: url('${thumbnail}')`">
+			<div v-if="thumbnail" class="thumbnail" :style="`background-image: url(${JSON.stringify(thumbnail)})`">
 				<button v-if="!playerEnabled && player.url" class="_button" :title="i18n.ts.enablePlayer" @click.prevent="playerEnabled = true"><i class="fas fa-play-circle"></i></button>
 			</div>
 			<article>
@@ -36,6 +36,7 @@
 import { onMounted, onUnmounted } from 'vue';
 import { url as local, lang } from '@/config';
 import { i18n } from '@/i18n';
+import { validateUrl } from '@/scripts/url';
 
 const props = withDefaults(defineProps<{
 	url: string;
@@ -68,6 +69,11 @@ let tweetHeight = $ref(150);
 
 const requestUrl = new URL(props.url);
 
+// javascript:等の危険なスキームのURLはプレビューしない (GHSA-vc39-c453-67g3)
+if (!['http:', 'https:'].includes(requestUrl.protocol)) {
+	throw 'unrecognized url type';
+}
+
 if (requestUrl.hostname === 'twitter.com' || requestUrl.hostname === 'mobile.twitter.com') {
 	const m = requestUrl.pathname.match(/^\/.+\/status(?:es)?\/(\d+)/);
 	if (m) tweetId = m[1];
@@ -86,11 +92,14 @@ fetch(`/url?url=${encodeURIComponent(requestUrl.href)}&lang=${requestLang}`).the
 		if (info.url == null) return;
 		title = info.title;
 		description = info.description;
-		thumbnail = info.thumbnail;
-		icon = info.icon;
+		// ogメタ由来のURLはhttp(s)のみ受け付け、javascript:等やCSS注入を防ぐ (GHSA-3p2w-xmv5-jm95)
+		thumbnail = info.thumbnail != null ? (validateUrl(info.thumbnail)?.href ?? null) : null;
+		icon = info.icon != null ? (validateUrl(info.icon)?.href ?? null) : null;
 		sitename = info.sitename;
 		fetching = false;
-		player = info.player;
+		player = (info.player != null && info.player.url != null && validateUrl(info.player.url))
+			? info.player
+			: { url: null, width: null, height: null };
 	});
 });
 

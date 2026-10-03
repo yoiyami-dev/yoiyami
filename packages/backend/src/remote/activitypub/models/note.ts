@@ -112,7 +112,16 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	let isTalk = note._misskey_talk && visibility === 'specified';
 
-	const apMentions = await extractApMentions(note.tag, resolver);
+	// GHSA-m2gq-69fp-6hv4: メンションはアクティビティのaudience(to/cc)に含まれるユーザーに限定し、
+	// audience外のユーザーを勝手に巻き込むスプーフィングを防止する
+	const audienceUris = new Set<string>([...toArray(note.to ?? []), ...toArray(note.cc ?? [])]
+		.map((x): string | null => {
+			if (typeof x === 'string') return x;
+			if (x != null && typeof x.id === 'string') return x.id;
+			return null;
+		})
+		.filter((x): x is string => x != null));
+	const apMentions = (await extractApMentions(note.tag, resolver)).filter(u => u.uri != null && audienceUris.has(u.uri));
 	const apHashtags = await extractApHashtags(note.tag);
 
 	// 添付ファイル

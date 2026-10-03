@@ -53,6 +53,7 @@ export async function signout() {
 	//#endregion
 
 	document.cookie = 'igi=; path=/';
+	document.cookie = 'token=; path=/; max-age=0'; // bull dashboard等で使われるtokenクッキーも失効させる
 
 	if (accounts.length > 0) login(accounts[0].token);
 	else unisonReload('/');

@@ -1,6 +1,7 @@
 import watch from '@/services/note/watch.js';
 import define from '../../../define.js';
 import { getNote } from '../../../common/getters.js';
+import { Notes } from '@/models/index.js';
 import { ApiError } from '../../../error.js';
 
 export const meta = {
@@ -33,6 +34,11 @@ export default define(meta, paramDef, async (ps, user) => {
 		if (e.id === '9725d0ce-ba28-4dde-95a7-2cbb2c15de24') throw new ApiError(meta.errors.noSuchNote);
 		throw e;
 	});
+
+	// 閲覧できないノートへのウォッチ登録を拒否する (strix vuln-0006)
+	if (!(await Notes.isVisibleForMe(note, user.id))) {
+		throw new ApiError(meta.errors.noSuchNote);
+	}
 
 	await watch(user.id, note);
 });

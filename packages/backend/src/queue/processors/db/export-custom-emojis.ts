@@ -61,6 +61,11 @@ export async function exportCustomEmojis(job: Job): Promise<void> {
 	for (const emoji of customEmojis) {
 		const ext = emoji.type == null ? null : mime.extension(emoji.type);
 		const fileName = emoji.name + (ext ? '.' + ext : '');
+		// Skip rows whose stored name is not basename-safe (path traversal / polluted DB rows).
+		if (fileName.length === 0 || fileName === '.' || fileName === '..' || fileName.includes('/') || fileName.includes('\\')) {
+			logger.warn(`Skipping emoji with unsafe name: ${emoji.id}`);
+			continue;
+		}
 		const emojiPath = path + '/' + fileName;
 		fs.writeFileSync(emojiPath, '', 'binary');
 		let downloaded = false;

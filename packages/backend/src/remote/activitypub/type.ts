@@ -66,8 +66,19 @@ export function getOneApHrefNullable(value: ApObject | undefined): string | unde
 }
 
 export function getApHrefNullable(value: string | IObject | undefined): string | undefined {
-	if (typeof value === 'string') return value;
-	if (typeof value?.href === 'string') return value.href;
+	if (typeof value === 'string') return sanitizeApHref(value);
+	if (typeof value?.href === 'string') return sanitizeApHref(value.href);
+	return undefined;
+}
+
+// 外部APソース由来のhrefをhttp(s)に限定し、javascript:等によるXSSを防止する (GHSA-pfp5-r48x-fg25)
+function sanitizeApHref(value: string): string | undefined {
+	try {
+		const u = new URL(value);
+		if (u.protocol === 'http:' || u.protocol === 'https:') return value;
+	} catch {
+		// fallthrough
+	}
 	return undefined;
 }
 
