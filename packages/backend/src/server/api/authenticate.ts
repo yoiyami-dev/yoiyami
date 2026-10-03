@@ -28,7 +28,7 @@ export default async (token: string | null): Promise<[CacheableLocalUser | null 
 			throw new AuthenticationError('user not found');
 		}
 
-		// 削除済みアカウントのトークンを無効化する (strix vuln-0008)
+		// 削除済みアカウントのトークンを無効化する
 		if (user.isDeleted) {
 			throw new AuthenticationError('user deleted');
 		}
@@ -56,7 +56,7 @@ export default async (token: string | null): Promise<[CacheableLocalUser | null 
 				id: accessToken.userId,
 			}) as Promise<ILocalUser>);
 
-		// 削除済みアカウントのアプリアクセストークンを無効化する (strix vuln-0008)
+		// 削除済みアカウントのアプリアクセストークンを無効化する
 		if (user.isDeleted) {
 			throw new AuthenticationError('user deleted');
 		}
