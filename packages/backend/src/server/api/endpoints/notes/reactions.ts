@@ -46,7 +46,7 @@ export const paramDef = {
 
 // eslint-disable-next-line import/no-default-export
 export default define(meta, paramDef, async (ps, user) => {
-	// 閲覧できないノート（指定可见性等）のリアクション一覧を返さない (GHSA-5c3q-jmv3-r6fx)
+	// 閲覧できないノートのリアクション一覧を返さない (GHSA-5c3q-jmv3-r6fx)
 	const note = await Notes.findOneBy({ id: ps.noteId });
 	if (note == null) throw new ApiError(meta.errors.noSuchNote);
 	if (!(await Notes.isVisibleForMe(note, user ? user.id : null))) {
