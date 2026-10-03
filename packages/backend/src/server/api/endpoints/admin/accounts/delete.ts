@@ -27,7 +27,7 @@ export default define(meta, paramDef, async (ps, me) => {
 		throw new Error('user not found');
 	}
 
-	// 削除済みアカウントに対する再削除（purge重複投入）を防ぐ (strix vuln-0008)
+	// 削除済みアカウントに対する再削除（purge重複投入）を防ぐ
 	if (user.isDeleted) {
 		throw new Error('user already deleted');
 	}
